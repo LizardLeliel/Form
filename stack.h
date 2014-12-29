@@ -23,8 +23,9 @@ void stackIni();
 void shouldNotBeBottom();
 
 /* Push and pop things on the stack */
-void pushStack(dataType_t dataType, byte* data);
+void pushStack(dataType_t dataType, void* data);
 void popStack();
+
 
 #define STACK_HEADER
 #endif

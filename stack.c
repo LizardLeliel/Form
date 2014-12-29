@@ -3,6 +3,7 @@
 
 #include "stdlib.h"
 #include "stdio.h"
+#include "string.h"
 
 /* Stack starts initialized with a null node */
 stack_t _bottom =
@@ -23,19 +24,21 @@ void stackIni() {
     STACK = &_bottom;
 }
 
-void ShouldNotBeBottom() {
+void shouldNotBeBottom() {
     if (STACK->data == nil) perror("Stack underflow");
 }
 
 /* Pushes data onto the stack */
-void pushStack(dataType_t dataType, byte* data) {
+void pushStack(dataType_t dataType, void* data) {
     if (dataSize[dataType] == 0) {
         printf("Fix behaviour for variable-sized data pushStack()!\n");
         exit(1);
     }
     else {
-        stack_t* newNode = malloc(dataSize[dataType]);
-        newNode->data    = data;
+        stack_t* newNode = malloc(sizeof(stack_t));
+        newNode->data = malloc(dataSize[dataType]);
+        memcpy(newNode->data, data, dataSize[dataType]);
+        //newNode->data    = data;
         newNode->type    = dataType;
         newNode->next    = STACK;
         STACK            = newNode;
@@ -44,7 +47,7 @@ void pushStack(dataType_t dataType, byte* data) {
 
 /* Pops data and frees it */
 void popStack() {
-    ShouldNotBeBottom();
+    shouldNotBeBottom();
     stack_t* newNode = STACK;
     STACK = STACK->next;
     free(newNode);

@@ -4,8 +4,9 @@
 /* Datatype suitable for storing an intstruction */
 typedef struct instruction_node {
     instructionType_t instruction;
-    int argSize;
+    size_t argSize;
     void* args;
+    struct instruction_node* next;
 
 } instruction_t;
 

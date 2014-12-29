@@ -2,6 +2,8 @@
 
 %{
 #include <math.h>
+#include <inttypes.h>
+#include "stack.h"
 %}
 
 NUM				[0-9]
@@ -16,9 +18,13 @@ VAR          			"."{ID}
 %%
 
 {INT}{WS}			{
-				printf("Found an int: %d\n", atoi(yytext));
+				int32_t n = atoi(yytext);
+				pushStack(f_int, &n);
 				}
 {VAR}{WS}			{
 				printf("Found a var: %s\n", yytext);
+				}
+":"{WS}*{ID}			{
+				printf("Found a function");
 				}
 %%
