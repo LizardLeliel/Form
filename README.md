@@ -10,6 +10,6 @@ type "sudo apt-get install flex" into the command bar, go the the clone's root d
 and type "flex flexLang.flex". lex.yy.c will be generated, and will be able to link
 
 Todo: <br>
-[ ] Make a make file
-[ ] Backus-Naur form documentation (?)
-[ ] A guide to the language
+- [ ] Make a make file
+- [ ] Backus-Naur form documentation (?)
+- [ ] A guide to the language
