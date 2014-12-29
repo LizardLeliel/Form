@@ -23,6 +23,10 @@ void stackIni() {
     STACK = &_bottom;
 }
 
+void ShouldNotBeBottom() {
+    if (STACK->data == nil) perror("Stack underflow");
+}
+
 /* Pushes data onto the stack */
 void pushStack(dataType_t dataType, byte* data) {
     if (dataSize[dataType] == 0) {
@@ -33,10 +37,18 @@ void pushStack(dataType_t dataType, byte* data) {
         stack_t* newNode = malloc(dataSize[dataType]);
         newNode->data    = data;
         newNode->type    = dataType;
-        newNode->next    = STACK->next;
+        newNode->next    = STACK;
         STACK            = newNode;
     }
-
 }
+
+/* Pops data and frees it */
+void popStack() {
+    ShouldNotBeBottom();
+    stack_t* newNode = STACK;
+    STACK = STACK->next;
+    free(newNode);
+}
+
 
 

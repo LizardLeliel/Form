@@ -14,13 +14,17 @@ typedef struct stack_node {
 
 /* The actual stack that is used by the language */
 extern stack_t* STACK;
-extern stack_t _bottom;
+//extern stack_t _bottom;
 
 /* Must be called for STACK to start pointing at _bottom */
 void stackIni();
 
-/* Push something onto the stack */
+/* Raise error if at bottom of stack */
+void shouldNotBeBottom();
+
+/* Push and pop things on the stack */
 void pushStack(dataType_t dataType, byte* data);
+void popStack();
 
 #define STACK_HEADER
 #endif
