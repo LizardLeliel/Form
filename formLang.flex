@@ -13,7 +13,7 @@ WS				[ \n\t\<<EOF>>]
 CHARR				[a-zA-Z]
 ALPHNUM			{NUM}|{CHARR}
 ID				{CHARR}{ALPHNUM}*
-VAR          			"."{ID}
+VAR				"."{ID}
 
 %%
 

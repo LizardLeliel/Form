@@ -25,7 +25,7 @@ void stackIni() {
 }
 
 void shouldNotBeBottom() {
-    if (STACK->data == nil) perror("Stack underflow");
+    if (STACK->next == NULL) perror("Stack underflow");
 }
 
 /* Pushes data onto the stack */

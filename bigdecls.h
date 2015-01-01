@@ -47,7 +47,7 @@ typedef enum intsruction_set {
     incr,
     decr,
 
-    // Standard stack-relation operations
+    // Standard stack-related operations
     push,
     drop,
     over,
@@ -63,8 +63,9 @@ typedef enum intsruction_set {
     assigns,
     get,
 
-    // Misc operations (function call, output, end program)
+    // Misc operations (function call, return output, end program)
     call,
+    returns,
     print,
     endProg,
 

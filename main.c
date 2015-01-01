@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     stackIni();
     instructionIni();
 
-//#define test
+#define test
 
 #ifdef test
  #include "test.h"
