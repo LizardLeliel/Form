@@ -38,6 +38,7 @@ void pushStack(dataType_t dataType, void* data) {
         stack_t* newNode = malloc(sizeof(stack_t));
         newNode->data = malloc(dataSize[dataType]);
         memcpy(newNode->data, data, dataSize[dataType]);
+        // The next is kept, because you'll never know what may happen...
         //newNode->data    = data;
         newNode->type    = dataType;
         newNode->next    = STACK;

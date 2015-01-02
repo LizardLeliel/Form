@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Three important pointers for the building bytecode out of
+/* Four important pointers for the building bytecode out of
  *  scanned input. The three pointers are the top of the function linked
  *  list, the end of the function linked list, the end of main's
  *  instruction list, and the instruction list currently appending too.
@@ -16,8 +16,9 @@ struct build_pointer_struct buildPointers = {NULL, NULL, NULL, NULL};
 /* A number for keeping track of how many functions are declared */
 unsigned int functionNumber = 1;
 
-// A boolean to determine whether the current function build sdequence
-//  is the main function or not
+/* A boolean to determine whether the current function build sdequence
+ *  is the main function or not
+ */
 bool onMain = true;
 
 /* Initialized buildPointers appriopriatly */

@@ -63,7 +63,7 @@ typedef enum intsruction_set {
     assigns,
     get,
 
-    // Misc operations (function call, return output, end program)
+    // Misc operations (function call, return, output, end program)
     call,
     returns,
     print,
