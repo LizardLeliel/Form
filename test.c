@@ -10,6 +10,10 @@
 #include "build.h"
 #include "hash.h"
 
+// The macro below is an integer representing the last 20 bits being 1. Or:
+//  00000000 00001111 11111111 11111111
+#define bit20 1048575
+
 #define GO_THROUGH(tracer) while(tracer) {\
     printf("%d ", tracer->instruction);   \
         tracer = tracer->next;            \
@@ -19,6 +23,8 @@
 
 void runChecks() {
     int32_t sampInt = 423;
+
+    printf("%lu\n", sizeof(hash_t)*bit20);
 
     // Simple push test
     pushStack(f_int, (void*)&sampInt);
@@ -67,24 +73,23 @@ void runChecks() {
     printf("The hash function and its various results, and their various ");
     printf("results with their\n first two bytes &'d:\n");
 
-    char* ourSymbol1  = "Bonjour";
+    char* ourSymbol1  = "Why?";
     char* ourSymbol2 = "KonohanaSakuya";
     char* ourSymbol3 = "ourSymbol3";
 
-#define bit20 1048575
 
     printf("%-20s %30lu\n",
             ourSymbol1, hashFunction(strlen(ourSymbol1), ourSymbol1));
     printf("%-20s %30lu\n",
             ourSymbol2, hashFunction(strlen(ourSymbol2), ourSymbol2));
-    printf("%-20s %30lu\n",
+    printf("%-20s %30lx\n",
             ourSymbol3, hashFunction(strlen(ourSymbol3), ourSymbol3));
 
     printf("&'d %-16s %30lu\n",
             ourSymbol1, bit20 & hashFunction(strlen(ourSymbol1), ourSymbol1));
     printf("&'d %-16s %30lu\n",
             ourSymbol2, bit20 & hashFunction(strlen(ourSymbol2), ourSymbol2));
-    printf("&'d %-16s %30lu\n",
+    printf("&'d %-16s %30lx\n",
             ourSymbol3, bit20 & hashFunction(strlen(ourSymbol3), ourSymbol3));
 
     printf("\n\n\n");

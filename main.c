@@ -7,8 +7,12 @@
 int main(int argc, char** argv)
 {
     printf("Hello world!\n");
+
     stackIni();
     instructionIni();
+    hashIni();
+
+    printf("%u %u %u\n", 1, 1<<1, 1>>1);
 
 #define test
 

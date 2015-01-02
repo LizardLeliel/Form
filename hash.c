@@ -1,8 +1,10 @@
 #include "hash.h"
+#include "bigdecls.h"
 
 #include <stdlib.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdio.h>
 
 /* The hash function is implemented with an array size and not a null-
  *  terminated string because it'll be simplier to determine
@@ -26,4 +28,57 @@ unsigned long hashFunction(size_t wordLength, char* symbol) {
 
     return hash;
 }
+
+/* Using a macro would be bad; the variable may change. The value MUST be
+ *  a number expressable by 2^n-1.
+ */
+#define initialHashArraySize 1048575
+unsigned long maxArrayVal = initialHashArraySize;
+
+/* The hashtable */
+hash_t* HASH;
+
+/* Initialize hash function */
+void hashIni() {
+    static int tries = 10;
+    HASH = calloc(maxArrayVal+1, sizeof(hash_t));
+
+    /* if malloc/calloc fails, try again with smaller ammounts */
+    while (HASH == NULL) {
+        maxArrayVal >>= 1;
+        HASH = calloc(maxArrayVal+1, sizeof(hash_t));
+
+        if (--tries == 0) {
+            perror
+            ("Unable to allocate memory for hash table while scanning\n");
+        } // If
+
+    //! DELETE EVENTUALLY
+    printf("SIZEOF HASH ARRAY: %lu\n", sizeof HASH);
+
+    } // While
+} // function
+
+//! TODO: write this full function, not just a stub
+void setHashEntry(hashType_t toHashType, size_t symbolSize,
+ const char* symbolName) {
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

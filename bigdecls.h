@@ -71,7 +71,15 @@ typedef enum intsruction_set {
 
 } instructionType_t;
 
-/* an enumeration of data types */
+/* An enumeration of hashed data types */
+typedef enum hash_type {
+    nothing,
+    variableName,
+    functionName,
+    labelName,
+} hashType_t;
+
+/* An enumeration of run-time data types */
 typedef enum data_type {
     nil = 0,
     f_int,
