@@ -84,18 +84,22 @@ typedef enum hash_type {
     h_gotoMemory,  // 4
 } hashType_t;     // I couldn't help myself with the comments!
 
-/* An enumeration of run-time data types */
+/* An enumeration of run-time data types. All data types in Form should
+ *  be 32 bits (even char; although strings will be treated like a special
+ *  array type*/
 typedef enum data_type {
-    nil = 0,
-    f_int,
-    f_ulong,
-    f_double,
-    f_bool,
-    f_char,
-    f_var,
-    f_table,
-    f_array,
-    f_ref,
+    f_nil     = 0,
+    f_32int   = 1,
+    f_32float = 2,
+    f_bool    = 4,
+    f_char    = 8,
+    f_number  = 16,
+    f_var     = 32,
+    f_table   = 64,
+    f_array   = 128,
+    f_string  = 256,
+    f_ref     = 512,
+
 } dataType_t;
 
 /* Array of data sizes */

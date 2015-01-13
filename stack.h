@@ -1,8 +1,10 @@
 #ifndef STACK_HEADER
 
 #include "bigdecls.h"
+#include "inttypes.h"
 
-#define byte unsigned char
+typedef unsigned char byte;
+typedef int32_t size32_t;
 
 /* The stack data stryctyre that this stack-oriented program uses */
 typedef struct stack_node {
@@ -25,6 +27,7 @@ void shouldNotBeBottom();
 /* Push and pop things on the stack */
 void pushStack(dataType_t dataType, void* data);
 void dropStack();
+size32_t popStack(instructionType_t* outType);
 
 
 

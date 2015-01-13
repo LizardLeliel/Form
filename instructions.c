@@ -35,27 +35,43 @@ void (*EXEC_INSTRUCTION[instruction_ammount])() =
 
 };
 
+#define C_OPERATE(DATA_TYPE, OPERATION)             \
+    *(DATA_TYPE*)toPush =                            \
+    (DATA_TYPE)topArg OPERATION (DATA_TYPE)bottomArg; \
+
 void i_nop() {
     return;
 }
 void i_add() {
-    shouldNotBeBottom();
+
+    // The functions popStack() checks for underflow
+    instructionType_t argTypes = 0;
+
+    size32_t topArg    = popStack(&argTypes);
+    size32_t bottomArg = popStack(&argTypes);
+
+    void* toPush = malloc(32);
 
     // Write stack manipulation
-    switch (STACK->type) {
-        case f_int:;
+    //! Todo: Make better switch case
+    switch (argTypes) {
+    case f_nil:
+        perror("You tried adding nothing\n");
+        break;
 
-            int32_t highest = *(int32_t*)STACK->data;
-            dropStack();
-            shouldNotBeBottom();
-            int32_t nextHighest = *(int32_t*)STACK->data;
-            dropStack();
-            int32_t result = highest + nextHighest;
-            pushStack(f_int, &result);
-            break;
-        default:
-            break;
+    case f_32int:
+        C_OPERATE(int32_t, +)
+        pushStack(f_32int,  toPush);
+        break;
+
+    case f_32float: case f_32int|f_32float:
+        C_OPERATE(float, +)
+        pushStack(f_32float, toPush);
+        break;
+
     }
+
+
 
     return;
 }

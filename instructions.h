@@ -1,5 +1,6 @@
 #ifndef INSTRUCTIONS_HEADER
 #include "bigdecls.h"
+#include "stack.h"
 
 // This is gonna be a long file...
 

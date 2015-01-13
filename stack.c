@@ -8,7 +8,7 @@
 /* Stack starts initialized with a null node */
 stack_t _bottom =
 {
-    nil,
+    f_nil,
     NULL,
     NULL,
 };
@@ -49,10 +49,24 @@ void pushStack(dataType_t dataType, void* data) {
 /* Pops data and frees it */
 void dropStack() {
     shouldNotBeBottom();
+
     stack_t* newNode = STACK;
     STACK = STACK->next;
     free(newNode);
 }
 
+size32_t popStack(instructionType_t* outType) {
+    shouldNotBeBottom();
+
+    if (outType != NULL) *outType |= STACK->type;
+
+    size32_t returnVal = *(size32_t*)STACK->data;
+    stack_t* freeNode = STACK;
+
+    STACK = STACK->next;
+
+    free(freeNode);
+    return returnVal;
+}
 
 

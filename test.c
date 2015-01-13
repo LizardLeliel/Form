@@ -28,7 +28,7 @@ void runChecks() {
     printf("%u\n", sizeof(hash_t)*bit20);
 
     // Simple push test
-    pushStack(f_int, (void*)&sampInt);
+    pushStack(f_32int, (void*)&sampInt);
     printf("Checking pushing: %d %s\n", *(int32_t*)(STACK->data),
             *(int32_t*)(STACK->data) == 423 ? "Pass" : "Fail");
 
@@ -109,8 +109,8 @@ void runChecks() {
     printHashResults(ourSymbol1)
 
     // Test our very first coded instruction: i_add
-    pushStack(f_int, &sampInt);
-    pushStack(f_int, &sampInt);
+    pushStack(f_32int, &sampInt);
+    pushStack(f_32int, &sampInt);
 
     EXEC_INSTRUCTION[add]();
 
