@@ -6,6 +6,22 @@
 #include <string.h>
 #include <stdio.h>
 
+<<<<<<< HEAD
+/* Using a macro would be bad; the variable may change. The value MUST be
+ *  a number expressable by 2^n-1.
+ */
+#define initialHashArraySize 1048575
+unsigned long maxArrayVal = initialHashArraySize;
+#undef initialHashArraySize
+
+/* The hashtable */
+hash_t HASH;
+
+/* counter Array */
+unsigned int counters[h_labelName+1] = {0,0,0,0};
+
+=======
+>>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 /* The hash function is implemented with an array size and not a null-
  *  terminated string because it'll be simplier to determine
  *  the range of the actual symbol (which, as text, is going to include
@@ -18,7 +34,11 @@
  * The algorithm used is a variation of the sdbm algoritn
  *  (http://www.cse.yorku.ca/~oz/hash.html)
  */
+<<<<<<< HEAD
+unsigned long hashFunction(size_t wordLength, const char* symbol) {
+=======
 unsigned long hashFunction(size_t wordLength, char* symbol) {
+>>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
     unsigned long hash = 0;
     int c = 0;
 
@@ -29,6 +49,9 @@ unsigned long hashFunction(size_t wordLength, char* symbol) {
     return hash;
 }
 
+<<<<<<< HEAD
+
+=======
 /* Using a macro would be bad; the variable may change. The value MUST be
  *  a number expressable by 2^n-1.
  */
@@ -39,6 +62,7 @@ unsigned long maxArrayVal = initialHashArraySize;
 hash_t* HASH;
 
 /* Initialize hash function */
+>>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 void hashIni() {
     static int tries = 10;
     HASH = calloc(maxArrayVal+1, sizeof(hash_t));
@@ -52,6 +76,74 @@ void hashIni() {
             perror
             ("Unable to allocate memory for hash table while scanning\n");
         } // If
+<<<<<<< HEAD
+    } // While
+
+    //! DELETE EVENTUALLY
+    printf("SIZEOF HASH ARRAY: %lu BYTES\n", sizeof(hash_t)*maxArrayVal);
+
+} // function
+
+/* This function will always return an unisnged integer. It first checks in the
+ *  hash to see if hash bucket has entries. If not, it'll build a
+ *
+ */
+unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
+                       const char* symbolName) {
+    // Get hash index
+    //! Test to make sure it handles collisions well by hardcoding and index,
+    //!  and seeing if it'll behave correctly given 2 different tokens without
+    //!  deference NULL
+    unsigned long index = maxArrayVal&hashFunction(symbolSize, symbolName);
+
+    // If hash entry is empty, set a new one
+    //! To do: make a function for creating hash entries
+    if (HASH[index] == NULL) {
+        (HASH[index]) = malloc(sizeof(hashBucket_t));
+
+        // Set values
+        (HASH[index])->hashedType  = toHashType;
+        (HASH[index])->contents.ID = ++(counters[toHashType]);
+        (HASH[index])->next        = NULL;
+
+        (HASH[index])->symbol
+            = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+        return counters[toHashType];
+    }
+
+    // Else, check each node in list to see if symbol already exists. Start
+    //  with a dummy list node (Is there a simplier way to do this?)
+    hashBucket_t* tracer = malloc(sizeof(hashBucket_t));
+    hashBucket_t* freeThisDummy = tracer;
+    tracer->next = HASH[index];
+
+    do {
+        tracer = tracer->next;
+        // If the words are the same length and are the same
+        //! Todo: Make it an && condidtional expression
+        if (tracer->symbolLength != symbolSize) {
+            if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) {
+                free(freeThisDummy);
+                return tracer->contents.ID;
+            }
+        }
+
+    } while (tracer->next != NULL);
+
+    // Now's the best time to free!
+    free(freeThisDummy);
+
+    // If trace->next == null, then we need to make a new hash entry
+    tracer = tracer->next = malloc(sizeof(hashBucket_t));
+    tracer->hashedType    = toHashType;
+    tracer->symbolLength  = symbolSize;
+    tracer->contents.ID   = ++counters[toHashType];
+
+    tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+    return counters[toHashType];
+=======
 
     //! DELETE EVENTUALLY
     printf("SIZEOF HASH ARRAY: %lu\n", sizeof HASH);
@@ -63,6 +155,7 @@ void hashIni() {
 void setHashEntry(hashType_t toHashType, size_t symbolSize,
  const char* symbolName) {
     return;
+>>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 }
 
 

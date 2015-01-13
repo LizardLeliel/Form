@@ -47,7 +47,11 @@ void pushStack(dataType_t dataType, void* data) {
 }
 
 /* Pops data and frees it */
+<<<<<<< HEAD
+void dropStack() {
+=======
 void popStack() {
+>>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
     shouldNotBeBottom();
     stack_t* newNode = STACK;
     STACK = STACK->next;
