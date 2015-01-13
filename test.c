@@ -9,10 +9,7 @@
 #include "bigdecls.h"
 #include "build.h"
 #include "hash.h"
-<<<<<<< HEAD
 #include "instructions.h"
-=======
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 
 // The macro below is an integer representing the last 20 bits being 1. Or:
 //  00000000 00001111 11111111 11111111
@@ -28,11 +25,7 @@
 void runChecks() {
     int32_t sampInt = 423;
 
-<<<<<<< HEAD
     printf("%u\n", sizeof(hash_t)*bit20);
-=======
-    printf("%lu\n", sizeof(hash_t)*bit20);
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 
     // Simple push test
     pushStack(f_int, (void*)&sampInt);
@@ -40,11 +33,7 @@ void runChecks() {
             *(int32_t*)(STACK->data) == 423 ? "Pass" : "Fail");
 
     // Simple pop test
-<<<<<<< HEAD
     dropStack();
-=======
-    popStack();
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
     printf("Checking popping: %d %s\n", STACK->type,
             STACK->type == 0 ? "Pass" : "Fail");
 
@@ -94,18 +83,13 @@ void runChecks() {
             ourSymbol1, hashFunction(strlen(ourSymbol1), ourSymbol1));
     printf("%-20s %30lu\n",
             ourSymbol2, hashFunction(strlen(ourSymbol2), ourSymbol2));
-<<<<<<< HEAD
     printf("%-20s %30lu\n",
-=======
-    printf("%-20s %30lx\n",
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
             ourSymbol3, hashFunction(strlen(ourSymbol3), ourSymbol3));
 
     printf("&'d %-16s %30lu\n",
             ourSymbol1, bit20 & hashFunction(strlen(ourSymbol1), ourSymbol1));
     printf("&'d %-16s %30lu\n",
             ourSymbol2, bit20 & hashFunction(strlen(ourSymbol2), ourSymbol2));
-<<<<<<< HEAD
     printf("&'d %-16s %30lu\n",
             ourSymbol3, bit20 & hashFunction(strlen(ourSymbol3), ourSymbol3));
 
@@ -134,13 +118,6 @@ void runChecks() {
            *(uint32_t*)STACK->data);
 
     return ;
-=======
-    printf("&'d %-16s %30lx\n",
-            ourSymbol3, bit20 & hashFunction(strlen(ourSymbol3), ourSymbol3));
-
-    printf("\n\n\n");
-    return;
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 }
 
 

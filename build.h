@@ -12,11 +12,8 @@ typedef struct function_header_struct {
 
 } functionHead_t;
 
-<<<<<<< HEAD
 // I normally don't be this in-depth with something, but these four pointers
 //  are so important I figured I'll do this kind of commenting
-=======
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 /* A collection of pointers which are important to the contruction
  *  the program's instruction squences
  * -----
@@ -26,11 +23,7 @@ typedef struct function_header_struct {
  * @mainLast: The last instruction added to the end of main. Once a function
  *  declaration ends, any new instructions will be added to the end of this,
  *  and any new function declarations will be valid
-<<<<<<< HEAD
  * @currentInstruction: The last instruction appened, regardless of lists. Any
-=======
- * @currentInstructi: The last instruction appened, regardless of lists. Any
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
  *  new instruction will be added to this.
  * -----
  * Keep in mind that both function lists and instruction lists are implemented

@@ -69,31 +69,20 @@ typedef enum intsruction_set {
     print,
     endProg,
 
-<<<<<<< HEAD
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that, and... things
     instruction_ammount,
 
-=======
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 } instructionType_t;
 
 /* An enumeration of hashed data types */
 typedef enum hash_type {
-<<<<<<< HEAD
     h_nothing = 0,     // 0
     h_variableName,   // 1
     h_functionName,  // 2
     h_labelName,    // 3
     h_gotoMemory,  // 4
 } hashType_t;     // I couldn't help myself with the comments!
-=======
-    nothing,
-    variableName,
-    functionName,
-    labelName,
-} hashType_t;
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 
 /* An enumeration of run-time data types */
 typedef enum data_type {

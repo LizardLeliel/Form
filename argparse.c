@@ -1,11 +1,6 @@
 #include "argparse.h"
-<<<<<<< HEAD
 //#include "lex.yy.c"
 /*
-=======
-#include "lex.yy.c"
-
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 int argParse(int argc, char** argv) {
     if (argc < 2) {
         printf("Invalid arguements. Format:\n");
@@ -19,7 +14,4 @@ int argParse(int argc, char** argv) {
         return n;
     }
 }
-<<<<<<< HEAD
 */
-=======
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50

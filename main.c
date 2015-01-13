@@ -3,10 +3,7 @@
 #include "argparse.h"
 #include "stack.h"
 #include "build.h"
-<<<<<<< HEAD
 #include "hash.h"
-=======
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
 
 int main(int argc, char** argv)
 {
@@ -26,7 +23,6 @@ int main(int argc, char** argv)
  #undef test
 #endif
 
-<<<<<<< HEAD
     //int n = argParse(argc, argv);
 
     return 0;
@@ -38,9 +34,3 @@ int main(int argc, char** argv)
  *   - The first stack operation was performed (internally; not from script)
  *
  */
-=======
-    int n = argParse(argc, argv);
-
-    return n;
-}
->>>>>>> fbaab0080dc700dae1c8ddc879a0d3c19c65ef50
