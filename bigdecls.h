@@ -88,17 +88,23 @@ typedef enum hash_type {
  *  be 32 bits (even char; although strings will be treated like a special
  *  array type*/
 typedef enum data_type {
-    f_nil     = 0,
-    f_32int   = 1,
-    f_32float = 2,
-    f_bool    = 4,
-    f_char    = 8,
-    f_number  = 16,
-    f_var     = 32,
-    f_table   = 64,
-    f_array   = 128,
-    f_string  = 256,
-    f_ref     = 512,
+    f_nil       = 0x0000,
+
+    f_numeric   = 0x0001,
+    f_composite = 0x0002,
+    f_other     = 0x0004,
+
+    f_32int     = 0x0008,
+    f_32float   = 0x0010,
+    f_bool      = 0x0020,
+    f_char      = 0x0040,
+
+    f_table     = 0x0080,
+    f_array     = 0x0100,
+    f_string    = 0x0200,
+
+    f_ref       = 0x0400,
+    f_var       = 0x0800,
 
 } dataType_t;
 

@@ -24,11 +24,12 @@
 
 void runChecks() {
     int32_t sampInt = 423;
+    float sampFloat = 1.3f;
 
-    printf("%u\n", sizeof(hash_t)*bit20);
+    printf("%lu\n", sizeof(hash_t)*bit20);
 
     // Simple push test
-    pushStack(f_32int, (void*)&sampInt);
+    pushStack(f_32int|f_numeric, (void*)&sampInt);
     printf("Checking pushing: %d %s\n", *(int32_t*)(STACK->data),
             *(int32_t*)(STACK->data) == 423 ? "Pass" : "Fail");
 
@@ -109,13 +110,26 @@ void runChecks() {
     printHashResults(ourSymbol1)
 
     // Test our very first coded instruction: i_add
-    pushStack(f_32int, &sampInt);
-    pushStack(f_32int, &sampInt);
+    pushStack(f_32int|f_numeric, &sampInt);
+    pushStack(f_32int|f_numeric, &sampInt);
 
     EXEC_INSTRUCTION[add]();
 
     printf("\nThe stack after pushing 423 twice and adding: %d\n",
            *(uint32_t*)STACK->data);
+
+    pushStack(f_32float|f_numeric, &sampFloat);
+    pushStack(f_32float|f_numeric, &sampFloat);
+
+    printf("The top two things on the stack: \n\
+            \t%f\n\t%f\n", *(float*)STACK->data,
+            *(float*)STACK->next->data);
+
+    EXEC_INSTRUCTION[add]();
+
+
+    printf("\nThe stack after pushing 1.5f twice and adding: %f\n",
+           *(float*)STACK->data);
 
     return ;
 }

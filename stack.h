@@ -27,7 +27,7 @@ void shouldNotBeBottom();
 /* Push and pop things on the stack */
 void pushStack(dataType_t dataType, void* data);
 void dropStack();
-size32_t popStack(instructionType_t* outType);
+size32_t popStack(dataType_t* outType);
 
 
 

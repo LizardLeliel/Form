@@ -30,20 +30,16 @@ void shouldNotBeBottom() {
 
 /* Pushes data onto the stack */
 void pushStack(dataType_t dataType, void* data) {
-    if (dataSize[dataType] == 0) {
-        printf("Fix behaviour for variable-sized data pushStack()!\n");
-        exit(1);
-    }
-    else {
-        stack_t* newNode = malloc(sizeof(stack_t));
-        newNode->data = malloc(dataSize[dataType]);
-        memcpy(newNode->data, data, dataSize[dataType]);
-        // The next is kept, because you'll never know what may happen...
-        //newNode->data    = data;
-        newNode->type    = dataType;
-        newNode->next    = STACK;
-        STACK            = newNode;
-    }
+
+    stack_t* newNode = malloc(sizeof(stack_t));
+    newNode->data = malloc(32);
+    memcpy(newNode->data, data, 32);
+    // The next is kept, because you'll never know what may happen...
+    //newNode->data    = data;
+    newNode->type    = dataType;
+    newNode->next    = STACK;
+    STACK            = newNode;
+
 }
 
 /* Pops data and frees it */
@@ -55,7 +51,8 @@ void dropStack() {
     free(newNode);
 }
 
-size32_t popStack(instructionType_t* outType) {
+//! Todo: Fix popping behaviour
+size32_t popStack(dataType_t* outType) {
     shouldNotBeBottom();
 
     if (outType != NULL) *outType |= STACK->type;
