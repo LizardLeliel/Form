@@ -24,7 +24,7 @@
 
 void runChecks() {
     int32_t sampInt = 423;
-    float sampFloat = 1.3f;
+    float sampFloat = 1.5f;
 
     printf("%lu\n", sizeof(hash_t)*bit20);
 
@@ -121,15 +121,27 @@ void runChecks() {
     pushStack(f_32float|f_numeric, &sampFloat);
     pushStack(f_32float|f_numeric, &sampFloat);
 
-    printf("The top two things on the stack: \n\
-            \t%f\n\t%f\n", *(float*)STACK->data,
-            *(float*)STACK->next->data);
-
     EXEC_INSTRUCTION[add]();
-
 
     printf("\nThe stack after pushing 1.5f twice and adding: %f\n",
            *(float*)STACK->data);
+
+    // And now that there _should_ be a float and a whole number on top, let's
+    //  see how it handles with that!
+
+    EXEC_INSTRUCTION[add]();
+    printf("The stack after adding the results that are on the stack: %f\n",
+            *(float*)STACK->data);
+
+    // We checked two ints, two floats, the top a float and the next an int,
+    //  now let's check for an int on top then a float
+
+    pushStack(f_32int|f_numeric, &sampInt);
+    EXEC_INSTRUCTION[add]();
+
+    printf("Pushing 423 on the stack then adding to the float on the stack: %f\n",
+            *(float*)STACK->data);
+
 
     return ;
 }

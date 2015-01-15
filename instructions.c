@@ -43,30 +43,37 @@ void i_nop() {
 void i_add() {
 
     // The functions popStack() checks for underflow
-    dataType_t argTypes = 0;
 
-    //! Todo: Fix casting issues
-    size32_t topArg    = popStack(&argTypes);
-    size32_t bottomArg = popStack(&argTypes);
+
+    dataType_t topType, bottomType, bothTypes;
+    any32_t    topArg, bottomArg;
+
+    topArg.as_i    = popStack(&topType);
+    bottomArg.as_i = popStack(&bottomType);
+    bothTypes      = topType | bottomType;
 
     void* toPush = malloc(32);
 
     // Write stack manipulation
-    switch (argTypes & (f_numeric|f_composite|f_other)) {
+    switch (bothTypes & (f_numeric|f_composite|f_other)) {
 
-    //! Fix floats (related to casting issues)
+    // Numerically add
       case f_numeric:
-        if (argTypes & f_32float) {
-            printf("Float float float!\n");
-            C_OPERATE(float, +);
-            printf("toPush: %f\n", *(float*)toPush);
-            printf("Our way: %f\n", (float)topArg + (float)bottomArg);
-            printf("Top arg? %f\n", (float)topArg);
-            pushStack(f_32float | f_numeric, toPush);}
-        else {
-            C_OPERATE(int32_t, +);
-            pushStack(f_32int | f_numeric, toPush);
+        if (!(bothTypes & f_32float)) {
+            *(int32_t*)toPush = topArg.as_i + bottomArg.as_i;
+            pushStack(f_numeric | f_32int, toPush);
+            break;
         }
+
+        // The next two should convert integers to floats implicitly
+        if (!(topType & f_32float)) {
+            topArg.as_f = topArg.as_i; }
+        else if (!(bottomType & f_32float)) {
+            bottomArg.as_f = bottomArg.as_i;
+        }
+
+        *(float*)toPush = topArg.as_f + bottomArg.as_f;
+        pushStack(f_32float | f_numeric, toPush);
         break;
 
       case f_composite:
@@ -75,7 +82,7 @@ void i_add() {
 
       default:
         puts("Error: can't not perform \"+\" operator on unmatching types or \
-              or types which are not numeric/composite");
+              on types which are not numeric/composite");
         exit(1);
     }
 

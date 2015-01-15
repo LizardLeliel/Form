@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
+#include "stdint.h"
 
 /* Stack starts initialized with a null node */
 stack_t _bottom =
@@ -34,8 +35,7 @@ void pushStack(dataType_t dataType, void* data) {
     stack_t* newNode = malloc(sizeof(stack_t));
     newNode->data = malloc(32);
     memcpy(newNode->data, data, 32);
-    // The next is kept, because you'll never know what may happen...
-    //newNode->data    = data;
+
     newNode->type    = dataType;
     newNode->next    = STACK;
     STACK            = newNode;
@@ -55,10 +55,10 @@ void dropStack() {
 size32_t popStack(dataType_t* outType) {
     shouldNotBeBottom();
 
-    if (outType != NULL) *outType |= STACK->type;
+    if (outType != NULL) *outType = STACK->type;
 
     size32_t returnVal = *(size32_t*)STACK->data;
-    stack_t* freeNode = STACK;
+    stack_t* freeNode  = STACK;
 
     STACK = STACK->next;
 
