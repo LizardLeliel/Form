@@ -21,19 +21,23 @@ stack_t* STACK;
  *  way to statically set STACK to point to _bottom; & is a runtime
  *  operator, and the value of &_bottom isn't known at compile time
  */
-void stackIni() {
+void stackIni() 
+{
     STACK = &_bottom;
 }
 
-void shouldNotBeBottom() {
+void shouldNotBeBottom() 
+{
+    // Try changing later. Make better warning error for user
     if (STACK->next == NULL) perror("Stack underflow");
 }
 
 /* Pushes data onto the stack */
-void pushStack(dataType_t dataType, void* data) {
-
+// Can we change it so all data isn't 32-bit?
+void pushStack(dataType_t dataType, void* data) 
+{
     stack_t* newNode = malloc(sizeof(stack_t));
-    newNode->data = malloc(32);
+    newNode->data    = malloc(32);
     memcpy(newNode->data, data, 32);
 
     newNode->type    = dataType;
@@ -46,13 +50,16 @@ void pushStack(dataType_t dataType, void* data) {
 void dropStack() {
     shouldNotBeBottom();
 
-    stack_t* newNode = STACK;
-    STACK = STACK->next;
-    free(newNode);
+    stack_t* oldNode = STACK;
+    STACK            = STACK->next;
+    free(oldNode);
 }
 
 //! Todo: Fix popping behaviour
-size32_t popStack(dataType_t* outType) {
+// Pops data from the stack, frees dynamic memory associated
+//  with it, then returns that value.
+size32_t popStack(dataType_t* outType) 
+{
     shouldNotBeBottom();
 
     if (outType != NULL) *outType = STACK->type;
@@ -64,6 +71,17 @@ size32_t popStack(dataType_t* outType) {
 
     free(freeNode);
     return returnVal;
+}
+
+data_t popData()
+{
+    shouldNotBeBottom();
+    dataType_t outType;
+    size32_t data = popStack(&outType);
+
+    data_t returnStruct 
+        = {.dataType = outType, .data = data};
+    return returnStruct;
 }
 
 

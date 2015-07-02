@@ -14,13 +14,15 @@ unsigned long hashFunction(size_t wordLength, const char* symbol);
 /* A struct suitable for keeping track of declared
  *  variables, labels, and function names.
  */
-typedef struct hash_bucket_slot {
+typedef struct hash_bucket_slot 
+{
     hashType_t hashedType;
     char* symbol;
     size_t symbolLength;
     struct hash_bucket_slot* next;
 
-   union {
+   union 
+    {
         unsigned int ID;
         instruction_t* noArgInstruction;
     } contents;
@@ -30,6 +32,7 @@ typedef struct hash_bucket_slot {
  //! Change it so the only element is a hash bucket pointer
 typedef hashBucket_t** hash_t;
 
+//! Chang this such that you don't depend on a fully global variable
 extern hash_t HASH;
 
 /* Hash table initalization function */

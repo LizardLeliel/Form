@@ -21,8 +21,9 @@
     } printf("\n");
 
 
-
-void runChecks() {
+// A bunch of hacky debug info.
+void runChecks() 
+{
     int32_t sampInt = 423;
     float sampFloat = 1.5f;
 
@@ -110,6 +111,7 @@ void runChecks() {
     printHashResults(ourSymbol1)
 
     // Test our very first coded instruction: i_add
+    // Undo this stuff after complimation works out
     pushStack(f_32int|f_numeric, &sampInt);
     pushStack(f_32int|f_numeric, &sampInt);
 
@@ -118,13 +120,18 @@ void runChecks() {
     printf("\nThe stack after pushing 423 twice and adding: %d\n",
            *(uint32_t*)STACK->data);
 
+    // No, here's me pushing the floats...
     pushStack(f_32float|f_numeric, &sampFloat);
     pushStack(f_32float|f_numeric, &sampFloat);
+
+    //printf("!!! pushing: %f %f \n", *(float*)STACK->data, STACK->next->data);
+    // Uh, hm.
 
     EXEC_INSTRUCTION[add]();
 
     printf("\nThe stack after pushing 1.5f twice and adding: %f\n",
-           *(float*)STACK->data);
+           *(float*)STACK->data); 
+
 
     // And now that there _should_ be a float and a whole number on top, let's
     //  see how it handles with that!

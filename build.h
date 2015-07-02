@@ -6,7 +6,8 @@
  *  executed first; and will be outside of any function declaration,
  *  adding new functions will be treated as a queue
  */
-typedef struct function_header_struct {
+typedef struct function_header_struct 
+{
     instruction_t* head;
     struct function_header_struct* next;
 
@@ -17,13 +18,13 @@ typedef struct function_header_struct {
 /* A collection of pointers which are important to the contruction
  *  the program's instruction squences
  * -----
- * @programTop: A pointer to the top of function list, or the 'main' function
- * @lastFunction: The last function, new function declarations will be added
+ * programTop: A pointer to the top of function list, or the 'main' function
+ * lastFunction: The last function, new function declarations will be added
  *  after the end
- * @mainLast: The last instruction added to the end of main. Once a function
+ * mainLast: The last instruction added to the end of main. Once a function
  *  declaration ends, any new instructions will be added to the end of this,
  *  and any new function declarations will be valid
- * @currentInstruction: The last instruction appened, regardless of lists. Any
+ * currentInstruction: The last instruction appened, regardless of lists. Any
  *  new instruction will be added to this.
  * -----
  * Keep in mind that both function lists and instruction lists are implemented
@@ -31,7 +32,8 @@ typedef struct function_header_struct {
  *  and each point to a different instruction list in memory. There are
  *  instruction queues; as many as there are functions (including "main")
  */
-struct build_pointer_struct {
+struct build_pointer_struct 
+{
     functionHead_t* programTop;
     functionHead_t* lastFunction;
     instruction_t*  mainLast;
@@ -39,6 +41,7 @@ struct build_pointer_struct {
 
 };
 
+// Also change these so we're not relying on global variables
 /* The instructions are NULL-initialized; It is currently externed
  *  for test.c (which I usually don't include in git repositories).
  *  It will be removed if its found not to be needed

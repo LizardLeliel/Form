@@ -11,7 +11,8 @@
  *  Any word that is a plural but has no reason to be plural
  *  is done as to avoid naming conflicts
  */
-typedef enum intsruction_set {
+typedef enum intsruction_set 
+{
     // No operation
     nop = 0,
 

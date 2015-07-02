@@ -19,6 +19,7 @@ int main(int argc, char** argv)
 
 #ifdef test
  #include "test.h"
+    // Make a formal test suite?
     runChecks();
  #undef test
 #endif

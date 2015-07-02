@@ -6,25 +6,26 @@
 #include "stack.h"
 %}
 
-NUM				[0-9]
-INT				{NUM}+
-UINT				"-"?{INT}
-WS				[ \n\t\<<EOF>>]
-CHARR				[a-zA-Z]
-ALPHNUM			{NUM}|{CHARR}
-ID				{CHARR}{ALPHNUM}*
-VAR				"."{ID}
+NUM             [0-9]
+UINT            {NUM}+
+INT             "-"?{UINT}
+WS              [ \n\t\<<EOF>>]
+CHARR           [a-zA-Z]
+ALPHNUM         {NUM}|{CHARR}
+ID              {CHARR}{ALPHNUM}*
+VAR             "."{ID}
+OP              [+-*/]
 
 %%
 
-{INT}{WS}			{
-				int32_t n = atoi(yytext);
-				pushStack(f_int, &n);
-				}
-{VAR}{WS}			{
-				printf("Found a var: %s\n", yytext);
-				}
-":"{WS}*{ID}			{
-				printf("Found a function");
-				}
+{UINT}{WS}          {
+                    int32_t n = atoi(yytext);
+                    pushStack(n, &n);
+                    }
+{VAR}{WS}           {
+                    printf("Found a var: %s\n", yytext);
+                    }
+":"{WS}*{ID}        {
+                    printf("Found a function");
+                    }
 %%
