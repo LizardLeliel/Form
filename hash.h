@@ -1,4 +1,5 @@
 #ifndef HASH_HEADER
+#define HASH_HEADER
 #include "bigdecls.h"
 #include "instructions.h"
 
@@ -17,11 +18,11 @@ unsigned long hashFunction(size_t wordLength, const char* symbol);
 typedef struct hash_bucket_slot 
 {
     hashType_t hashedType;
-    char* symbol;
-    size_t symbolLength;
-    struct hash_bucket_slot* next;
+    char*      symbol;
+    size_t     symbolLength;
+    struct     hash_bucket_slot* next;
 
-   union 
+    union 
     {
         unsigned int ID;
         instruction_t* noArgInstruction;
@@ -48,5 +49,5 @@ unsigned int getHashID
 
 
 
-#define HASH_HEADER
+// HASH_HEADER
 #endif

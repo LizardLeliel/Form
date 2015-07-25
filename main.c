@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "argparse.h"
 #include "stack.h"
-#include "build.h"
+//#include "build.h"
 #include "hash.h"
 
 int main(int argc, char** argv)
@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 #define test
 
 #ifdef test
- #include "test.h"
+// #include "test.h"
     // Make a formal test suite?
-    runChecks();
+//    runChecks();
  #undef test
 #endif
 
@@ -29,9 +29,3 @@ int main(int argc, char** argv)
     return 0;
 }
 
-
-/* Milestones:
- *  January 8th 2015 at arround 12:17 pm:
- *   - The first stack operation was performed (internally; not from script)
- *
- */
