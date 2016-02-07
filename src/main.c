@@ -9,8 +9,8 @@ int main(int argc, char** argv)
 {
     printf("Hello world!\n");
 
-    //stackIni();
-    //instructionIni();
+    stackIni();
+    instructionIni();
     hashIni();
 
     printf("%u %u %u\n", 1, 1<<1, 1>>1);
@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 #define test
 
 #ifdef test
-// #include "test.h"
-    // Make a formal test suite?
-//    runChecks();
+#include "test.h"
+    //Make a formal test suite?
+   runChecks();
  #undef test
 #endif
 

@@ -10,7 +10,7 @@ all: $(Program)
 $(Program): $(Objects) 
 	$(Compilier) $(Flags) $(Objects) -o $@ 
 
-.cpp.o: 
+.c.o: 
 	$(Compilier) $(Flags) $< -c -o $@ $(Incflags)
 
 clean: 

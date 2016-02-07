@@ -32,7 +32,7 @@ typedef enum intsruction_set
     bitwxor,
 
     // Standard comparison operations
-    lessthan,
+    lessthen,
     lessthaneq,
     morethan,
     morethaneq,
