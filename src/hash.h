@@ -5,9 +5,7 @@
 
 #include <stdlib.h>
 
-#ifndef byte
- #define byte unsigned char
-#endif
+
 
 /* The hashing function */
 unsigned long hashFunction(size_t wordLength, const char* symbol);
@@ -24,17 +22,23 @@ typedef struct hash_bucket_slot
 
     union 
     {
-        unsigned int ID;
+        unsigned int   ID;
         instruction_t* noArgInstruction;
     } contents;
 
 } hashBucket_t;
 
- //! Change it so the only element is a hash bucket pointer
-typedef hashBucket_t** hash_t;
+//! Change it so the only element is a hash bucket pointer
+//typedef hashBucket_t** hash_t;
+typedef struct hash
+{
+    hashBucket_t* hashArray;
+    unsigned int size;
+};
+
 
 //! Chang this such that you don't depend on a fully global variable
-extern hash_t HASH;
+//extern hash_t HASH;
 
 /* Hash table initalization function */
 void hashIni();

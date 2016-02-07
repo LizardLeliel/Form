@@ -22,7 +22,8 @@ unsigned int functionNumber = 1;
 bool onMain = true;
 
 /* Initialized buildPointers appriopriatly */
-void instructionIni() {
+void instructionIni() 
+{
     buildPointers.programTop       = malloc(sizeof(functionHead_t));
     buildPointers.currentInstruct  = malloc(sizeof(instruction_t));
 
@@ -42,16 +43,19 @@ void instructionIni() {
  *  do usually have fixed argSize; only for push values like strings and arrays
  */
 void appendInstruction(instructionType_t newInstruct,
-                       size_t argSize, void* args) {
+                       size_t argSize, void* args) 
+{
     instruction_t* newInstructNode = malloc(sizeof(instruction_t));
     newInstructNode->instruction   = newInstruct;
     newInstructNode->argSize       = argSize; // In bytes
     newInstructNode->next          = NULL;
 
-    if (argSize == 0) {
+    if (argSize == 0) 
+    {
         newInstructNode->args = NULL; // Copying memory wouldn't be nessecary
     }
-    else {
+    else 
+    {
         newInstructNode->args = malloc(argSize);
         memcpy(newInstructNode->args, args, argSize);
     }
@@ -59,14 +63,16 @@ void appendInstruction(instructionType_t newInstruct,
     buildPointers.currentInstruct->next = newInstructNode;
     buildPointers.currentInstruct       = newInstructNode;
 
-    if (onMain == true) {
+    if (onMain == true) 
+    {
         buildPointers.mainLast = newInstructNode;
     }
 
 }
 
 /* Returns a dynamically allocated dummy instruction */
-inline instruction_t* dummyInstruction() {
+inline instruction_t* dummyInstruction() 
+{
     /* The function is calloc because every value in dummy is 0 -
      *  instructionType (nop, which is 0), argSize (0), args (NULL),
      *  and next (also NULL)
@@ -78,7 +84,8 @@ inline instruction_t* dummyInstruction() {
  *  in hash.c It also sets buildPointers.currenInstruct/lastFunction,
  *  and onMain
  */
-void makeNewFunction() {
+void makeNewFunction() 
+{
     /* Allocates and initialize memory */
     functionHead_t* newFunction = malloc(sizeof(functionHead_t));
     newFunction->next = NULL;
@@ -95,7 +102,8 @@ void makeNewFunction() {
 /* Places appriopriate instruction on end of the instruction queue,
  *  and configures things back to main
  */
-void endFunction() {
+void endFunction() 
+{
     instruction_t* endInstruct = calloc(1, sizeof(instruction_t));
     endInstruct->instruction = returns;
 
