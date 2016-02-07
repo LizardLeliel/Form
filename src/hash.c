@@ -31,13 +31,11 @@ unsigned int counters[h_labelName+1] = {0,0,0,0};
  * The algorithm used is a variation of the sdbm algoritn
  *  (http://www.cse.yorku.ca/~oz/hash.html)
  */
-unsigned long hashFunction(size_t wordLength, const char* symbol) 
-{
+unsigned long hashFunction(size_t wordLength, const char* symbol) {
     unsigned long hash = 0;
     int c = 0;
 
-    do 
-    {
+    do {
         hash = symbol[c] + (hash << 6) + (hash << 16) - hash;
     } while (++c < wordLength);
 
@@ -45,19 +43,16 @@ unsigned long hashFunction(size_t wordLength, const char* symbol)
 }
 
 
-void hashIni() 
-{
+void hashIni() {
     static int tries = 10;
     HASH = calloc(maxArrayVal+1, sizeof(hash_t));
 
     /* if malloc/calloc fails, try again with smaller ammounts */
-    while (HASH == NULL) 
-    {
+    while (HASH == NULL) {
         maxArrayVal >>= 1;
         HASH = calloc(maxArrayVal+1, sizeof(hash_t));
 
-        if (--tries == 0) 
-        {
+        if (--tries == 0) {
             perror
             ("Unable to allocate memory for hash table while scanning\n");
         } // If
@@ -73,18 +68,16 @@ void hashIni()
  *
  */
 unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
-                       const char* symbolName) 
-{
+                       const char* symbolName) {
     // Get hash index
     //! Test to make sure it handles collisions well by hardcoding and index,
     //!  and seeing if it'll behave correctly given 2 different tokens without
     //!  deference NULL
-    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
+    unsigned long index = maxArrayVal&hashFunction(symbolSize, symbolName);
 
     // If hash entry is empty, set a new one
     //! To do: make a function for creating hash entries
-    if (HASH[index] == NULL) 
-    {
+    if (HASH[index] == NULL) {
         (HASH[index]) = malloc(sizeof(hashBucket_t));
 
         // Set values
@@ -108,8 +101,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
         tracer = tracer->next;
         // If the words are the same length and are the same
         //! Todo: Make it an && condidtional expression
-        if (tracer->symbolLength != symbolSize) 
-        {
+        if (tracer->symbolLength != symbolSize) {
             if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) {
                 free(freeThisDummy);
                 return tracer->contents.ID;
@@ -131,21 +123,3 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
     return counters[toHashType];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

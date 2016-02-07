@@ -71,7 +71,7 @@ void appendInstruction(instructionType_t newInstruct,
 }
 
 /* Returns a dynamically allocated dummy instruction */
-inline instruction_t* dummyInstruction() 
+instruction_t* dummyInstruction() 
 {
     /* The function is calloc because every value in dummy is 0 -
      *  instructionType (nop, which is 0), argSize (0), args (NULL),

@@ -7,92 +7,62 @@
 #include "stdint.h"
 
 /* Stack starts initialized with a null node */
-/*stack_t _bottom =
+stack_t _bottom =
 {
     f_nil,
     NULL,
     NULL,
-};*/
+};
 
 /* Define STACK */
-//stack_t* STACK;
+stack_t* STACK;
 
 /* Set STACK to initialy point to bottom (note; I couldn't find a
  *  way to statically set STACK to point to _bottom; & is a runtime
  *  operator, and the value of &_bottom isn't known at compile time
  */
-// void stackIni() 
-// {
-//     STACK = &_bottom;
-// }
-
-
-programStack_t newProgramStack()
-{
-    programStack_t programStack 
-        = {NULL, 0};
-    // The first scope would be the main/global scope
-    pushScoping(&programStack);
+void stackIni() {
+    STACK = &_bottom;
 }
 
-void deleteProgramStack(programStack_t* programStack)
-{
-    while (programStack->currentScope != NULL)
-    {
-        popScoping(programStack);
-    }
+void shouldNotBeBottom() {
+    if (STACK->next == NULL) perror("Stack underflow");
 }
 
-void pushScoping(programStack_t* programStack)
-{
-    ++(programStack->scopeDepth);
-    scopingNode_t* newScope = malloc(sizeof(scopingNode_t));
-    newScope->nextScope     = programStack->currentScope;
-    newScope->dataTop       = malloc(sizeof(dataNode_t));
-    newScope->dataTop->next = NULL;
-    newScope->dataTop->data = NULL;
-    newScope->dataTop->type = f_nil;
+/* Pushes data onto the stack */
+void pushStack(dataType_t dataType, void* data) {
+
+    stack_t* newNode = malloc(sizeof(stack_t));
+    newNode->data = malloc(32);
+    memcpy(newNode->data, data, 32);
+
+    newNode->type    = dataType;
+    newNode->next    = STACK;
+    STACK            = newNode;
+
 }
 
-void popScoping(programStack_t* programStack)
-{
-    --(programStack->scopeDepth);
-    // Freeing all the data in this scope
-    dataNode_t* tracer           = programStack->currentScope->dataTop;
-    dataNode_t* freeThisDataNode = tracer;
+/* Pops data and frees it */
+void dropStack() {
+    shouldNotBeBottom();
 
-    while (tracer != NULL)
-    {
-        free(tracer->data);
-        freeThisDataNode = tracer;
-        tracer = tracer->next;
-        free(freeThisDataNode);
-    }
-
-    scopingNode_t* freeThisScopeNode = programStack->currentScope;
-    programStack->currentScope       = programStack->currentScope->nextScope;
-    free(freeThisScopeNode);
+    stack_t* newNode = STACK;
+    STACK = STACK->next;
+    free(newNode);
 }
 
-data_t popData(programStack_t* programStack)
-{
-    // Hmm 
-    shouldNotBeBottom(programStack);
-    dataNode_t* dataNode = programStack->currentScope->dataTop;
-    programStack->currentScope->dataTop 
-        = programStack->currentScope->dataTop->next;
+//! Todo: Fix popping behaviour
+size32_t popStack(dataType_t* outType) {
+    shouldNotBeBottom();
 
-    data_t returnData = {dataNode->type, dataNode->data};
-    free(dataNode);
-    return returnData;
-}
+    if (outType != NULL) *outType = STACK->type;
 
-void shouldNotBeBottom(programStack_t* programStack) 
-{
-    // Try changing later. Make better warning error for user
-    if (programStack->currentScope->dataTop->next == NULL) 
-    {
-        perror("Stack underflow");
-    }
+    size32_t returnVal = *(size32_t*)STACK->data;
+    stack_t* freeNode  = STACK;
+
+    STACK = STACK->next;
+
+    free(freeNode);
+    return returnVal;
 }
 
