@@ -1,5 +1,5 @@
 Compilier 	  = clang
-Program   	  = Form
+Program   	  = form
 Sources  	  = $(wildcard *.c)
 Flags         = -Wall -std=c99
 Objects       = $(Sources:.c=.o) 

@@ -16,6 +16,13 @@ typedef struct instruction_node
 
 } instruction_t;
 
+// Used for easier implementation of casting.
+typedef union floatint_union 
+{
+    int32_t as_i;
+    float   as_f;
+} any32_t;
+
 extern void (*EXEC_INSTRUCTION[instruction_ammount])();
 
 /* Instruction Functions */

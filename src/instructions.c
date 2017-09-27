@@ -216,13 +216,19 @@ dataType_t floatCast(data_t* operandA, data_t* operandB)
     else if (operandA->dataType & f_32int)
     {
         // cast it to a float, then reinterpret cast it.
-        float h = (float)operandA->data;
-        operandA->data = *(size32_t*)&h;
+        any32_t data;
+        data.as_f = (float)operandA->data;
+        // float h = (float)operandA->data;
+        // operandA->data = *(size32_t*)&h;
+        operandA->data = data.as_i;
     }
     else if (operandB->dataType & f_32int)
     {
-        float h = (float)operandB->data;
-        operandB->data = *(size32_t*)&h;
+        any32_t data;
+        data.as_f = (float)operandB->data;
+        operandB->data = data.as_i;
+        // float h = (float)operandB->data;
+        // operandB->data = *(size32_t*)&h;
     }
     // So if neither are ints, nothing is done.
     //printf("Floats? %f %f\n", 
