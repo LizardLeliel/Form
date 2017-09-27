@@ -153,12 +153,12 @@ void runChecks() {
 
     pushStack(f_32int|f_numeric, &sampInt);
     EXEC_INSTRUCTION[divs]();
-    printf("Pushing 423 on the stack then multiplying: %f\n",
+    printf("Pushing 423 on the stack then dividing: %f\n",
             *(float*)STACK->data);
 
     pushStack(f_32int|f_numeric, &sampInt);
     EXEC_INSTRUCTION[lessthen]();
-    printf("Pushing 423 on the stack then multiplying: %d\n",
+    printf("Pushing 423 on the stack then comparing less then: %d\n",
             *(uint32_t*)STACK->data);
 
     return ;

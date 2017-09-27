@@ -68,7 +68,7 @@ void i_add()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
 
     if (type == f_32int)
     {
@@ -79,9 +79,9 @@ void i_add()
     {
         //evaluation
         float value 
-            = *(float*)&(operandA.data)
-            + *(float*)&(operandB.data);
-        evaluation = *(size32_t*)&value;
+            = interpretAsFloat(operandA.data)
+            + interpretAsFloat(operandB.data);
+        evaluation = interpretAsInt(value);
         // printf("Operands: %f %f \n", *(float*)&(operandA.data), 
         //     *(float*)&(operandB.data));
         // printf("Evaluation: %f \n", *(float*)&evaluation);
@@ -95,7 +95,7 @@ void i_sub()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data - operandB.data;
@@ -104,9 +104,9 @@ void i_sub()
     else if (type == f_32float)
     {
         float value 
-            = *(float*)&(operandA.data)
-            - *(float*)&(operandB.data);
-        evaluation = *(size32_t*)&value;
+            = interpretAsFloat(operandA.data)
+            - interpretAsFloat(operandB.data);
+        evaluation = interpretAsInt(value);
         pushStack(type | f_numeric, &evaluation);
 
     }
@@ -116,7 +116,7 @@ void i_mul()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data * operandB.data;
@@ -125,9 +125,9 @@ void i_mul()
     else if (type == f_32float)
     {
         float value 
-            = *(float*)&(operandA.data)
-            * *(float*)&(operandB.data);
-        evaluation = *(size32_t*)&value;
+            = interpretAsFloat(operandA.data)
+            * interpretAsFloat(operandB.data);
+        evaluation = interpretAsInt(value);
         pushStack(type | f_numeric, &evaluation);
 
     }
@@ -137,7 +137,7 @@ void i_divs()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         if (operandB.data == 0) 
@@ -154,9 +154,9 @@ void i_divs()
             perror("Division by zero");
         }
         float value 
-            = *(float*)&(operandA.data)
-            / *(float*)&(operandB.data);
-        evaluation = *(size32_t*)&value;
+            = interpretAsFloat(operandA.data)
+            / interpretAsFloat(operandB.data);
+        evaluation = interpretAsInt(value);
         pushStack(type | f_numeric, &evaluation);
     }
 }
@@ -166,7 +166,7 @@ void i_mod()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         if (operandB.data == 0) 
@@ -178,7 +178,7 @@ void i_mod()
     }
     else if (type == f_32float)
     {
-        perror("moding a float");
+        perror("Moding a float");
     }
 }
 
@@ -188,7 +188,7 @@ void i_lessthen()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = floatCast(&operandA, &operandB);
+    dataType_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data < operandB.data;
@@ -197,14 +197,28 @@ void i_lessthen()
     else if (type == f_32float)
     {
         size32_t value 
-            = *(float*)&(operandA.data)
-            < *(float*)&(operandB.data);
-        evaluation = *(size32_t*)&value;
+            = interpretAsFloat(operandA.data)
+            < interpretAsFloat(operandB.data);
+        evaluation = value;
         pushStack(f_numeric | f_bool, &evaluation);
     }
 }
 
-dataType_t floatCast(data_t* operandA, data_t* operandB)
+size32_t interpretAsInt(float value)
+{
+    any32_t result;
+    result.as_f = value;
+    return result.as_i;
+}
+
+float interpretAsFloat(size32_t operandValue)
+{
+    any32_t value;
+    value.as_i = operandValue;       
+    return value.as_f;
+}
+
+dataType_t prepareOperands(data_t* operandA, data_t* operandB)
 {
     // All the ands!
     if ((operandA->dataType & f_32int) 

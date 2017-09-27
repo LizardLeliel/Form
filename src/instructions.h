@@ -33,8 +33,10 @@ void i_mul();
 void i_divs();
 void i_mod();
 void i_lessthen();
-
-dataType_t floatCast(data_t* operandA, data_t* operandB);
+ 
+size32_t interpretAsInt(float value);
+float interpretAsFloat(size32_t operandValue);
+dataType_t prepareOperands(data_t* operandA, data_t* operandB);
 
 /* Execute a chain of instructions */
 void executeInternal(instruction_t** program);
