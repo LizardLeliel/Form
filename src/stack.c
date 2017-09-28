@@ -52,12 +52,15 @@ void dropStack() {
 
     stack_t* oldNode = STACK;
     STACK            = STACK->next;
+    free(oldNode->data); // ?
     free(oldNode);
 }
 
 //! Todo: Fix popping behaviour
 // Pops data from the stack, frees dynamic memory associated
 //  with it, then returns that value.
+// Wait, it pops a value of size 32 when we store it as
+//  a void pointer?
 size32_t popStack(dataType_t* outType) 
 {
     shouldNotBeBottom();
@@ -69,6 +72,7 @@ size32_t popStack(dataType_t* outType)
 
     STACK = STACK->next;
 
+    free(freeNode->data);
     free(freeNode);
     return returnVal;
 }
