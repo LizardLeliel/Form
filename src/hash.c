@@ -76,7 +76,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     //! Test to make sure it handles collisions well by hardcoding and index,
     //!  and seeing if it'll behave correctly given 2 different tokens without
     //!  deference NULL
-    unsigned long index = maxArrayVal&hashFunction(symbolSize, symbolName);
+    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
 
     // If hash entry is empty, set a new one
     //! To do: make a function for creating hash entries
@@ -158,6 +158,7 @@ void freeHash()
     tracer = LIST.top;
     while (tracer != NULL)
     {
+        free(tracer->entry->symbol);
         free(tracer->entry);
         toFree = tracer;
         tracer = tracer->next;
