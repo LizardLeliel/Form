@@ -33,6 +33,8 @@ void i_mul();
 void i_divs();
 void i_mod();
 void i_lessthen();
+void i_push();
+void i_print();
  
 size32_t interpretAsInt(float value);
 float interpretAsFloat(size32_t operandValue);

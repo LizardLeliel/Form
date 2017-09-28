@@ -24,7 +24,6 @@ void* instructionArgs;
 instruction_t* CURRENT_INSTRUCTION;
 
 
-
 /* The instruction array (a function array).
  *  Each instruction in our program will be an enum,
  *  and will be used as an index in this array, whiich will
@@ -34,19 +33,60 @@ instruction_t* CURRENT_INSTRUCTION;
 void (*EXEC_INSTRUCTION[instruction_ammount])() =
 {
     i_nop, // No operation
-    i_add, // Addidtion
+
+    // Standard arthmetic opertaions
+    i_add, 
     i_sub,
     i_mul,
     i_divs,
     i_mod,
+
+    // Standard bitwise operations
     i_nop,
     i_nop,
     i_nop,
     i_nop,
     i_nop,
     i_nop,
-    i_lessthen
-    // Fill the rest with i_nop, slowly fill with functions
+
+    // Standard comparison operations
+    i_lessthen,
+    i_nop,
+    i_nop,
+    i_nop,
+    i_nop,
+    i_nop,
+
+    // Boolean logic operations
+    i_nop,
+    i_nop,
+    i_nop,
+
+    // Increment and deincremetn operations
+    i_nop,
+    i_nop,
+
+    // Standard stack-related operations
+    i_push,
+    i_nop,
+    i_nop,
+    i_nop,
+    i_nop,
+
+    // Form goto operations
+    i_nop,
+    i_nop,
+
+    // Variable-related operations
+    i_nop,
+    i_nop,
+    i_nop,
+
+    // Misc operations 
+    i_nop,
+    i_nop,
+    i_print,
+    i_nop
 };
 
 // Macro for primitive operations
@@ -82,9 +122,6 @@ void i_add()
             = interpretAsFloat(operandA.data)
             + interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        // printf("Operands: %f %f \n", *(float*)&(operandA.data), 
-        //     *(float*)&(operandB.data));
-        // printf("Evaluation: %f \n", *(float*)&evaluation);
         pushStack(type | f_numeric, &evaluation);
 
     }
@@ -201,6 +238,31 @@ void i_lessthen()
             < interpretAsFloat(operandB.data);
         evaluation = value;
         pushStack(f_numeric | f_bool, &evaluation);
+    }
+}
+
+void i_push()
+{
+    //CURRENT_INSTRUCTION->data;
+    dataType_t type = ((dataType_t*)CURRENT_INSTRUCTION->args)[0];
+
+    pushStack(type, CURRENT_INSTRUCTION->args + 1);
+
+    // Arg 1: type
+    // Arg 2: data
+}
+
+void i_print()
+{
+    data_t value = popData();
+
+    if (value.dataType & f_32float)
+    {
+        printf("%f\n", interpretAsFloat(value.data));
+    }
+    else if (value.dataType & f_32int)
+    {
+        printf("%d\n", value.data);
     }
 }
 
