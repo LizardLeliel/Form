@@ -21,7 +21,7 @@ PRINT           "PRINT"
 
 %%
 
-{UINT}{WS}          {
+{INT}{WS}+          {
                     int32_t n = atoi(yytext);
                     struct {
                         dataType_t dt;
@@ -32,20 +32,24 @@ PRINT           "PRINT"
                     data.dn = n;
 
                     appendInstruction(push, sizeof data, &data);
-                    
+                   
                     //pushStack(f_32int, &n);
-                    // printf("Found an unsigned: %u\n", n);
+                    //printf("Found an unsigned: %u\n", n);
                     }
-{VAR}{WS}           {
+"+"{WS}+            {
+                    appendInstruction(add, 0, NULL);
+                    }
+{VAR}{WS}+          {
                     //int32_t = *(int32_t*)&strtof(yytext);
                     //pushStack(f_32float, &n);
                     printf("Found a var: %s\n", yytext);
                     }
-":"{WS}*{ID}        {
+":"{WS}*{ID}+       {
                     printf("Found a function");
                     }
-{PRINT}{WS}         {
-                    printf("printing");
+{PRINT}{WS}+        {
+                    appendInstruction(print, 0, NULL);
+                    //printf("printing");
                     }
 
 %%

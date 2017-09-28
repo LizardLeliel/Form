@@ -246,7 +246,7 @@ void i_push()
     //CURRENT_INSTRUCTION->data;
     dataType_t type = ((dataType_t*)CURRENT_INSTRUCTION->args)[0];
 
-    pushStack(type, CURRENT_INSTRUCTION->args + 1);
+    pushStack(type, CURRENT_INSTRUCTION->args + sizeof(dataType_t));
 
     // Arg 1: type
     // Arg 2: data
@@ -306,12 +306,17 @@ dataType_t prepareOperands(data_t* operandA, data_t* operandB)
         // float h = (float)operandB->data;
         // operandB->data = *(size32_t*)&h;
     }
-    // So if neither are ints, nothing is done.
-    //printf("Floats? %f %f\n", 
-    //   *(float*)&(operandA->data), 
-    //    *(float*)&(operandB->data));
+
     return f_32float;
 } 
 
 
-
+void execute(instruction_t** program)
+{
+    CURRENT_INSTRUCTION = *program;
+    while (CURRENT_INSTRUCTION != NULL)
+    {
+        EXEC_INSTRUCTION[CURRENT_INSTRUCTION->instruction]();
+        CURRENT_INSTRUCTION = CURRENT_INSTRUCTION->next;
+    }
+}

@@ -74,6 +74,7 @@ void appendInstruction(instructionType_t newInstruct,
     newInstructNode->argSize       = argSize; // In bytes
     newInstructNode->next          = NULL;
 
+
     if (argSize == 0) 
     {
         newInstructNode->args = NULL; // Copying memory wouldn't be nessecary
@@ -134,23 +135,11 @@ void endFunction()
     buildPointers.currentInstruct       = buildPointers.mainLast;
 
     onMain = true;
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+instruction_t** returnProgram()
+{
+    return &(buildPointers.programTop->head);
+}
 
 

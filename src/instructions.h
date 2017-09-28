@@ -41,7 +41,7 @@ float interpretAsFloat(size32_t operandValue);
 dataType_t prepareOperands(data_t* operandA, data_t* operandB);
 
 /* Execute a chain of instructions */
-void executeInternal(instruction_t** program);
+void execute(instruction_t** program);
 
 #define INSTRUCTIONS_HEADER
 #endif

@@ -63,7 +63,7 @@ void hashIni() {
     } 
 
     //! DELETE EVENTUALLY
-    printf("SIZEOF HASH ARRAY: %lu BYTES\n", sizeof(hash_t)*maxArrayVal);
+    //printf("SIZEOF HASH ARRAY: %lu BYTES\n", sizeof(hash_t)*maxArrayVal);
 
 } // function
 
