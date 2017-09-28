@@ -161,6 +161,6 @@ void runChecks() {
     printf("Pushing 423 on the stack then comparing less then: %d\n",
             *(uint32_t*)STACK->data);
 
-    return ;
+    return;
 }
 

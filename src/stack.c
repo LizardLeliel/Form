@@ -73,6 +73,7 @@ size32_t popStack(dataType_t* outType)
     return returnVal;
 }
 
+
 data_t popData()
 {
     shouldNotBeBottom();

@@ -56,6 +56,7 @@ extern unsigned int functionNumber;
  *  values to variables in struct "buildPointers"
  */
 void instructionIni();
+void freeInstructions();
 
 /* Adds a new instruction to buildPointers.currentInstruct */
 void appendInstruction

@@ -36,6 +36,30 @@ void instructionIni()
     buildPointers.currentInstruct->instruction = nop;
 }
 
+void freeInstructions()
+{
+    // outer
+    functionHead_t* tracer = buildPointers.programTop;
+    functionHead_t* toFree;
+    while (tracer != NULL)
+    {
+        instruction_t* instructionTracer = tracer->head;
+        instruction_t* instructionToFree;
+
+        while (instructionTracer != NULL)
+        {
+            free(instructionTracer->args);
+            instructionToFree = instructionTracer;
+            instructionTracer = instructionTracer->next;
+            free(instructionToFree);
+        }
+        free(tracer->head);
+        toFree = tracer;
+        tracer = tracer->next;
+        free(toFree);
+    }
+}
+
 /* Adds a new instruction to end of the instruction sequence.
  *  Note: I may change instruction_t such that argsize is not a member,
  *  and dynamicly-sized variables will have their size as the first byte (or
@@ -67,7 +91,6 @@ void appendInstruction(instructionType_t newInstruct,
     {
         buildPointers.mainLast = newInstructNode;
     }
-
 }
 
 /* Returns a dynamically allocated dummy instruction */

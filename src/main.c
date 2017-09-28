@@ -25,7 +25,8 @@ int main(int argc, char** argv)
 #endif
 
     //int n = argParse(argc, argv);
-
+   	freeHash();
+   	freeInstructions();
     return 0;
 }
 

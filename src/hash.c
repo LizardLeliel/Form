@@ -15,8 +15,9 @@ unsigned long maxArrayVal = initialHashArraySize;
 
 /* The hashtable */
 hash_t HASH;
+hash_bucket_list_t LIST;
 
-/* counter Array */
+// Counts how much of 
 unsigned int counters[h_labelName+1] = {0,0,0,0};
 
 /* The hash function is implemented with an array size and not a null-
@@ -44,19 +45,22 @@ unsigned long hashFunction(size_t wordLength, const char* symbol) {
 
 
 void hashIni() {
-    static int tries = 10;
+    static int tries = 3;
     HASH = calloc(maxArrayVal+1, sizeof(hash_t));
+    LIST.top = NULL;
 
     /* if malloc/calloc fails, try again with smaller ammounts */
-    while (HASH == NULL) {
+    while (HASH == NULL) 
+    {
         maxArrayVal >>= 1;
         HASH = calloc(maxArrayVal+1, sizeof(hash_t));
 
-        if (--tries == 0) {
+        if (--tries == 0) 
+        {
             perror
             ("Unable to allocate memory for hash table while scanning\n");
-        } // If
-    } // While
+        }
+    } 
 
     //! DELETE EVENTUALLY
     printf("SIZEOF HASH ARRAY: %lu BYTES\n", sizeof(hash_t)*maxArrayVal);
@@ -64,8 +68,7 @@ void hashIni() {
 } // function
 
 /* This function will always return an unisnged integer. It first checks in the
- *  hash to see if hash bucket has entries. If not, it'll build a
- *
+ *  hash to see if hash bucket has entries. If not, it'll add a new entry
  */
 unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
                        const char* symbolName) {
@@ -87,6 +90,8 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
         (HASH[index])->symbol
             = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+        pushToList(HASH[index]);
 
         return counters[toHashType];
     }
@@ -122,4 +127,43 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
     return counters[toHashType];
+}
+
+void pushToList(hashBucket_t* slot)
+{
+    if (LIST.top == NULL)
+    {
+        LIST.top = malloc(sizeof(hash_bucket_list_node_t));
+
+        LIST.top->entry = slot;
+        LIST.top->next  = NULL;
+    }
+    else
+    {
+        hash_bucket_list_node_t* newNode 
+            = malloc(sizeof(hash_bucket_list_node_t));
+        newNode->next = LIST.top;
+        newNode->entry = slot;
+        LIST.top = newNode;
+    }
+}
+
+void freeHash()
+{
+    // Free hash buckets
+    // Free hash bucket list
+    // Free hash array
+    hash_bucket_list_node_t* tracer;
+    hash_bucket_list_node_t* toFree;
+    tracer = LIST.top;
+    while (tracer != NULL)
+    {
+        free(tracer->entry);
+        toFree = tracer;
+        tracer = tracer->next;
+        free(toFree);
+    }
+
+    free(HASH);
+
 }

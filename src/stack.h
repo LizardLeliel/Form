@@ -30,6 +30,7 @@ extern stack_t* STACK;
 
 /* Must be called for STACK to start pointing at _bottom */
 void stackIni();
+//void freeStack();
 
 /* Raise error if at bottom of stack */
 void shouldNotBeBottom();
