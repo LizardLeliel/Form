@@ -4,11 +4,9 @@
 
 #include "stack.h"
 
-/* Instruction set enumeration - each member represents
- *  and action that a bytecode instruction can perform.
- *  Any word that is a plural but has no reason to be plural
- *  is done as to avoid naming conflicts
- */
+// Each enumeration's integer representation
+//  corresponds to an index in a function pointer
+//  array.
 typedef enum intsruction_set 
 {
     // No operation
@@ -74,12 +72,9 @@ typedef enum intsruction_set
 
 } instructionType_t;
 
-/* Datatype suitable for storing an intstruction */
 typedef struct instruction 
 {
     instructionType_t instruction;
-    //! Todo: Delete. Argsize can be the first 2 or 4 bytes of args
-    //!  you'll also need to fix every thing
     size_t argSize;
     void* args;
     struct instruction* next;
@@ -110,10 +105,9 @@ size32_t interpretAsInt(float value);
 float interpretAsFloat(size32_t operandValue);
 dataType_t prepareOperands(data_t* operandA, data_t* operandB);
 
-/* Execute a chain of instructions */
+// Execute a chain of instructions
 void execute(instruction_t** program);
 
 #define INSTRUCTIONS_HEADER
 #endif
 
-//size32_t popStack(dataType_t* outType<);

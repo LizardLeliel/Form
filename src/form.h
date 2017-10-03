@@ -1,7 +1,4 @@
 #ifndef FORM_HEADER
-/* This file has #include directives for all common files .h files
- * in this project
- */
 
 #include "hash.h"
 #include "build.h"

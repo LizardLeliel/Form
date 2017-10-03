@@ -13,9 +13,8 @@ typedef struct function_header
     struct function_header* next;
 
 } function_header_t;
+=
 
-// I normally don't be this in-depth with something, but these four pointers
-//  are so important I figured I'll do this kind of commenting
 /* A collection of pointers which are important to the contruction
  *  the program's instruction squences
  * -----
@@ -27,11 +26,6 @@ typedef struct function_header
  *  and any new function declarations will be valid
  * currentInstruction: The last instruction appened, regardless of lists. Any
  *  new instruction will be added to this.
- * -----
- * Keep in mind that both function lists and instruction lists are implemented
- *  as queues; but both are different. There will only be one function queue;
- *  and each point to a different instruction list in memory. There are
- *  instruction queues; as many as there are functions (including "main")
  */
 struct build_pointer_struct 
 {
@@ -42,15 +36,10 @@ struct build_pointer_struct
 
 };
 
-// Also change these so we're not relying on global variables
-/* The instructions are NULL-initialized; It is currently externed
- *  for test.c (which I usually don't include in git repositories).
- *  It will be removed if its found not to be needed
- */
+// This is extern'd for test.c
 extern struct build_pointer_struct buildPointers;
-/* The ammount of functions currently, including "main". Initialized
- *  to one
- */
+
+// The ammount of functions, including main.
 extern unsigned int functionNumber;
 
 /* Allocates various memory for the functions queue, and sets initial
@@ -59,7 +48,7 @@ extern unsigned int functionNumber;
 void instructionIni();
 void freeInstructions();
 
-/* Adds a new instruction to buildPointers.currentInstruct */
+// Adds a new instruction to buildPointers.currentInstruct
 void appendInstruction
 (
     instructionType_t newInstruct,
@@ -67,7 +56,7 @@ void appendInstruction
     void* args
 );
 
-/* Makes a dummy head */
+// Makes a dummy head
 inline instruction_t* dummyInstruction();
 
 /* Adds a new function to the end of the function queue; sets build pointers
@@ -75,10 +64,10 @@ inline instruction_t* dummyInstruction();
  */
 void makeNewFunction();
 
-/* Things! (Make a better explanation) */
+// Ends a function
 void endFunction();
 
-/* Currently undefined; it will create an appriopriate array
+/* Returns head of main. it eventually will create an appriopriate array
  *  for goto look-up and function calls; as well as return head.
  *  It will also snip dummy instruction queue heads unless function
  *  is emptey; i.e. only contains "return"

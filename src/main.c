@@ -18,13 +18,11 @@ int main(int argc, char** argv)
     instructionIni();
     hashIni();
 
-    //printf("%u %u %u\n", 1, 1<<1, 1>>1);
 
 //#define test
 
 #ifdef test
 #include "test.h"
-    //Make a formal test suite?
     runChecks();
  #undef test
 #endif
@@ -46,8 +44,6 @@ int main(int argc, char** argv)
     }
 #endif
 
-
-    //int n = argParse(argc, argv);
     freeHash();
     freeInstructions();
     return 0;

@@ -6,29 +6,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* Will contain args for arguemented instructions
- *  (so we don't need to worry about passing functions,
- *  because most of the instructions don't require arguements,
- *  and we don't want to waste time passing them.
- * Instructions with args should be able to ask to have them
- *  loaded into this space
- */
- // Is this the best implementation???
+// Arguements for instructions loaded in here
 void* instructionArgs;
 
-//typedef dataType_t data_t;
-//typedef data_t dataType_t;
-
-/* A pointer of the current instruction being executed */
+// A pointer of the current instruction being executed
 instruction_t* CURRENT_INSTRUCTION;
 
 
-/* The instruction array (a function array).
- *  Each instruction in our program will be an enum,
- *  and will be used as an index in this array, whiich will
- *  be called and run
- */
- // This is an array of function pointers
+// This is an array of function pointers. These functions
+//  are called during runtime.
 void (*EXEC_INSTRUCTION[instruction_ammount])() =
 {
     i_nop, // No operation
@@ -99,11 +85,8 @@ void i_nop()
     return;
 }
 
-// Intstruction - addidtion
 void i_add() 
 {
-    // The functions popStack() checks for underflow
-    //  adjust later to do types which are not numeric
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
@@ -242,7 +225,6 @@ void i_lessthen()
 
 void i_push()
 {
-    //CURRENT_INSTRUCTION->data;
     dataType_t type = ((dataType_t*)CURRENT_INSTRUCTION->args)[0];
 
     pushStack(type, CURRENT_INSTRUCTION->args + sizeof(dataType_t));

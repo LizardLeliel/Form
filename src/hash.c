@@ -5,9 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
-/* Using a macro would be bad; the variable may change. The value MUST be
- *  a number expressable by 2^n-1.
- */
+// This value must be in the form (2^)) - 1
 #define initialHashArraySize 1048575
 unsigned long maxArrayVal = initialHashArraySize;
 #undef initialHashArraySize
@@ -60,21 +58,13 @@ void hashIni() {
             ("Unable to allocate memory for hash table while scanning\n");
         }
     } 
+}
 
-    //! DELETE EVENTUALLY
-    //printf("SIZEOF HASH ARRAY: %lu BYTES\n", sizeof(hash_t)*maxArrayVal);
-
-} // function
-
-/* This function will always return an unisnged integer. It first checks in the
- *  hash to see if hash bucket has entries. If not, it'll add a new entry
- */
+// This will set the hash bucket with symbol name and type, creating one if 
+// it does not exist, and will create a new bucket. Returns its index.
 unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
                        const char* symbolName) {
-    // Get hash index
-    //! Test to make sure it handles collisions well by hardcoding and index,
-    //!  and seeing if it'll behave correctly given 2 different tokens without
-    //!  deference NULL
+
     unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
 
     // If hash entry is empty, set a new one
@@ -104,7 +94,6 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     do {
         tracer = tracer->next;
         // If the words are the same length and are the same
-        //! Todo: Make it an && condidtional expression
         if (tracer->symbolLength != symbolSize) {
             if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) {
                 free(freeThisDummy);
@@ -114,10 +103,10 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
     } while (tracer->next != NULL);
 
-    // Now's the best time to free!
     free(freeThisDummy);
 
     // If trace->next == null, then we need to make a new hash entry
+    //  (because one does not exist)
     tracer = tracer->next = malloc(sizeof(hash_bucket_t));
     tracer->hashedType    = toHashType;
     tracer->symbolLength  = symbolSize;
@@ -128,6 +117,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     return counters[toHashType];
 }
 
+// Adds to list of hash buckets (for freeing later)
 void pushToList(hash_bucket_t* slot)
 {
     if (LIST.top == NULL)
@@ -149,9 +139,6 @@ void pushToList(hash_bucket_t* slot)
 
 void freeHash()
 {
-    // Free hash buckets
-    // Free hash bucket list
-    // Free hash array
     hash_bucket_list_node_t* tracer;
     hash_bucket_list_node_t* toFree;
     tracer = LIST.top;

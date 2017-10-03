@@ -13,7 +13,7 @@
  */
 struct build_pointer_struct buildPointers = {NULL, NULL, NULL, NULL};
 
-/* A number for keeping track of how many functions are declared */
+// A number for keeping track of how many functions are declared
 unsigned int functionNumber = 1;
 
 /* A boolean to determine whether the current function build sdequence
@@ -21,7 +21,7 @@ unsigned int functionNumber = 1;
  */
 bool onMain = true;
 
-/* Initialized buildPointers appriopriatly */
+// Initialized buildPointers appriopriatly
 void instructionIni() 
 {
     buildPointers.programTop       = malloc(sizeof(function_header_t));
@@ -38,7 +38,6 @@ void instructionIni()
 
 void freeInstructions()
 {
-    // outer
     function_header_t* tracer = buildPointers.programTop;
     function_header_t* toFree;
     while (tracer != NULL)
@@ -60,12 +59,7 @@ void freeInstructions()
     }
 }
 
-/* Adds a new instruction to end of the instruction sequence.
- *  Note: I may change instruction_t such that argsize is not a member,
- *  and dynamicly-sized variables will have their size as the first byte (or
- *  two, or three). Most instructions do not require arguements, the few that
- *  do usually have fixed argSize; only for push values like strings and arrays
- */
+// Adds a new instruction to end of current instruction sequence.
 void appendInstruction(instructionType_t newInstruct,
                        size_t argSize, void* args) 
 {
@@ -94,20 +88,13 @@ void appendInstruction(instructionType_t newInstruct,
     }
 }
 
-/* Returns a dynamically allocated dummy instruction */
+// Returns a dynamically allocated dummy instruction
 instruction_t* dummyInstruction() 
 {
-    /* The function is calloc because every value in dummy is 0 -
-     *  instructionType (nop, which is 0), argSize (0), args (NULL),
-     *  and next (also NULL)
-     */
+    // Calloc is used since it returns zero-filled memory (NULL)
     return calloc(1, sizeof(instruction_t));
 }
 
-/* The function has no parameters since function names are dealt with
- *  in hash.c It also sets buildPointers.currenInstruct/lastFunction,
- *  and onMain
- */
 void makeNewFunction() 
 {
     /* Allocates and initialize memory */
@@ -123,7 +110,7 @@ void makeNewFunction()
     onMain = false;
 }
 
-/* Places appriopriate instruction on end of the instruction queue,
+/* Places return instruction on end of the instruction queue,
  *  and configures things back to main
  */
 void endFunction() 

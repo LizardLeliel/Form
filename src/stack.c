@@ -5,7 +5,7 @@
 #include "string.h"
 #include "stdint.h"
 
-/* Stack starts initialized with a null node */
+// Stack starts initialized with a null node
 stack_t _bottom =
 {
     f_nil,
@@ -13,7 +13,6 @@ stack_t _bottom =
     NULL,
 };
 
-/* Define STACK */
 stack_t* STACK;
 
 /* Set STACK to initialy point to bottom (note; I couldn't find a
@@ -31,7 +30,7 @@ void shouldNotBeBottom()
     if (STACK->next == NULL) perror("Stack underflow");
 }
 
-/* Pushes data onto the stack */
+// Pushes data onto the stack.
 // Can we change it so all data isn't 32-bit?
 void pushStack(dataType_t dataType, void* data) 
 {
@@ -45,7 +44,7 @@ void pushStack(dataType_t dataType, void* data)
 
 }
 
-/* Pops data and frees it */
+// Pops data and frees it
 void dropStack() {
     shouldNotBeBottom();
 
@@ -75,8 +74,6 @@ size32_t popStack(dataType_t* outType)
     free(freeNode);
     return returnVal;
 }
-
-
 
 data_t popData()
 {

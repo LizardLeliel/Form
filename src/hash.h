@@ -16,7 +16,7 @@ typedef enum hash_type {
     h_gotoMemory,      // = 4
 } hashType_t;     
 
-/* The hashing function */
+// The hashing function 
 unsigned long hashFunction(size_t wordLength, const char* symbol);
 
 /* A struct suitable for keeping track of declared
@@ -39,13 +39,13 @@ typedef struct hash_bucket {
  //! Change it so the only element is a hash bucket pointer
 typedef hash_bucket_t** hash_t;
 
+// For testing
 extern hash_t HASH;
 
-/* Hash table initalization function */
 void hashIni();
 void freeHash();
 
-/* Get a token's id */
+// Set element of hash
 unsigned int getHashID
 (
     hashType_t  toHashType,
@@ -53,12 +53,14 @@ unsigned int getHashID
     const char* symbolName
 );
 
+
+// These two structs and function are used in implementing
+//  deallocation of hash buckets
 typedef struct hash_bucket_list_node
 {
     hash_bucket_t* entry;
     struct hash_bucket_list_node* next; 
 } hash_bucket_list_node_t;
-
 
 typedef struct hash_bucket_list_wrapper
 {
