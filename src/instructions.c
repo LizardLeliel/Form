@@ -148,6 +148,7 @@ void i_sub()
 
     }
 }
+
 void i_mul()
 {
     size32_t evaluation;
@@ -169,6 +170,7 @@ void i_mul()
 
     }
 }
+
 void i_divs()
 {
     size32_t evaluation;
@@ -218,7 +220,6 @@ void i_mod()
         perror("Moding a float");
     }
 }
-
 
 void i_lessthen()
 {
@@ -282,7 +283,6 @@ float interpretAsFloat(size32_t operandValue)
 
 dataType_t prepareOperands(data_t* operandA, data_t* operandB)
 {
-    // All the ands!
     if ((operandA->dataType & f_32int) 
         && (operandB->dataType & f_32int))
     {
@@ -294,8 +294,6 @@ dataType_t prepareOperands(data_t* operandA, data_t* operandB)
         // cast it to a float, then reinterpret cast it.
         any32_t data;
         data.as_f = (float)operandA->data;
-        // float h = (float)operandA->data;
-        // operandA->data = *(size32_t*)&h;
         operandA->data = data.as_i;
     }
     else if (operandB->dataType & f_32int)
@@ -303,8 +301,6 @@ dataType_t prepareOperands(data_t* operandA, data_t* operandB)
         any32_t data;
         data.as_f = (float)operandB->data;
         operandB->data = data.as_i;
-        // float h = (float)operandB->data;
-        // operandB->data = *(size32_t*)&h;
     }
 
     return f_32float;

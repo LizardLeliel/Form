@@ -81,7 +81,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     // If hash entry is empty, set a new one
     //! To do: make a function for creating hash entries
     if (HASH[index] == NULL) {
-        (HASH[index]) = malloc(sizeof(hashBucket_t));
+        (HASH[index]) = malloc(sizeof(hash_bucket_t));
 
         // Set values
         (HASH[index])->hashedType  = toHashType;
@@ -98,8 +98,8 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
     // Else, check each node in list to see if symbol already exists. Start
     //  with a dummy list node (Is there a simplier way to do this?)
-    hashBucket_t* tracer = malloc(sizeof(hashBucket_t));
-    hashBucket_t* freeThisDummy = tracer;
+    hash_bucket_t* tracer = malloc(sizeof(hash_bucket_t));
+    hash_bucket_t* freeThisDummy = tracer;
     tracer->next = HASH[index];
 
     do {
@@ -119,7 +119,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     free(freeThisDummy);
 
     // If trace->next == null, then we need to make a new hash entry
-    tracer = tracer->next = malloc(sizeof(hashBucket_t));
+    tracer = tracer->next = malloc(sizeof(hash_bucket_t));
     tracer->hashedType    = toHashType;
     tracer->symbolLength  = symbolSize;
     tracer->contents.ID   = ++counters[toHashType];
@@ -129,7 +129,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     return counters[toHashType];
 }
 
-void pushToList(hashBucket_t* slot)
+void pushToList(hash_bucket_t* slot)
 {
     if (LIST.top == NULL)
     {

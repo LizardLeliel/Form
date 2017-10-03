@@ -5,19 +5,19 @@
 // This is gonna be a long file...
 
 /* Datatype suitable for storing an intstruction */
-typedef struct instruction_node 
+typedef struct instruction 
 {
     instructionType_t instruction;
     //! Todo: Delete. Argsize can be the first 2 or 4 bytes of args
     //!  you'll also need to fix every thing
     size_t argSize;
     void* args;
-    struct instruction_node* next;
+    struct instruction* next;
 
 } instruction_t;
 
 // Used for easier implementation of casting.
-typedef union floatint_union 
+typedef union any32 
 {
     int32_t as_i;
     float   as_f;

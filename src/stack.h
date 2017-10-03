@@ -7,11 +7,11 @@ typedef unsigned char byte;
 typedef int32_t size32_t;
 
 /* The stack data structure that this stack-oriented program uses */
-typedef struct stack_node 
+typedef struct stack 
 {
     dataType_t type;
     void* data;
-    struct stack_node* next;
+    struct stack* next;
 
 } stack_t;
 

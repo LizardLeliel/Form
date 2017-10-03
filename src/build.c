@@ -24,7 +24,7 @@ bool onMain = true;
 /* Initialized buildPointers appriopriatly */
 void instructionIni() 
 {
-    buildPointers.programTop       = malloc(sizeof(functionHead_t));
+    buildPointers.programTop       = malloc(sizeof(function_header_t));
     buildPointers.currentInstruct  = malloc(sizeof(instruction_t));
 
     buildPointers.programTop->head = buildPointers.currentInstruct;
@@ -39,8 +39,8 @@ void instructionIni()
 void freeInstructions()
 {
     // outer
-    functionHead_t* tracer = buildPointers.programTop;
-    functionHead_t* toFree;
+    function_header_t* tracer = buildPointers.programTop;
+    function_header_t* toFree;
     while (tracer != NULL)
     {
         instruction_t* instructionTracer = tracer->head;
@@ -111,7 +111,7 @@ instruction_t* dummyInstruction()
 void makeNewFunction() 
 {
     /* Allocates and initialize memory */
-    functionHead_t* newFunction = malloc(sizeof(functionHead_t));
+    function_header_t* newFunction = malloc(sizeof(function_header_t));
     newFunction->next = NULL;
     newFunction->head = dummyInstruction();
 

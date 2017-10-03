@@ -6,12 +6,12 @@
  *  executed first; and will be outside of any function declaration,
  *  adding new functions will be treated as a queue
  */
-typedef struct function_header_struct 
+typedef struct function_header
 {
     instruction_t* head;
-    struct function_header_struct* next;
+    struct function_header* next;
 
-} functionHead_t;
+} function_header_t;
 
 // I normally don't be this in-depth with something, but these four pointers
 //  are so important I figured I'll do this kind of commenting
@@ -34,8 +34,8 @@ typedef struct function_header_struct
  */
 struct build_pointer_struct 
 {
-    functionHead_t* programTop;
-    functionHead_t* lastFunction;
+    function_header_t* programTop;
+    function_header_t* lastFunction;
     instruction_t*  mainLast;
     instruction_t*  currentInstruct;
 
