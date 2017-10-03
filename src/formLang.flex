@@ -17,13 +17,15 @@ ID              {CHARR}{ALPHNUM}*
 VAR             "."{ID}
 OP              [+-*/]
 PRINT           "PRINT"
+BOOLTRUE        "TRUE"
+BOOLFALSE       "FALSE"
 
 %%
 
 {INT}{WS}+          {
                     int32_t n = atoi(yytext);
                     struct {
-                        dataType_t dt;
+                        data_type_t dt;
                         int32_t dn;
                     } data;
 
@@ -50,5 +52,7 @@ PRINT           "PRINT"
                     appendInstruction(print, 0, NULL);
                     //printf("printing");
                     }
+{BOOLTRUE}{WS}+     {
 
+                    }
 %%

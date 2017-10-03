@@ -68,7 +68,7 @@ typedef enum intsruction_set
 
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that, and... things
-    instruction_ammount,
+    instruction_ammount
 
 } instructionType_t;
 
@@ -103,7 +103,7 @@ void i_print();
  
 size32_t interpretAsInt(float value);
 float interpretAsFloat(size32_t operandValue);
-dataType_t prepareOperands(data_t* operandA, data_t* operandB);
+data_type_t prepareOperands(data_t* operandA, data_t* operandB);
 
 // Execute a chain of instructions
 void execute(instruction_t** program);

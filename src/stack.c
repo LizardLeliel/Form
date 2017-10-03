@@ -32,7 +32,7 @@ void shouldNotBeBottom()
 
 // Pushes data onto the stack.
 // Can we change it so all data isn't 32-bit?
-void pushStack(dataType_t dataType, void* data) 
+void pushStack(data_type_t dataType, void* data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
     newNode->data    = malloc(32);
@@ -59,7 +59,7 @@ void dropStack() {
 //  with it, then returns that value.
 // Wait, it pops a value of size 32 when we store it as
 //  a void pointer?
-size32_t popStack(dataType_t* outType) 
+size32_t popStack(data_type_t* outType) 
 {
     shouldNotBeBottom();
 
@@ -78,7 +78,7 @@ size32_t popStack(dataType_t* outType)
 data_t popData()
 {
     shouldNotBeBottom();
-    dataType_t outType;
+    data_type_t outType;
     size32_t data = popStack(&outType);
 
     data_t returnStruct 

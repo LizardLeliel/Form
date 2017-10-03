@@ -90,7 +90,7 @@ void i_add()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
 
     if (type == f_32int)
     {
@@ -114,7 +114,7 @@ void i_sub()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data - operandB.data;
@@ -135,7 +135,7 @@ void i_mul()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data * operandB.data;
@@ -157,7 +157,7 @@ void i_divs()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         if (operandB.data == 0) 
@@ -186,7 +186,7 @@ void i_mod()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         if (operandB.data == 0) 
@@ -207,7 +207,7 @@ void i_lessthen()
     size32_t evaluation;
     data_t operandB = popData();
     data_t operandA = popData();
-    dataType_t type = prepareOperands(&operandA, &operandB);
+    data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data < operandB.data;
@@ -225,9 +225,9 @@ void i_lessthen()
 
 void i_push()
 {
-    dataType_t type = ((dataType_t*)CURRENT_INSTRUCTION->args)[0];
+    data_type_t type = ((data_type_t*)CURRENT_INSTRUCTION->args)[0];
 
-    pushStack(type, CURRENT_INSTRUCTION->args + sizeof(dataType_t));
+    pushStack(type, CURRENT_INSTRUCTION->args + sizeof(data_type_t));
 
     // Arg 1: type
     // Arg 2: data
@@ -261,7 +261,7 @@ float interpretAsFloat(size32_t operandValue)
     return value.as_f;
 }
 
-dataType_t prepareOperands(data_t* operandA, data_t* operandB)
+data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 {
     if ((operandA->dataType & f_32int) 
         && (operandB->dataType & f_32int))

@@ -28,13 +28,13 @@ typedef enum data_type {
     f_ref       = 0x0400,
     f_var       = 0x0800,
 
-} dataType_t;
+} data_type_t;
 
 
 // The stack data structure that this stack-oriented program uses
 typedef struct stack 
 {
-    dataType_t type;
+    data_type_t type;
     void* data;
     struct stack* next;
 
@@ -45,7 +45,7 @@ typedef struct stack
 //  this into actual_data.
 typedef struct data
 {
-    dataType_t dataType;
+    data_type_t dataType;
     size32_t data;
 } data_t;
 
@@ -61,9 +61,9 @@ void stackIni();
 void shouldNotBeBottom();
 
 // Push and pop things on the stack 
-void pushStack(dataType_t dataType, void* data);
+void pushStack(data_type_t dataType, void* data);
 void dropStack();
-size32_t popStack(dataType_t* outType);
+size32_t popStack(data_type_t* outType);
 
 // Inline this?
 data_t popData();

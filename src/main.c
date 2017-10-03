@@ -41,6 +41,7 @@ int main(int argc, char** argv)
     else
     {
         printf("Please provide a file\n");
+        return 0;
     }
 #endif
 
