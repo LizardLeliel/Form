@@ -6,7 +6,6 @@
 #include "hash.h"
 #include "build.h"
 #include "stack.h"
-#include "bigdecls.h"
 #include "instructions.h"
 #include "compile.h"
 #include "argparse.h"

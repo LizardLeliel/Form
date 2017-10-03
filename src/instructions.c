@@ -1,6 +1,5 @@
 #include "instructions.h"
 #include "stack.h"
-#include "bigdecls.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -148,7 +147,6 @@ void i_sub()
 
     }
 }
-
 void i_mul()
 {
     size32_t evaluation;

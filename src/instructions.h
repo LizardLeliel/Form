@@ -1,8 +1,76 @@
 #ifndef INSTRUCTIONS_HEADER
-#include "bigdecls.h"
+
 #include "stack.h"
 
-// This is gonna be a long file...
+/* Instruction set enumeration - each member represents
+ *  and action that a bytecode instruction can perform.
+ *  Any word that is a plural but has no reason to be plural
+ *  is done as to avoid naming conflicts
+ */
+typedef enum intsruction_set 
+{
+    // No operation
+    nop = 0,
+
+    // Standard arthemtic operations
+    add,
+    sub,
+    mul,
+    divs,
+    mod,
+
+    // Standard bitwise operations
+    bitwand,
+    bitwor,
+    bitwnot,
+    bitwleft,
+    bitwright,
+    bitwxor,
+
+    // Standard comparison operations
+    lessthen,
+    lessthaneq,
+    morethan,
+    morethaneq,
+    eq,
+    ineq,
+
+    // Boolean logic operations
+    logand,
+    logor,
+    lognot,
+
+    // Increment and deincrement operations
+    incr,
+    decr,
+
+    // Standard stack-related operations
+    push,
+    drop,
+    over,
+    swaps,
+    rot,
+
+    // Form goto operations
+    gotos,
+    congotos,
+
+    // Variable-related operations
+    scope,
+    assigns,
+    get,
+
+    // Misc operations (function call, return, output, end program)
+    call,
+    returns,
+    print,
+    endProg,
+
+    // This isn't an instruction; this is just as the size of the enumeration
+    //  if this enum's size changes, this will reflect that, and... things
+    instruction_ammount,
+
+} instructionType_t;
 
 /* Datatype suitable for storing an intstruction */
 typedef struct instruction 

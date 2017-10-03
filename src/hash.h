@@ -1,5 +1,4 @@
 #ifndef HASH_HEADER
-#include "bigdecls.h"
 #include "instructions.h"
 
 #include <stdlib.h>
@@ -7,6 +6,15 @@
 #ifndef byte
  #define byte unsigned char
 #endif
+
+// Enumeration of hashed data types
+typedef enum hash_type {
+    h_nothing = 0,     // = 0
+    h_variableName,    // = 1
+    h_functionName,    // = 2
+    h_labelName,       // = 3
+    h_gotoMemory,      // = 4
+} hashType_t;     
 
 /* The hashing function */
 unsigned long hashFunction(size_t wordLength, const char* symbol);

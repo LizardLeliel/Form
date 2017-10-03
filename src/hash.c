@@ -1,5 +1,4 @@
 #include "hash.h"
-#include "bigdecls.h"
 
 #include <stdlib.h>
 #include <inttypes.h>
