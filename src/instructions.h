@@ -1,5 +1,7 @@
 #ifndef INSTRUCTIONS_HEADER
 
+#include "stdlib.h"
+
 #include "stack.h"
 
 /* Instruction set enumeration - each member represents

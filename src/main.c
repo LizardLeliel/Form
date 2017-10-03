@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "argparse.h"
 #include "stack.h"
 #include "build.h"
 #include "hash.h"
 #include "instructions.h"
 //#include "test.c"
-
-//#include "lex.yy.c"
 
 extern void yylex(void);
 extern FILE* yyin;

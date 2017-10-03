@@ -11,7 +11,9 @@ $(Program): $(Objects)
 	$(Compilier) $(Flags) $(Objects) -o $@ 
 
 .c.o: 
+	flex formLang.flex
 	$(Compilier) $(Flags) $< -c -o $@ $(Incflags)
 
 clean: 
 	rm -f *.o $(Program)
+	rm -f lex.yy.c

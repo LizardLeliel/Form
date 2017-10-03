@@ -4,7 +4,6 @@
 #include <math.h>
 #include <inttypes.h>
 #include "stack.h"
-#include "bigdecls.h"
 #include "build.h"
 %}
 
