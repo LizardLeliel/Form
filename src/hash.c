@@ -6,12 +6,6 @@
 #include <stdio.h>
 
 
-// The hashtable 
-//hash_t HASH;
-//hash_bucket_list_t LIST;
-
-// Counts how much of 
-//unsigned int counters[h_gotoMemory+1] = {0, 0, 0, 0, 0};
 
 runtime_hash_t RUNTIME_HASH;
 
@@ -114,7 +108,7 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
     tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
-    return RUNTIME_HASH.typeCount[toHashType];
+    return ++RUNTIME_HASH.typeCount[toHashType];
 }
 
 // Adds to list of hash buckets (for freeing later)

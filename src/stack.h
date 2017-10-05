@@ -30,7 +30,6 @@ typedef enum data_type {
 
 } data_type_t;
 
-
 // The stack data structure that this stack-oriented program uses
 typedef struct stack 
 {
@@ -40,7 +39,6 @@ typedef struct stack
 
 } stack_t;
 
-
 // Major to do: get rid of this, make
 //  this into actual_data.
 typedef struct data
@@ -48,6 +46,7 @@ typedef struct data
     data_type_t dataType;
     size32_t data;
 } data_t;
+
 
 // The actual stack that is used by the language
 extern stack_t* STACK;

@@ -7,15 +7,15 @@
 #include <stdint.h>
 
 // Arguements for instructions loaded in here
-void* instructionArgs;
+//void* instructionArgs;
 
 // A pointer of the current instruction being executed
 instruction_t* CURRENT_INSTRUCTION;
-
+function_stack_t FUNCTION_STACK;
 
 // This is an array of function pointers. These functions
 //  are called during runtime.
-void (*EXEC_INSTRUCTION[instruction_ammount])() =
+void (*EXEC_INSTRUCTION[instruction_ammount])()=
 {
     i_nop, // No operation
 
@@ -68,16 +68,46 @@ void (*EXEC_INSTRUCTION[instruction_ammount])() =
     i_nop,
 
     // Misc operations 
-    i_nop,
+    i_call,
     i_nop,
     i_print,
     i_nop
 };
 
-// Macro for primitive operations
-#define C_OPERATE(DATA_TYPE, OPERATION)              \
-    *(DATA_TYPE*)toPush =                            \
-    (DATA_TYPE)topArg OPERATION (DATA_TYPE)bottomArg
+// This is an array of function pointers. These functions
+//  are called during runtime.
+void (*EXEC_INSTRUCTION[instruction_ammount])();
+
+void pushFunction(instruction_t* returnInstruction)
+{
+    if (FUNCTION_STACK.head == NULL)
+    {
+        FUNCTION_STACK.head = malloc(sizeof(function_stack_node_t));
+        FUNCTION_STACK.head->next = NULL;
+        FUNCTION_STACK.head->returnInstruction = returnInstruction;
+        ++FUNCTION_STACK.depth;
+    }
+    else
+    {
+        function_stack_node_t* newFunction = malloc(sizeof(function_stack_t));
+        newFunction->next                  = FUNCTION_STACK.head;
+        newFunction->returnInstruction     = returnInstruction;
+        FUNCTION_STACK.head                = newFunction;
+    }
+}
+
+void returnFromFunction()
+{
+    if (FUNCTION_STACK.head == NULL)
+    {
+        perror("Function stack underflow");
+    }
+    function_stack_node_t* freeThis = FUNCTION_STACK.head;
+    FUNCTION_STACK.head = FUNCTION_STACK.head->next;
+    --FUNCTION_STACK.depth;
+    free(freeThis);
+    return;
+}
 
 // No operation
 void i_nop() 
@@ -233,6 +263,11 @@ void i_push()
     // Arg 2: data
 }
 
+void i_call()
+{
+    puts("i_call() called");
+}
+
 void i_print()
 {
     data_t value = popData();
@@ -288,11 +323,16 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 
 
 void execute(instruction_t** program)
-{
+{   
+    // Refactor into function?
+    FUNCTION_STACK.depth = 0;
+    FUNCTION_STACK.head = NULL;
+
     CURRENT_INSTRUCTION = *program;
     while (CURRENT_INSTRUCTION != NULL)
     {
         EXEC_INSTRUCTION[CURRENT_INSTRUCTION->instruction]();
+
         CURRENT_INSTRUCTION = CURRENT_INSTRUCTION->next;
     }
 }

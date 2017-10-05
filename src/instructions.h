@@ -78,8 +78,27 @@ typedef struct instruction
     size_t argSize;
     void* args;
     struct instruction* next;
-
 } instruction_t;
+
+
+typedef struct function_stack_node
+{
+    struct function_stack_node* next;
+    instruction_t* returnInstruction;
+} function_stack_node_t;
+
+// Contains information such as return address
+//  and (later) local variables.
+typedef struct function_stack
+{
+    function_stack_node_t* head;
+    unsigned int depth;
+} function_stack_t;
+
+static const unsigned int maxDepth = 50;
+
+void pushFunction(instruction_t* returnInstruction);
+void returnFromFunction();
 
 // Used for easier implementation of casting.
 typedef union any32 
@@ -99,6 +118,7 @@ void i_divs();
 void i_mod();
 void i_lessthen();
 void i_push();
+void i_call();
 void i_print();
  
 size32_t interpretAsInt(float value);
