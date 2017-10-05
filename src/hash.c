@@ -5,17 +5,15 @@
 #include <string.h>
 #include <stdio.h>
 
-// This value must be in the form (2^)) - 1
-#define initialHashArraySize 1048575
-unsigned long maxArrayVal = initialHashArraySize;
-#undef initialHashArraySize
 
-/* The hashtable */
-hash_t HASH;
-hash_bucket_list_t LIST;
+// The hashtable 
+//hash_t HASH;
+//hash_bucket_list_t LIST;
 
 // Counts how much of 
-unsigned int counters[h_labelName+1] = {0,0,0,0};
+//unsigned int counters[h_gotoMemory+1] = {0, 0, 0, 0, 0};
+
+runtime_hash_t RUNTIME_HASH;
 
 /* The hash function is implemented with an array size and not a null-
  *  terminated string because it'll be simplier to determine
@@ -30,27 +28,29 @@ unsigned int counters[h_labelName+1] = {0,0,0,0};
  *  (http://www.cse.yorku.ca/~oz/hash.html)
  */
 unsigned long hashFunction(size_t wordLength, const char* symbol) {
-    unsigned long hash = 0;
+    unsigned long hashed_value = 0;
     int c = 0;
 
     do {
-        hash = symbol[c] + (hash << 6) + (hash << 16) - hash;
+        hashed_value = symbol[c] + (hashed_value << 6) + (hashed_value << 16) - hashed_value;
     } while (++c < wordLength);
 
-    return hash;
+    return hashed_value;
 }
 
 
 void hashIni() {
     static int tries = 3;
-    HASH = calloc(maxArrayVal+1, sizeof(hash_t));
-    LIST.top = NULL;
+    //HASH = calloc(maxArrayVal+1, sizeof(hash_t));
+    RUNTIME_HASH.hash = calloc(maxArrayVal + 1, sizeof(hash_bucket_t*));
+    // RUNTIME_HASH.typeCount = {0, 0, 0, 0, 0};
+    memset(RUNTIME_HASH.typeCount, 0, sizeof RUNTIME_HASH.typeCount);
 
     /* if malloc/calloc fails, try again with smaller ammounts */
-    while (HASH == NULL) 
+    while (RUNTIME_HASH.hash == NULL) 
     {
         maxArrayVal >>= 1;
-        HASH = calloc(maxArrayVal+1, sizeof(hash_t));
+        RUNTIME_HASH.hash = calloc(maxArrayVal + 1, sizeof(hash_bucket_t*));
 
         if (--tries == 0) 
         {
@@ -69,27 +69,27 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
 
     // If hash entry is empty, set a new one
     //! To do: make a function for creating hash entries
-    if (HASH[index] == NULL) {
-        (HASH[index]) = malloc(sizeof(hash_bucket_t));
+    if (RUNTIME_HASH.hash[index] == NULL) {
+        (RUNTIME_HASH.hash[index]) = malloc(sizeof(hash_bucket_t));
 
         // Set values
-        (HASH[index])->hashedType  = toHashType;
-        (HASH[index])->contents.ID = ++(counters[toHashType]);
-        (HASH[index])->next        = NULL;
+        (RUNTIME_HASH.hash[index])->hashedType  = toHashType;
+        (RUNTIME_HASH.hash[index])->contents.ID = ++(RUNTIME_HASH.typeCount[toHashType]);
+        (RUNTIME_HASH.hash[index])->next        = NULL;
 
-        (HASH[index])->symbol
+        (RUNTIME_HASH.hash[index])->symbol
             = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
-        pushToList(HASH[index]);
+        pushToList(RUNTIME_HASH.hash[index]);
 
-        return counters[toHashType];
+        return RUNTIME_HASH.typeCount[toHashType];
     }
 
     // Else, check each node in list to see if symbol already exists. Start
     //  with a dummy list node (Is there a simplier way to do this?)
     hash_bucket_t* tracer = malloc(sizeof(hash_bucket_t));
     hash_bucket_t* freeThisDummy = tracer;
-    tracer->next = HASH[index];
+    tracer->next = RUNTIME_HASH.hash[index];
 
     do {
         tracer = tracer->next;
@@ -110,30 +110,30 @@ unsigned int getHashID(hashType_t toHashType, size_t symbolSize,
     tracer = tracer->next = malloc(sizeof(hash_bucket_t));
     tracer->hashedType    = toHashType;
     tracer->symbolLength  = symbolSize;
-    tracer->contents.ID   = ++counters[toHashType];
+    tracer->contents.ID   = ++RUNTIME_HASH.typeCount[toHashType];
 
     tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
-    return counters[toHashType];
+    return RUNTIME_HASH.typeCount[toHashType];
 }
 
 // Adds to list of hash buckets (for freeing later)
 void pushToList(hash_bucket_t* slot)
 {
-    if (LIST.top == NULL)
+    if (RUNTIME_HASH.cleanupList.top == NULL)
     {
-        LIST.top = malloc(sizeof(hash_bucket_list_node_t));
+        RUNTIME_HASH.cleanupList.top = malloc(sizeof(hash_bucket_list_node_t));
 
-        LIST.top->entry = slot;
-        LIST.top->next  = NULL;
+        RUNTIME_HASH.cleanupList.top->entry = slot;
+        RUNTIME_HASH.cleanupList.top->next  = NULL;
     }
     else
     {
         hash_bucket_list_node_t* newNode 
             = malloc(sizeof(hash_bucket_list_node_t));
-        newNode->next = LIST.top;
+        newNode->next = RUNTIME_HASH.cleanupList.top;
         newNode->entry = slot;
-        LIST.top = newNode;
+        RUNTIME_HASH.cleanupList.top = newNode;
     }
 }
 
@@ -141,7 +141,7 @@ void freeHash()
 {
     hash_bucket_list_node_t* tracer;
     hash_bucket_list_node_t* toFree;
-    tracer = LIST.top;
+    tracer = RUNTIME_HASH.cleanupList.top;
     while (tracer != NULL)
     {
         free(tracer->entry->symbol);
@@ -151,6 +151,6 @@ void freeHash()
         free(toFree);
     }
 
-    free(HASH);
+    free(RUNTIME_HASH.hash);
 
 }

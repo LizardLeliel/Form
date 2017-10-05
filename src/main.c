@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     hashIni();
 
 
-//#define test
+#define test
 
 #ifdef test
 #include "test.h"

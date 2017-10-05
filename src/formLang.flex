@@ -26,7 +26,7 @@ BOOLFALSE       "FALSE"
                     int32_t n = atoi(yytext);
                     struct {
                         data_type_t dt;
-                        int32_t dn;
+                        int32_t dn; 
                     } data;
 
                     data.dt = f_32int;

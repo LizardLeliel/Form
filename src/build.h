@@ -49,12 +49,9 @@ void instructionIni();
 void freeInstructions();
 
 // Adds a new instruction to buildPointers.currentInstruct
-void appendInstruction
-(
-    instructionType_t newInstruct,
-    size_t argSize,
-    void* args
-);
+void appendInstruction(instructionType_t newInstruct,
+    				   size_t 			 argSize,
+    				   void* 			 args);
 
 // Makes a dummy head
 inline instruction_t* dummyInstruction();

@@ -25,7 +25,7 @@ void runChecks() {
     int32_t sampInt = 423;
     float sampFloat = 1.5f;
 
-    printf("%lu\n", sizeof(hash_t)*bit20);
+    //printf("%lu\n", sizeof(hash_t)*bit20);
 
     // Simple push test
     pushStack(f_32int|f_numeric, (void*)&sampInt);
