@@ -13,6 +13,9 @@
 instruction_t* CURRENT_INSTRUCTION;
 function_stack_t FUNCTION_STACK;
 
+// Refactor this into a not-global-variable.
+program_context_t* GLOBAL_CONTEXT;
+
 // This is an array of function pointers. These functions
 //  are called during runtime.
 void (*EXEC_INSTRUCTION[instruction_ammount])()=
@@ -102,6 +105,8 @@ void returnFromFunction()
     {
         perror("Function stack underflow");
     }
+    CURRENT_INSTRUCTION = FUNCTION_STACK.head->returnInstruction;
+
     function_stack_node_t* freeThis = FUNCTION_STACK.head;
     FUNCTION_STACK.head = FUNCTION_STACK.head->next;
     --FUNCTION_STACK.depth;
@@ -265,13 +270,21 @@ void i_push()
 
 void i_call()
 {
-    puts("i_call() called");
+    unsigned int functionIndex = *(unsigned int*)CURRENT_INSTRUCTION->args;
+
+    pushFunction(CURRENT_INSTRUCTION);
+
+    CURRENT_INSTRUCTION = GLOBAL_CONTEXT->functions[functionIndex];
+}
+
+void i_return()
+{
+    return;
 }
 
 void i_print()
 {
     data_t value = popData();
-
 
     if (value.dataType & f_32float)
     {
@@ -328,6 +341,8 @@ void execute(program_context_t program)
     // Refactor into function?
     FUNCTION_STACK.depth = 0;
     FUNCTION_STACK.head = NULL;
+
+    GLOBAL_CONTEXT = &program;
 
     CURRENT_INSTRUCTION = program.functions[0];
     while (CURRENT_INSTRUCTION != NULL)

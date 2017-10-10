@@ -57,10 +57,10 @@ BOOLFALSE       "FALSE"
                         char* trimmed = trim(yytext);
                         //printf("Trimmed Token: %s\n", trimmed);
                         // Allow ambigious functions _for now_
-                        unsigned int token = 
-                            getHashID(h_functionName, 
-                                    strlen(trimmed + 1), 
-                                    trimmed + 1);
+                        
+                        getHashID(h_functionName, 
+                                strlen(trimmed + 1), 
+                                trimmed + 1);
                         makeNewFunction();
                         }
 {FUNCTIONEND}{WS}+      {
@@ -68,7 +68,13 @@ BOOLFALSE       "FALSE"
                         }
 {FUNCTION}{WS}+         {
                         char* trimmed = trim(yytext);
+                        unsigned int token = 
+                            getHashID(h_functionName,
+                                strlen(trimmed),
+                                trimmed);
 
+                        appendInstruction(call, sizeof(unsigned int),
+                            &token);
                         }
 {BOOLTRUE}{WS}+         {
                         // We have to move this rule up sometime.
