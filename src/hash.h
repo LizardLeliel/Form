@@ -2,6 +2,7 @@
 #include "instructions.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef byte
  #define byte unsigned char
@@ -66,6 +67,7 @@ unsigned long hashFunction(size_t wordLength, const char* symbol);
 void hashIni();
 void freeHash();
 
+
 // Set element of hash
 unsigned int getHashID(hashType_t  toHashType,
                        size_t      symbolSize,
@@ -73,6 +75,9 @@ unsigned int getHashID(hashType_t  toHashType,
 
 
 void pushToList(hash_bucket_t* slot);
+
+bool isWhiteSpace(char c);
+char* trim(const char* string);
 
 #define HASH_HEADER
 #endif

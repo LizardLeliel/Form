@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include "stack.h"
 #include "build.h"
+#include "hash.h"
 %}
 
 NUM             [0-9]
@@ -15,6 +16,8 @@ CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
 ID              {CHARR}{ALPHNUM}*
 VAR             "."{ID}
+FUNCTIONBEGIN   ":"{ID}
+FUNCTIONEND     ";"
 OP              [+-*/]
 PRINT           "PRINT"
 BOOLTRUE        "TRUE"
@@ -45,8 +48,19 @@ BOOLFALSE       "FALSE"
                     //pushStack(f_32float, &n);
                     printf("Found a var: %s\n", yytext);
                     }
-":"{WS}*{ID}+       {
-                    printf("Found a function");
+FUNCTIONBEGIN{WS}+  {
+                    //:func3+231+print;
+                    char* trimmed = trim(yytext);
+                    printf("Trimmed Toxen: %s\n", trimmed);
+                    // Allow ambigious functions _for now_
+                    unsigned int token = 
+                        getHashID(h_functionName, 
+                                strlen(trimmed + 1), 
+                                trimmed + 1);
+                    makeNewFunction();
+                    }
+{FUNCTIONEND}{WS}+  {
+                    endFunction();
                     }
 {PRINT}{WS}+        {
                     appendInstruction(print, 0, NULL);

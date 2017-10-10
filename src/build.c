@@ -6,10 +6,9 @@
 #include <string.h>
 
 /* Four important pointers for the building bytecode out of
- *  scanned input. The three pointers are the top of the function linked
+ *  scanned input. The four pointers are the top of the function linked
  *  list, the end of the function linked list, the end of main's
- *  instruction list, and the instruction list currently appending too.
- *  They are all initalized to NULL
+ *  instruction list, and the instruction list currently appending to.
  */
 struct build_pointer_struct buildPointers = {NULL, NULL, NULL, NULL};
 
@@ -92,17 +91,22 @@ void appendInstruction(instructionType_t newInstruct,
 instruction_t* dummyInstruction() 
 {
     // Calloc is used since it returns zero-filled memory (NULL)
-    return calloc(1, sizeof(instruction_t));
+    instruction_t* dummy = malloc(sizeof(instruction_t));
+    dummy->instruction = nop;
+    dummy->argSize     = 0;
+    dummy->args        = NULL;
+    dummy->next        = NULL;
+    return dummy;
 }
 
 void makeNewFunction() 
 {
-    /* Allocates and initialize memory */
+    // Allocates and initialize memory
     function_header_t* newFunction = malloc(sizeof(function_header_t));
     newFunction->next = NULL;
     newFunction->head = dummyInstruction();
 
-    /* Assigns buildPointerFunctions */
+    // Assigns buildPointerFunctions 
     buildPointers.currentInstruct    = newFunction->head;
     buildPointers.lastFunction->next = newFunction;
     buildPointers.lastFunction       = newFunction;

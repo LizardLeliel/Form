@@ -7,12 +7,14 @@ Objects       = $(Sources:.c=.o)
 
 all: $(Program)
 
-$(Program): $(Objects) 
-	$(Compilier) $(Flags) $(Objects) -o $@ 
+$(Program): lex.yy.c $(Objects) lex.yy.o
+	$(Compilier) $(Flags) $(Objects) -o $@  lex.yy.o
 
 .c.o: 
-	flex formLang.flex
 	$(Compilier) $(Flags) $< -c -o $@ $(Incflags)
+
+lex.yy.c:
+	flex formLang.flex
 
 clean: 
 	rm -f *.o $(Program)

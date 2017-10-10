@@ -1,4 +1,5 @@
 #ifndef BUILD_HEADER
+#include <stdbool.h>
 #include "instructions.h"
 
 

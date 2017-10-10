@@ -146,5 +146,28 @@ void freeHash()
     }
 
     free(RUNTIME_HASH.hash);
+}
 
+bool isWhiteSpace(char c)
+{
+    return (c == ' ' || c == '\n' || c == '\t' || c == 26);
+}
+
+char* trim(const char* string)
+{
+    char* duplicate = malloc(strlen(string));
+    unsigned int index = 0;
+    char* reader = string;
+    while (isWhiteSpace(*reader))
+    {
+        ++reader;
+    }
+
+    while (!isWhiteSpace(*reader))
+    {
+        duplicate[index] = *reader;
+        ++index; ++reader;
+    }
+    duplicate[index] = '\0';
+    return duplicate;
 }
