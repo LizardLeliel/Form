@@ -72,7 +72,7 @@ void (*EXEC_INSTRUCTION[instruction_ammount])()=
 
     // Misc operations 
     i_call,
-    i_nop,
+    i_returns,
     i_print,
     i_nop
 };
@@ -277,8 +277,9 @@ void i_call()
     CURRENT_INSTRUCTION = GLOBAL_CONTEXT->functions[functionIndex];
 }
 
-void i_return()
+void i_returns()
 {
+    returnFromFunction();
     return;
 }
 

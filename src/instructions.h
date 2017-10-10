@@ -126,6 +126,7 @@ void i_mod();
 void i_lessthen();
 void i_push();
 void i_call();
+void i_returns();
 void i_print();
  
 size32_t interpretAsInt(float value);
