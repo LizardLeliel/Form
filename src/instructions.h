@@ -95,6 +95,13 @@ typedef struct function_stack
     unsigned int depth;
 } function_stack_t;
 
+// This is what's execute
+typedef struct program_context
+{
+    instruction_t** functions; // functions[0] is main
+    function_stack_t functionStack;
+} program_context_t;
+
 static const unsigned int maxDepth = 50;
 
 void pushFunction(instruction_t* returnInstruction);
@@ -126,7 +133,7 @@ float interpretAsFloat(size32_t operandValue);
 data_type_t prepareOperands(data_t* operandA, data_t* operandB);
 
 // Execute a chain of instructions
-void execute(instruction_t** program);
+void execute(program_context_t program);
 
 #define INSTRUCTIONS_HEADER
 #endif

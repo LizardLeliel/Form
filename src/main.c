@@ -19,12 +19,11 @@ int main(int argc, char** argv)
     hashIni();
 
 
-#define test
+//#define test
 
 #ifdef test
 #include "test.h"
     runChecks();
- #undef test
 #endif
 
 #ifndef test
@@ -44,9 +43,12 @@ int main(int argc, char** argv)
         return 0;
     }
 #endif
+#undef test
+
+
 
     freeHash();
-    freeInstructions();
+    //freeInstructions();
     return 0;
 }
 

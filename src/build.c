@@ -128,9 +128,26 @@ void endFunction()
     onMain = true;
 }
 
-instruction_t** returnProgram()
+program_context_t returnProgram()
 {
-    return &(buildPointers.programTop->head);
+    // Build program.
+    program_context_t program;
+    program.functionStack.depth = 0;
+
+    program.functions = malloc(sizeof(instruction_t*) * functionNumber);
+
+    int i = 0;
+    function_header_t* tracer = buildPointers.programTop;
+
+    while (tracer != NULL)
+    {
+        program.functions[i] = tracer->head;
+        ++i;
+        tracer = tracer->next;
+    }
+
+    return program;
+    //return &(buildPointers.programTop->head);
 }
 
 

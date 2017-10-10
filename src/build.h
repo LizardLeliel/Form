@@ -44,9 +44,13 @@ extern struct build_pointer_struct buildPointers;
 extern unsigned int functionNumber;
 
 /* Allocates various memory for the functions queue, and sets initial
- *  values to variables in struct "buildPointers"
+ *  values to variables in struct "buildPointers".
+ * Should be changed to "buildInit"
  */
 void instructionIni();
+
+// Change this so it only reflects what is in build.h.
+// That, and things have been changed to program_context_t.
 void freeInstructions();
 
 // Adds a new instruction to buildPointers.currentInstruct
@@ -65,12 +69,13 @@ void makeNewFunction();
 // Ends a function
 void endFunction();
 
+// Change this comment to better reflect the function.
 /* Returns head of main. it eventually will create an appriopriate array
  *  for goto look-up and function calls; as well as return head.
  *  It will also snip dummy instruction queue heads unless function
  *  is emptey; i.e. only contains "return"
  */
-instruction_t** returnProgram();
+program_context_t returnProgram();
 
 #define BUILD_HEADER
 #endif

@@ -322,13 +322,13 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 } 
 
 
-void execute(instruction_t** program)
+void execute(program_context_t program)
 {   
     // Refactor into function?
     FUNCTION_STACK.depth = 0;
     FUNCTION_STACK.head = NULL;
 
-    CURRENT_INSTRUCTION = *program;
+    CURRENT_INSTRUCTION = program.functions[0];
     while (CURRENT_INSTRUCTION != NULL)
     {
         EXEC_INSTRUCTION[CURRENT_INSTRUCTION->instruction]();
