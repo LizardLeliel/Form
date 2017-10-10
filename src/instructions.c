@@ -272,6 +272,7 @@ void i_print()
 {
     data_t value = popData();
 
+
     if (value.dataType & f_32float)
     {
         printf("%f\n", interpretAsFloat(value.data));
@@ -332,7 +333,6 @@ void execute(program_context_t program)
     while (CURRENT_INSTRUCTION != NULL)
     {
         EXEC_INSTRUCTION[CURRENT_INSTRUCTION->instruction]();
-
         CURRENT_INSTRUCTION = CURRENT_INSTRUCTION->next;
     }
 }

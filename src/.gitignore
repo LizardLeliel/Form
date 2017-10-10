@@ -1,2 +1,4 @@
 lex.yy.c
 *.o
+todo.txt
+form
