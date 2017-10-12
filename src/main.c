@@ -3,7 +3,6 @@
 
 #include "stack.h"
 #include "build.h"
-#include "hash.h"
 #include "instructions.h"
 //#include "test.c"
 

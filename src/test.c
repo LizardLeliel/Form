@@ -7,7 +7,6 @@
 #include "test.h"
 #include "stack.h"
 #include "build.h"
-#include "hash.h"
 #include "instructions.h"
 
 // The macro below is an integer representing the last 20 bits being 1. Or:
