@@ -1,6 +1,6 @@
 #ifndef BUILD_HEADER
 #include <stdbool.h>
-#include "instructions.h"
+#include "runtime.h"
 
 #ifndef byte
  #define byte unsigned char

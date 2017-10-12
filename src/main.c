@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "stack.h"
 #include "build.h"
-#include "instructions.h"
+#include "runtime.h"
 //#include "test.c"
 
 extern void yylex(void);

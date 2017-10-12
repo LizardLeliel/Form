@@ -3,9 +3,7 @@
 %{
 #include <math.h>
 #include <inttypes.h>
-#include "stack.h"
 #include "build.h"
-#include "hash.h"
 %}
 
 NUM             [0-9]

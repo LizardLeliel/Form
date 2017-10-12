@@ -5,9 +5,8 @@
 #include <string.h>
 
 #include "test.h"
-#include "stack.h"
 #include "build.h"
-#include "instructions.h"
+#include "runtime.h"
 
 // The macro below is an integer representing the last 20 bits being 1. Or:
 //  00000000 00001111 11111111 11111111

@@ -1,5 +1,5 @@
 #include "build.h"
-#include "instructions.h"
+#include "runtime.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -151,14 +151,6 @@ program_context_t returnProgram()
     return program;
     //return &(buildPointers.programTop->head);
 }
-
-
-#include "hash.h"
-
-#include <stdlib.h>
-#include <inttypes.h>
-#include <string.h>
-#include <stdio.h>
 
 
 
