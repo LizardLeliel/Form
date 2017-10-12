@@ -47,6 +47,18 @@ BOOLFALSE       "FALSE"
 "+"{WS}+                {
                         appendInstruction(add, 0, NULL);
                         }
+"-"{WS}+                {
+                        appendInstruction(sub, 0, NULL);
+                        }  
+"*"{WS}+                {
+                        appendInstruction(mul, 0, NULL);
+                        }
+"/"{WS}+                {
+                        appendInstruction(divs, 0, NULL);
+                        }
+"%"{WS}+                {
+                        appendInstruction(mod, 0, NULL);
+                        }
 {VAR}{WS}+              {
                         //int32_t = *(int32_t*)&strtof(yytext);
                         //pushStack(f_32float, &n);
