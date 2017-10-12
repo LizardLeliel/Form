@@ -1,6 +1,9 @@
 #ifndef RUNTIME_HEADER
+#define RUNTIME_HEADER
 
 #include "stdlib.h"
+#include "basicOperations.h"
+
 #include "inttypes.h"
 
 
@@ -183,12 +186,13 @@ void returnFromFunction();
 
 
 // Instruction Functions 
-void i_nop();
-void i_add();
-void i_sub();
-void i_mul();
-void i_divs();
-void i_mod();
+// Commented out instructions are still here to keep the ordering
+// void i_nop();
+// void i_add();
+// void i_sub();
+// void i_mul();
+// void i_divs();
+// void i_mod();
 void i_lessthen();
 void i_push();
 void i_call();
@@ -202,6 +206,6 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB);
 // Execute a chain of instructions
 void execute(program_context_t program);
 
-#define RUNTIME_HEADER
+// RUNTIME_HEADER
 #endif
 
