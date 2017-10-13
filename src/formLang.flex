@@ -4,6 +4,9 @@
 #include <math.h>
 #include <inttypes.h>
 #include "build.h"
+// This can be a program build
+int testX;
+program_build_t programBuild;
 %}
 
 NUM             [0-9]
@@ -25,7 +28,7 @@ BOOLFALSE       "FALSE"
 %%
 
 {PRINT}{WS}+            {
-                        appendInstruction(print, 0, NULL);
+                        appendInstruction(&programBuild, print, 0, NULL);
                         }
 {INT}{WS}+              {
                         int32_t n = atoi(yytext);
@@ -37,25 +40,25 @@ BOOLFALSE       "FALSE"
                         data.dt = f_32int;
                         data.dn = n;
 
-                        appendInstruction(push, sizeof data, &data);
+                        appendInstruction(&programBuild, push, sizeof data, &data);
                        
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
                         }
 "+"{WS}+                {
-                        appendInstruction(add, 0, NULL);
+                        appendInstruction(&programBuild, add, 0, NULL);
                         }
 "-"{WS}+                {
-                        appendInstruction(sub, 0, NULL);
+                        appendInstruction(&programBuild, sub, 0, NULL);
                         }  
 "*"{WS}+                {
-                        appendInstruction(mul, 0, NULL);
+                        appendInstruction(&programBuild, mul, 0, NULL);
                         }
 "/"{WS}+                {
-                        appendInstruction(divs, 0, NULL);
+                        appendInstruction(&programBuild, divs, 0, NULL);
                         }
 "%"{WS}+                {
-                        appendInstruction(mod, 0, NULL);
+                        appendInstruction(&programBuild, mod, 0, NULL);
                         }
 {VAR}{WS}+              {
                         //int32_t = *(int32_t*)&strtof(yytext);
@@ -68,26 +71,47 @@ BOOLFALSE       "FALSE"
                         //printf("Trimmed Token: %s\n", trimmed);
                         // Allow ambigious functions _for now_
                         
-                        getHashID(h_functionName, 
-                                strlen(trimmed + 1), 
-                                trimmed + 1);
-                        makeNewFunction();
+                        getHashID(&(programBuild.tokenHash),
+                                  h_functionName, 
+                                  strlen(trimmed + 1), 
+                                  trimmed + 1);
+                        makeNewFunction(&programBuild);
                         }
 {FUNCTIONEND}{WS}+      {
-                        endFunction();
+                        endFunction(&programBuild);
                         }
 {FUNCTION}{WS}+         {
                         char* trimmed = trim(yytext);
                         unsigned int token = 
-                            getHashID(h_functionName,
-                                strlen(trimmed),
-                                trimmed);
+                            getHashID(&(programBuild.tokenHash),
+                                      h_functionName,
+                                      strlen(trimmed),
+                                      trimmed);
 
-                        appendInstruction(call, sizeof(unsigned int),
-                            &token);
+                        appendInstruction(&programBuild,
+                                          call, 
+                                          sizeof(unsigned int),
+                                          &token);
                         }
 {BOOLTRUE}{WS}+         {
                         // We have to move this rule up sometime.
 
                         }
 %%
+
+void initializeYYLEXProgramBuilder()
+{
+    programBuild = prepareBuild();
+}
+
+program_context_t finishYYLEXBuild()
+{
+    return returnProgram(&programBuild);
+}
+
+// Turn this into a return build program.
+int returnTestX()
+{
+    testX = 3;
+    return testX;
+}

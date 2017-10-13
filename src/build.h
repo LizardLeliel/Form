@@ -2,9 +2,17 @@
 #include <stdbool.h>
 #include "runtime.h"
 
-#ifndef byte
- #define byte unsigned char
-#endif
+typedef unsigned char byte;
+
+// Hashing-related data types
+// Enumeration of hashed data types
+typedef enum hash_type {
+    h_nothing = 0,     // = 0
+    h_variableName,    // = 1
+    h_functionName,    // = 2
+    h_labelName,       // = 3
+    h_gotoMemory,      // = 4
+} hashType_t;     
 
 /* A struct suitable for creating a list of functions
  *  The top of this function is the function which gets
@@ -40,17 +48,6 @@ struct build_pointer_struct
 
 };
 
-
-// Hashing-related data types
-// Enumeration of hashed data types
-typedef enum hash_type {
-    h_nothing = 0,     // = 0
-    h_variableName,    // = 1
-    h_functionName,    // = 2
-    h_labelName,       // = 3
-    h_gotoMemory,      // = 4
-} hashType_t;     
-
 /* A struct suitable for keeping track of declared
  *  variables, labels, and function names.
  */
@@ -84,37 +81,77 @@ typedef struct hash_bucket_list
 
 
 // 0xFFFF = 2^20 - 1 = 1048575
+// This is literally not a runtime hash.
+// Rename it!!!
 static unsigned long maxArrayVal = 0xFFFF;
-typedef struct runtime_hash
+typedef struct token_hash
 {  
     hash_bucket_t** hash;
     unsigned int typeCount[h_gotoMemory+1];
     hash_bucket_list_t cleanupList;
-} runtime_hash_t;
+} token_hash_t;
+
+
+
+
+
+
+typedef struct program_build
+{
+    // The hash
+    token_hash_t       tokenHash;
+
+    // Important pointers for building
+    function_header_t* programTop;
+    function_header_t* lastFunction;
+    instruction_t*     mainLast;
+    instruction_t*     currentInstruction;
+
+    // Other
+    bool onMain;
+    unsigned int functionAmmount;
+} program_build_t;
+
+
+
+
+program_build_t prepareBuild();
+
+
+
+
+
+
 
 
 // This is extern'd for test.c
-extern struct build_pointer_struct buildPointers;
+// extern struct build_pointer_struct buildPointers;
 
 // The ammount of functions, including main.
-extern unsigned int functionNumber;
+// extern unsigned int functionNumber;
+
+
 
 /* Allocates various memory for the functions queue, and sets initial
  *  values to variables in struct "buildPointers".
  * Should be changed to "buildInit"
  */
 void instructionIni();
-void hashIni();
+//void hashIni();
+
+// Make tries and hash type a parameter
+token_hash_t makeTokenHash();
 
 // Change this so it only reflects what is in build.h.
 // That, and things have been changed to program_context_t.
 void freeInstructions();
-void freeHash();
+void freeHash(token_hash_t* tokenHash);
 
 // Adds a new instruction to buildPointers.currentInstruct
-void appendInstruction(instructionType_t newInstruct,
-    				   size_t 			 argSize,
-    				   void* 			 args);
+void appendInstruction(program_build_t* programBuild,
+                       instructionType_t newInstruct,
+                       size_t            argSize,
+                       void*             args);
 
 // Makes a dummy head
 inline instruction_t* dummyInstruction();
@@ -122,10 +159,10 @@ inline instruction_t* dummyInstruction();
 /* Adds a new function to the end of the function queue; sets build pointers
  *  to appriopriate values
  */
-void makeNewFunction();
+void makeNewFunction(program_build_t* programBuild);
 
 // Ends a function
-void endFunction();
+void endFunction(program_build_t* programBuild);
 
 // Change this comment to better reflect the function.
 /* Returns head of main. it eventually will create an appriopriate array
@@ -133,7 +170,7 @@ void endFunction();
  *  It will also snip dummy instruction queue heads unless function
  *  is emptey; i.e. only contains "return"
  */
-program_context_t returnProgram();
+program_context_t returnProgram(program_build_t* program);
 
 
 
@@ -145,12 +182,14 @@ unsigned long hashFunction(size_t wordLength, const char* symbol);
 
 
 // Set element of hash
-unsigned int getHashID(hashType_t  toHashType,
-                       size_t      symbolSize,
-                       const char* symbolName);
+unsigned int getHashID(token_hash_t* tokenHash,
+                       hashType_t    toHashType,
+                       size_t        symbolSize,
+                       const char*   symbolName);
 
 
-void pushToList(hash_bucket_t* slot);
+void pushToList(token_hash_t*  tokenHash, 
+                hash_bucket_t* slot);
 
 // Utilities
 bool isWhiteSpace(char c);

@@ -9,7 +9,7 @@
  *  once things become stable
  */
 
-void runChecks();
+// void runChecks();
 
 #define TEST_HEADER
 #endif

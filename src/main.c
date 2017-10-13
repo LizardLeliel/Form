@@ -5,19 +5,26 @@
 #include "runtime.h"
 //#include "test.c"
 
-extern void yylex(void);
+extern void yylex();
 extern FILE* yyin;
+
+extern void initializeYYLEXProgramBuilder();
+extern program_context_t finishYYLEXBuild();
+
+//extern int returnTestX(void);
 
 int main(int argc, char** argv)
 {
     printf("Hello world!\n");
 
     stackIni();
-    instructionIni();
-    hashIni();
+    //instructionIni();
+    //hashIni();
 
-
+    //printf("Testing testx: %d", returnTestX());
 //#define test
+
+    initializeYYLEXProgramBuilder();
 
 #ifdef test
 #include "test.h"
@@ -33,7 +40,7 @@ int main(int argc, char** argv)
             perror("File does not exist");
         }
         yylex();
-        execute(returnProgram());
+        execute(finishYYLEXBuild());
     }
     else
     {
@@ -45,7 +52,7 @@ int main(int argc, char** argv)
 
 
 
-    freeHash();
+    //freeHash();
     //freeInstructions();
     return 0;
 }

@@ -90,9 +90,6 @@ data_t popData()
 
 
 
-// Arguements for instructions loaded in here
-//void* instructionArgs;
-
 // A pointer of the current instruction being executed
 instruction_t* CURRENT_INSTRUCTION;
 function_stack_t FUNCTION_STACK;
