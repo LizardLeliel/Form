@@ -1,4 +1,4 @@
-lex.yy.c
+lex.yy.*
 *.o
 todo.txt
 form

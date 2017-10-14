@@ -1,10 +1,12 @@
 #ifndef RUNTIME_HEADER
 #define RUNTIME_HEADER
 
-#include "stdlib.h"
+#include <stdlib.h>
+#include <inttypes.h>
+
+
 #include "basicOperations.h"
 
-#include "inttypes.h"
 
 
 typedef unsigned char byte;

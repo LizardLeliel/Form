@@ -1,11 +1,17 @@
 %option noyywrap
 
 %{
+#include <stdio.h>
 #include <math.h>
 #include <inttypes.h>
+
 #include "build.h"
-// This can be a program build
-int testX;
+
+// Utility functions
+bool isWhiteSpace(char c);
+char* trim(char* string);
+
+// What will be returned
 program_build_t programBuild;
 %}
 
@@ -29,6 +35,9 @@ BOOLFALSE       "FALSE"
 
 {PRINT}{WS}+            {
                         appendInstruction(&programBuild, print, 0, NULL);
+                        }
+{BOOLTRUE}{WS}+         {
+
                         }
 {INT}{WS}+              {
                         int32_t n = atoi(yytext);
@@ -93,10 +102,6 @@ BOOLFALSE       "FALSE"
                                           sizeof(unsigned int),
                                           &token);
                         }
-{BOOLTRUE}{WS}+         {
-                        // We have to move this rule up sometime.
-
-                        }
 %%
 
 void initializeYYLEXProgramBuilder()
@@ -109,9 +114,28 @@ program_context_t finishYYLEXBuild()
     return returnProgram(&programBuild);
 }
 
-// Turn this into a return build program.
-int returnTestX()
+
+// Move these bottom two into formLang.flex
+bool isWhiteSpace(char c)
 {
-    testX = 3;
-    return testX;
+    return (c == ' ' || c == '\n' || c == '\t' || c == 26);
+}
+
+char* trim(char* string)
+{
+    char* duplicate = malloc(strlen(string));
+    unsigned int index = 0;
+    char* reader = string;
+    while (isWhiteSpace(*reader))
+    {
+        ++reader;
+    }
+
+    while (!isWhiteSpace(*reader))
+    {
+        duplicate[index] = *reader;
+        ++index; ++reader;
+    }
+    duplicate[index] = '\0';
+    return duplicate;
 }

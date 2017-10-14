@@ -14,8 +14,8 @@ $(Program): lex.yy.c $(Objects) lex.yy.o
 	$(Compilier) $(Flags) $< -c -o $@ $(Incflags)
 
 lex.yy.c:
-	flex formLang.flex
+	flex --header-file=lex.yy.h formLang.flex
 
 clean: 
 	rm -f *.o $(Program)
-	rm -f lex.yy.c
+	rm -f lex.yy.*
