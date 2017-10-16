@@ -3,12 +3,12 @@
 
 #include "runtime.h"
 
-void i_nop();
-void i_add();
-void i_sub();
-void i_mul();
-void i_divs();
-void i_mod();
+void i_nop(program_context_t*);
+void i_add(program_context_t*);
+void i_sub(program_context_t*);
+void i_mul(program_context_t*);
+void i_divs(program_context_t*);
+void i_mod(program_context_t*);
 
 
 // BASIC_OPERATIONS_HEADER

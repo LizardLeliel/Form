@@ -149,6 +149,7 @@ void endFunction(program_build_t* programBuild)
 }
 
 
+
 program_context_t returnProgram(program_build_t* programBuild)
 {
     // Build program.
@@ -156,7 +157,7 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.functionStack.depth = 0;
 
     // Create a function array
-    program.functions = malloc(sizeof(instruction_t*) 
+    program.code = malloc(sizeof(instruction_t*) 
                                * programBuild->functionAmmount);
 
     int i = 0;
@@ -164,13 +165,14 @@ program_context_t returnProgram(program_build_t* programBuild)
 
     while (tracer != NULL)
     {
-        program.functions[i] = tracer->head;
+        program.code[i] = tracer->head;
         ++i;
         tracer = tracer->next;
     }
 
     return program;
 }
+
 
 
 // The algorithm used is a variation of the sdbm algoritn

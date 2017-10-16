@@ -7,15 +7,7 @@
 #include <stdint.h>
 
 
-// Stack starts initialized with a null node
-stack_t _bottom =
-{
-    f_nil,
-    NULL,
-    NULL,
-};
 
-stack_t* STACK;
 
 /* Set STACK to initialy point to bottom (note; I couldn't find a
  *  way to statically set STACK to point to _bottom; & is a runtime
@@ -23,35 +15,36 @@ stack_t* STACK;
  */
 void stackIni() 
 {
-    STACK = &_bottom;
+    //STACK = &_bottom;
 }
 
-void shouldNotBeBottom() 
+void shouldNotBeBottom(stack_t** dataStack) 
 {
     // Try changing later. Make better warning error for user
-    if (STACK->next == NULL) perror("Stack underflow");
+    if ((*dataStack)->next == NULL) perror("Stack underflow");
 }
 
 // Pushes data onto the stack.
 // Can we change it so all data isn't 32-bit?
-void pushStack(data_type_t dataType, void* data) 
+void pushStack(stack_t** dataStack, data_type_t dataType, void* data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
     newNode->data    = malloc(32);
+
     memcpy(newNode->data, data, 32);
 
     newNode->type    = dataType;
-    newNode->next    = STACK;
-    STACK            = newNode;
+    newNode->next    = *dataStack;
+    *dataStack       = newNode;
 
 }
 
 // Pops data and frees it
-void dropStack() {
-    shouldNotBeBottom();
+void dropStack(stack_t** dataStack) {
+    shouldNotBeBottom(dataStack);
 
-    stack_t* oldNode = STACK;
-    STACK            = STACK->next;
+    stack_t* oldNode = *dataStack;
+    *dataStack        = (*dataStack)->next;
     free(oldNode->data); // ?
     free(oldNode);
 }
@@ -61,27 +54,27 @@ void dropStack() {
 //  with it, then returns that value.
 // Wait, it pops a value of size 32 when we store it as
 //  a void pointer?
-size32_t popStack(data_type_t* outType) 
+size32_t popStack(stack_t** dataStack, data_type_t* outType) 
 {
-    shouldNotBeBottom();
+    shouldNotBeBottom(dataStack);
 
-    if (outType != NULL) *outType = STACK->type;
+    if (outType != NULL) *outType = (*dataStack)->type;
 
-    size32_t returnVal = *(size32_t*)STACK->data;
-    stack_t* freeNode  = STACK;
+    size32_t returnVal = *(size32_t*)(*dataStack)->data;
+    stack_t* freeNode  = (*dataStack);
 
-    STACK = STACK->next;
+    *dataStack = (*dataStack)->next;
 
     free(freeNode->data);
     free(freeNode);
     return returnVal;
 }
 
-data_t popData()
+data_t popData(stack_t** dataStack)
 {
-    shouldNotBeBottom();
+    shouldNotBeBottom(dataStack);
     data_type_t outType;
-    size32_t data = popStack(&outType);
+    size32_t data = popStack(dataStack, &outType);
 
     data_t returnStruct 
         = {.dataType = outType, .data = data};
@@ -90,16 +83,9 @@ data_t popData()
 
 
 
-// A pointer of the current instruction being executed
-instruction_t* CURRENT_INSTRUCTION;
-function_stack_t FUNCTION_STACK;
-
-// Refactor this into a not-global-variable.
-program_context_t* GLOBAL_CONTEXT;
-
 // This is an array of function pointers. These functions
 //  are called during runtime.
-void (*EXEC_INSTRUCTION[instruction_ammount])()=
+void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*)=
 {
     i_nop, // No operation
 
@@ -162,50 +148,52 @@ void (*EXEC_INSTRUCTION[instruction_ammount])()=
 //  are called during runtime.
 void (*EXEC_INSTRUCTION[instruction_ammount])();
 
-void pushFunction(instruction_t* returnInstruction)
+void pushFunction(function_stack_t* function_stack, 
+                  instruction_t* returnInstruction)
 {
-    if (FUNCTION_STACK.head == NULL)
+    if (function_stack->head == NULL)
     {
-        FUNCTION_STACK.head = malloc(sizeof(function_stack_node_t));
-        FUNCTION_STACK.head->next = NULL;
-        FUNCTION_STACK.head->returnInstruction = returnInstruction;
-        ++FUNCTION_STACK.depth;
+        function_stack->head = malloc(sizeof(function_stack_node_t));
+        function_stack->head->next = NULL;
+        function_stack->head->returnInstruction = returnInstruction;
+        ++(function_stack->depth);
     }
     else
     {
         function_stack_node_t* newFunction = malloc(sizeof(function_stack_t));
-        newFunction->next                  = FUNCTION_STACK.head;
+        newFunction->next                  = function_stack->head;
         newFunction->returnInstruction     = returnInstruction;
-        FUNCTION_STACK.head                = newFunction;
+        function_stack->head               = newFunction;
     }
 }
 
-void returnFromFunction()
+void returnFromFunction(program_context_t* program)
 {
-    if (FUNCTION_STACK.head == NULL)
+    if (program->functionStack.head == NULL)
     {
         perror("Function stack underflow");
     }
-    CURRENT_INSTRUCTION = FUNCTION_STACK.head->returnInstruction;
+    program->currentInstruction 
+        = program->functionStack.head->returnInstruction;
 
-    function_stack_node_t* freeThis = FUNCTION_STACK.head;
-    FUNCTION_STACK.head = FUNCTION_STACK.head->next;
-    --FUNCTION_STACK.depth;
+    function_stack_node_t* freeThis = program->functionStack.head;
+    program->functionStack.head      = program->functionStack.head->next;
+    --program->functionStack.depth;
     free(freeThis);
     return;
 }
 
 
-void i_lessthen()
+void i_lessthen(program_context_t* program)
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data < operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
@@ -213,38 +201,42 @@ void i_lessthen()
             = interpretAsFloat(operandA.data)
             < interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
     }
 }
 
-void i_push()
+void i_push(program_context_t* program)
 {
-    data_type_t type = ((data_type_t*)CURRENT_INSTRUCTION->args)[0];
+    data_type_t type = ((data_type_t*)program->currentInstruction->args)[0];
 
-    pushStack(type, CURRENT_INSTRUCTION->args + sizeof(data_type_t));
+    pushStack(&(program->dataStack), 
+              type, 
+              program->currentInstruction->args + sizeof(data_type_t));
 
     // Arg 1: type
     // Arg 2: data
 }
 
-void i_call()
+void i_call(program_context_t* program)
 {
-    unsigned int functionIndex = *(unsigned int*)CURRENT_INSTRUCTION->args;
+    unsigned int functionIndex 
+        = *(unsigned int*)program->currentInstruction->args;
 
-    pushFunction(CURRENT_INSTRUCTION);
+    pushFunction(&(program->functionStack), program->currentInstruction);
 
-    CURRENT_INSTRUCTION = GLOBAL_CONTEXT->functions[functionIndex];
+    program->currentInstruction 
+        = program->code[functionIndex];
 }
 
-void i_returns()
+void i_returns(program_context_t* program)
 {
-    returnFromFunction();
+    returnFromFunction(program);
     return;
 }
 
-void i_print()
+void i_print(program_context_t* program)
 {
-    data_t value = popData();
+    data_t value = popData(&(program->dataStack));
 
     if (value.dataType & f_32float)
     {
@@ -299,15 +291,25 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 void execute(program_context_t program)
 {   
     // Refactor into function?
-    FUNCTION_STACK.depth = 0;
-    FUNCTION_STACK.head = NULL;
+    program.functionStack.depth = 0;
+    program.functionStack.head  = NULL;
 
-    GLOBAL_CONTEXT = &program;
-
-    CURRENT_INSTRUCTION = program.functions[0];
-    while (CURRENT_INSTRUCTION != NULL)
+    // Stack starts initialized with a null node
+    stack_t _bottom =
     {
-        EXEC_INSTRUCTION[CURRENT_INSTRUCTION->instruction]();
-        CURRENT_INSTRUCTION = CURRENT_INSTRUCTION->next;
+        f_nil,
+        NULL,
+        NULL,
+    };
+
+    //GLOBAL_CONTEXT = &program;
+    program.dataStack = &_bottom;
+
+    program.currentInstruction = program.code[0];
+
+    while (program.currentInstruction != NULL)
+    {
+        EXEC_INSTRUCTION[program.currentInstruction->instruction](&program);
+        program.currentInstruction = program.currentInstruction->next;
     }
 }

@@ -4,11 +4,6 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-
-#include "basicOperations.h"
-
-
-
 typedef unsigned char byte;
 typedef int32_t size32_t;
 
@@ -110,7 +105,6 @@ typedef struct stack
     data_type_t type;
     void* data;
     struct stack* next;
-
 } stack_t;
 
 // Major to do: get rid of this, make
@@ -146,8 +140,14 @@ typedef struct function_stack
 // This is what's execute
 typedef struct program_context
 {
-    instruction_t** functions; // functions[0] is main
+
+    instruction_t**  code; // code[0] is main
     function_stack_t functionStack;
+    // Later: make a wrapper struct for stack
+    stack_t*         dataStack;
+
+    instruction_t* currentInstruction;
+
 } program_context_t;
 
 // Used for easier implementation of casting.
@@ -159,8 +159,11 @@ typedef union any32
 
 static const unsigned int maxDepth = 50;
 
+#include "basicOperations.h"
+
 // Remove externs sometime - test.h can extern them.
-extern void (*EXEC_INSTRUCTION[instruction_ammount])();
+// Or we can keep it global for now.
+extern void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
 // The actual stack that is used by the language
 //  Extern'd so it can be used by test.c
@@ -172,34 +175,35 @@ void stackIni();
 //void freeStack();
 
 // Raise error if at bottom of stack
-void shouldNotBeBottom();
+void shouldNotBeBottom(stack_t** dataStack);
 
 // Push and pop things on the stack 
-void pushStack(data_type_t dataType, void* data);
-void dropStack();
-size32_t popStack(data_type_t* outType);
+void pushStack(stack_t** dataStack, data_type_t dataType, void* data);
+void dropStack(stack_t** dataStack);
+size32_t popStack(stack_t** dataStack, data_type_t* outType);
 
 // Inline this?
 data_t popData();
 
 
-void pushFunction(instruction_t* returnInstruction);
-void returnFromFunction();
+void pushFunction(function_stack_t* functionStack,
+                  instruction_t* returnInstruction);
+void returnFromFunction(program_context_t* program);
 
 
 // Instruction Functions 
 // Commented out instructions are still here to keep the ordering
-// void i_nop();
-// void i_add();
-// void i_sub();
-// void i_mul();
-// void i_divs();
-// void i_mod();
-void i_lessthen();
-void i_push();
-void i_call();
-void i_returns();
-void i_print();
+// void i_nop(program_context_t*);
+// void i_add(program_context_t*);
+// void i_sub(program_context_t*);
+// void i_mul(program_context_t*);
+// void i_divs(program_context_t*);
+// void i_mod(program_context_t*);
+void i_lessthen(program_context_t*);
+void i_push(program_context_t*);
+void i_call(program_context_t*);
+void i_returns(program_context_t*);
+void i_print(program_context_t*);
  
 size32_t interpretAsInt(float value);
 float interpretAsFloat(size32_t operandValue);

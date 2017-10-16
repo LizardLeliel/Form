@@ -10,22 +10,22 @@
 extern instruction_t* CURRENT_INSTRUCTION;
 
 // No operation
-void i_nop() 
+void i_nop(program_context_t* program) 
 {
     return;
 }
 
-void i_add() 
+void i_add(program_context_t* program) 
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
 
     if (type == f_32int)
     {
         evaluation = operandA.data + operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
@@ -34,21 +34,21 @@ void i_add()
             = interpretAsFloat(operandA.data)
             + interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
 
     }
 }
 
-void i_sub()
+void i_sub(program_context_t* program)
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data - operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
@@ -56,20 +56,20 @@ void i_sub()
             = interpretAsFloat(operandA.data)
             - interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
 
     }
 }
-void i_mul()
+void i_mul(program_context_t* program)
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data * operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
@@ -77,16 +77,16 @@ void i_mul()
             = interpretAsFloat(operandA.data)
             * interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
 
     }
 }
 
-void i_divs()
+void i_divs(program_context_t* program)
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
@@ -95,7 +95,7 @@ void i_divs()
             perror("Division by zero");
         }
         evaluation = operandA.data / operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
@@ -107,15 +107,15 @@ void i_divs()
             = interpretAsFloat(operandA.data)
             / interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
 }
 
-void i_mod()
+void i_mod(program_context_t* program)
 {
     size32_t evaluation;
-    data_t operandB = popData();
-    data_t operandA = popData();
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
@@ -124,7 +124,7 @@ void i_mod()
             perror("Division by zero");
         }
         evaluation = operandA.data % operandB.data;
-        pushStack(type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
     }
     else if (type == f_32float)
     {
