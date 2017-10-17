@@ -58,9 +58,9 @@ typedef enum intsruction_set
 
     // Standard comparison operations
     lessthen,
-    lessthaneq,
-    morethan,
-    morethaneq,
+    lesstheneq,
+    greaterthen,
+    greatertheneq,
     eq,
     ineq,
 
@@ -201,7 +201,8 @@ void returnFromFunction(program_context_t* program);
 // void i_mul(program_context_t*);
 // void i_divs(program_context_t*);
 // void i_mod(program_context_t*);
-void i_lessthen(program_context_t*);
+// void i_lessthen(program_context_t*);
+
 void i_push(program_context_t*);
 void i_call(program_context_t*);
 void i_returns(program_context_t*);

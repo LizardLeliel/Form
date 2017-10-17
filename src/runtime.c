@@ -97,9 +97,9 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     // Standard comparison operations
     i_lessthen,
     i_nop,
+    i_greaterthen,
     i_nop,
-    i_nop,
-    i_nop,
+    i_eq,
     i_nop,
 
     // Boolean logic operations
@@ -168,28 +168,6 @@ void returnFromFunction(program_context_t* program)
     --program->functionStack.depth;
     free(freeThis);
     return;
-}
-
-// Move this to basicOPerations.c
-void i_lessthen(program_context_t* program)
-{
-    size32_t evaluation;
-    data_t operandB = popData(&(program->dataStack));
-    data_t operandA = popData(&(program->dataStack));
-    data_type_t type = prepareOperands(&operandA, &operandB);
-    if (type == f_32int)
-    {
-        evaluation = operandA.data < operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
-    }
-    else if (type == f_32float)
-    {
-        size32_t value 
-            = interpretAsFloat(operandA.data)
-            < interpretAsFloat(operandB.data);
-        evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
-    }
 }
 
 void i_push(program_context_t* program)

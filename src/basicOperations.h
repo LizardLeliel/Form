@@ -9,7 +9,9 @@ void i_sub(program_context_t*);
 void i_mul(program_context_t*);
 void i_divs(program_context_t*);
 void i_mod(program_context_t*);
-
+void i_lessthen(program_context_t*);
+void i_greaterthen(program_context_t*);
+void i_eq(program_context_t*);
 
 // BASIC_OPERATIONS_HEADER
 #endif

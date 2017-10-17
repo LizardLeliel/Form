@@ -131,3 +131,68 @@ void i_mod(program_context_t* program)
         perror("Moding a float");
     }
 }
+
+// Move this to basicOPerations.c
+void i_lessthen(program_context_t* program)
+{
+    size32_t evaluation;
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
+    data_type_t type = prepareOperands(&operandA, &operandB);
+    if (type == f_32int)
+    {
+        evaluation = operandA.data < operandB.data;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+    else if (type == f_32float)
+    {
+        size32_t value 
+            = interpretAsFloat(operandA.data)
+            < interpretAsFloat(operandB.data);
+        evaluation = value;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+}
+
+// Move this to basicOPerations.c
+void i_greaterthen(program_context_t* program)
+{
+    size32_t evaluation;
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
+    data_type_t type = prepareOperands(&operandA, &operandB);
+    if (type == f_32int)
+    {
+        evaluation = operandA.data > operandB.data;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+    else if (type == f_32float)
+    {
+        size32_t value 
+            = interpretAsFloat(operandA.data)
+            > interpretAsFloat(operandB.data);
+        evaluation = value;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+}
+
+void i_eq(program_context_t* program)
+{
+    size32_t evaluation;
+    data_t operandB = popData(&(program->dataStack));
+    data_t operandA = popData(&(program->dataStack));
+    data_type_t type = prepareOperands(&operandA, &operandB);
+    if (type == f_32int)
+    {
+        evaluation = operandA.data > operandB.data;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+    else if (type == f_32float)
+    {
+        size32_t value 
+            = interpretAsFloat(operandA.data)
+            > interpretAsFloat(operandB.data);
+        evaluation = value;
+        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+    }
+}

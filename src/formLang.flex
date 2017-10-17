@@ -90,6 +90,15 @@ OP              [+-*/]
 "%"{WS}+                {
                         appendInstruction(&programBuild, mod, 0, NULL);
                         }
+"<"{WS}+                {
+                        appendInstruction(&programBuild, lessthen, 0, NULL);
+                        }
+">"{WS}+                {
+                        appendInstruction(&programBuild, greaterthen, 0, NULL);
+                        }
+"=="{WS}+               {
+                        appendInstruction(&programBuild, eq, 0, NULL);
+                        }
 {VAR}{WS}+              {
                         //int32_t = *(int32_t*)&strtof(yytext);
                         //pushStack(f_32float, &n);
