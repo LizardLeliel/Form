@@ -18,7 +18,7 @@ program_build_t programBuild;
 NUM             [0-9]
 UINT            {NUM}+
 INT             "-"?{UINT}
-WS              [ \n\t\<<EOF>>]
+WS              [ \n\t]
 CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
 ID              {CHARR}{ALPHNUM}*
@@ -26,10 +26,10 @@ VAR             "."{ID}
 FUNCTION        {ID}
 FUNCTIONBEGIN   ":"{ID}
 FUNCTIONEND     ";"
-OP              [+-*/]
 PRINT           "PRINT"
 BOOLTRUE        "TRUE"
 BOOLFALSE       "FALSE"
+OP              [+-*/]
 
 %%
 
@@ -37,7 +37,28 @@ BOOLFALSE       "FALSE"
                         appendInstruction(&programBuild, print, 0, NULL);
                         }
 {BOOLTRUE}{WS}+         {
+                        struct
+                        {
+                            data_type_t dt;
+                            int32_t dn;
+                        } data;
 
+                        data.dt = f_bool;
+                        data.dn = 1;
+
+                        appendInstruction(&programBuild, push, sizeof data, &data);
+                        }
+{BOOLFALSE}{WS}+        {
+                        struct
+                        {
+                            data_type_t dt;
+                            int32_t dn;
+                        } data;
+
+                        data.dt = f_bool;
+                        data.dn = 0;
+
+                        appendInstruction(&programBuild, push, sizeof data, &data);
                         }
 {INT}{WS}+              {
                         int32_t n = atoi(yytext);

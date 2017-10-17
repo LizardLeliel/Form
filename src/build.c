@@ -163,6 +163,7 @@ program_context_t returnProgram(program_build_t* programBuild)
     int i = 0;
     function_header_t* tracer = programBuild->programTop;
 
+    // Valgrind doesn't like us using pointer arthmetic. 
     while (tracer != NULL)
     {
         program.code[i] = tracer->head;

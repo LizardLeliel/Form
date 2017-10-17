@@ -18,9 +18,9 @@ void shouldNotBeBottom(stack_t** dataStack)
 void pushStack(stack_t** dataStack, data_type_t dataType, void* data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
-    newNode->data    = malloc(32);
+    newNode->data    = malloc(4);
 
-    memcpy(newNode->data, data, 32);
+    memcpy(newNode->data, data, 4);
 
     newNode->type    = dataType;
     newNode->next    = *dataStack;
@@ -199,7 +199,6 @@ void i_push(program_context_t* program)
     pushStack(&(program->dataStack), 
               type, 
               program->currentInstruction->args + sizeof(data_type_t));
-
     // Arg 1: type
     // Arg 2: data
 }
@@ -232,6 +231,17 @@ void i_print(program_context_t* program)
     else if (value.dataType & f_32int)
     {
         printf("%d\n", value.data);
+    }
+    else if (value.dataType & f_bool)
+    {
+        if (value.data == 0)
+        {
+            printf("False\n");
+        }
+        else
+        {
+            printf("True\n");
+        }
     }
 }
 
