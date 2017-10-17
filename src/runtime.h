@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+// Typedefs
 typedef unsigned char byte;
 typedef int32_t size32_t;
 
 /* An enumeration of run-time data types. All data types in Form should
  *  be 32 bits (even char; although strings will be treated like a special
- *  array type*/
+ *  array type
+ */
 typedef enum data_type {
     f_nil       = 0x0000,
 
@@ -115,6 +117,9 @@ typedef struct data
     size32_t data;
 } data_t;
 
+// Represents an executable instruction and its args.
+// Todo: move args and instruction into a consistent-sized
+//  struct.
 typedef struct instruction 
 {
     instructionType_t instruction;
@@ -165,29 +170,26 @@ static const unsigned int maxDepth = 50;
 // Or we can keep it global for now.
 extern void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
-// The actual stack that is used by the language
-//  Extern'd so it can be used by test.c
-extern stack_t* STACK;
-//extern stack_t _bottom;
 
-// Must be called for STACK to start pointing at _bottom
-void stackIni();
-//void freeStack();
+// Implement this sometime.
+// void freeStack();
 
 // Raise error if at bottom of stack
 void shouldNotBeBottom(stack_t** dataStack);
 
 // Push and pop things on the stack 
 void pushStack(stack_t** dataStack, data_type_t dataType, void* data);
+// Deletes the top of the stack
 void dropStack(stack_t** dataStack);
+// Pops the stack, returns its value and puts the data type into outType
 size32_t popStack(stack_t** dataStack, data_type_t* outType);
-
-// Inline this?
+// Pops the stack, then puts the data into a data_t data structe
 data_t popData();
 
-
+// Calls a new function
 void pushFunction(function_stack_t* functionStack,
                   instruction_t* returnInstruction);
+// Ends a function
 void returnFromFunction(program_context_t* program);
 
 
@@ -205,8 +207,14 @@ void i_call(program_context_t*);
 void i_returns(program_context_t*);
 void i_print(program_context_t*);
  
+// Reinterpration procedures for arthmetic.
 size32_t interpretAsInt(float value);
 float interpretAsFloat(size32_t operandValue);
+
+// If either operand is a float, converts the other operand to 
+//  a float and returns f_float.
+// Else, if they're both integer types, leave them be and return
+//  f_int
 data_type_t prepareOperands(data_t* operandA, data_t* operandB);
 
 // Execute a chain of instructions

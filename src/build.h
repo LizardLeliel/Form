@@ -44,10 +44,12 @@ typedef struct hash_bucket_list
 } hash_bucket_list_t;
 
 
-// A structur suitable for storing
+// A structur suitable for storing values related to
+//  different tokens
 typedef struct token_hash
 {  
     hash_bucket_t** hash;
+    // Move typeCount out?
     unsigned int typeCount[h_gotoMemory+1];
     hash_bucket_list_t cleanupList;
 } token_hash_t;
@@ -60,6 +62,8 @@ typedef struct function_header
 } function_header_t;
 
 
+// A struct meant to represent code before
+//  its converted to a bytecode array.
 typedef struct program_build
 {
     // The hash

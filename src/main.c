@@ -15,9 +15,6 @@ int main(int argc, char** argv)
 {
     printf("Hello world!\n");
 
-    stackIni();
-    //instructionIni();
-    //hashIni();
 
     //printf("Testing testx: %d", returnTestX());
 //#define test

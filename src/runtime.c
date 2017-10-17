@@ -7,17 +7,6 @@
 #include <stdint.h>
 
 
-
-
-/* Set STACK to initialy point to bottom (note; I couldn't find a
- *  way to statically set STACK to point to _bottom; & is a runtime
- *  operator, and the value of &_bottom isn't known at compile time
- */
-void stackIni() 
-{
-    //STACK = &_bottom;
-}
-
 void shouldNotBeBottom(stack_t** dataStack) 
 {
     // Try changing later. Make better warning error for user
@@ -70,6 +59,7 @@ size32_t popStack(stack_t** dataStack, data_type_t* outType)
     return returnVal;
 }
 
+// Like popStack, but puts the data into a data_t struct.
 data_t popData(stack_t** dataStack)
 {
     shouldNotBeBottom(dataStack);
@@ -85,7 +75,7 @@ data_t popData(stack_t** dataStack)
 
 // This is an array of function pointers. These functions
 //  are called during runtime.
-void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*)=
+void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
 {
     i_nop, // No operation
 
@@ -144,9 +134,6 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*)=
     i_nop
 };
 
-// This is an array of function pointers. These functions
-//  are called during runtime.
-void (*EXEC_INSTRUCTION[instruction_ammount])();
 
 void pushFunction(function_stack_t* function_stack, 
                   instruction_t* returnInstruction)
@@ -183,7 +170,7 @@ void returnFromFunction(program_context_t* program)
     return;
 }
 
-
+// Move this to basicOPerations.c
 void i_lessthen(program_context_t* program)
 {
     size32_t evaluation;
@@ -295,16 +282,14 @@ void execute(program_context_t program)
     program.functionStack.head  = NULL;
 
     // Stack starts initialized with a null node
-    stack_t _bottom =
+    stack_t bottom =
     {
         f_nil,
         NULL,
         NULL,
     };
 
-    //GLOBAL_CONTEXT = &program;
-    program.dataStack = &_bottom;
-
+    program.dataStack = &bottom;
     program.currentInstruction = program.code[0];
 
     while (program.currentInstruction != NULL)
