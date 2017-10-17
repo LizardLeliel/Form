@@ -96,11 +96,11 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
 
     // Standard comparison operations
     i_lessthen,
-    i_nop,
+    i_lesstheneq,
     i_greaterthen,
-    i_nop,
+    i_greatertheneq,
     i_eq,
-    i_nop,
+    i_ineq,
 
     // Boolean logic operations
     i_nop,

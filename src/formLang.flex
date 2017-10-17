@@ -93,11 +93,20 @@ OP              [+-*/]
 "<"{WS}+                {
                         appendInstruction(&programBuild, lessthen, 0, NULL);
                         }
+"<="{WS}+               {
+                        appendInstruction(&programBuild, lesstheneq, 0, NULL);
+                        }
 ">"{WS}+                {
                         appendInstruction(&programBuild, greaterthen, 0, NULL);
                         }
+">="{WS}+               {
+                        appendInstruction(&programBuild, greatertheneq, 0, NULL);
+                        }
 "=="{WS}+               {
                         appendInstruction(&programBuild, eq, 0, NULL);
+                        }
+"!="{WS}+               {
+                        appendInstruction(&programBuild, ineq, 0, NULL);
                         }
 {VAR}{WS}+              {
                         //int32_t = *(int32_t*)&strtof(yytext);
