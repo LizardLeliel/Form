@@ -92,6 +92,7 @@ void appendInstruction(program_build_t* programBuild,
                        size_t argSize, 
                        void* args) 
 {
+
     instruction_t* newInstructNode = malloc(sizeof(instruction_t));
     newInstructNode->instruction   = newInstruct;
     newInstructNode->argSize       = argSize; // In bytes

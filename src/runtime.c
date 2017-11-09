@@ -10,7 +10,7 @@
 void shouldNotBeBottom(stack_t** dataStack) 
 {
     // Try changing later. Make better warning error for user
-    if ((*dataStack)->next == NULL) perror("Stack underflow");
+    if ((*dataStack)->next == NULL) puts("Stack underflow");
 }
 
 // Pushes data onto the stack.
@@ -18,9 +18,10 @@ void shouldNotBeBottom(stack_t** dataStack)
 void pushStack(stack_t** dataStack, data_type_t dataType, void* data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
-    newNode->data    = malloc(4);
-
-    memcpy(newNode->data, data, 4);
+    // definitly get rid of these magic numbers
+    
+    newNode->data    = malloc(8);
+    memcpy(newNode->data, data, 8);
 
     newNode->type    = dataType;
     newNode->next    = *dataStack;
@@ -33,7 +34,7 @@ void dropStack(stack_t** dataStack) {
     shouldNotBeBottom(dataStack);
 
     stack_t* oldNode = *dataStack;
-    *dataStack        = (*dataStack)->next;
+    *dataStack       = (*dataStack)->next;
     free(oldNode->data); // ?
     free(oldNode);
 }
@@ -198,8 +199,22 @@ void i_returns(program_context_t* program)
     return;
 }
 
+// Please fix how strings work and how printing works,
+//  I'm just hacking it in for now.
 void i_print(program_context_t* program)
 {
+    // Delete this later
+    shouldNotBeBottom(&(program->dataStack));
+    if (program->dataStack->type & f_string)
+    {
+        //printf("String location: %p\n", program->dataStack->data);
+        puts((char*)program->dataStack->data);
+        //data_type_t throwAway;
+        //popStack(&(program->dataStack), &throwAway);
+        dropStack(&(program->dataStack));
+        return;
+    }
+
     data_t value = popData(&(program->dataStack));
 
     if (value.dataType & f_32float)
@@ -221,6 +236,7 @@ void i_print(program_context_t* program)
             printf("True\n");
         }
     }
+    
 }
 
 size32_t interpretAsInt(float value)

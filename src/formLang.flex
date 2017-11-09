@@ -26,6 +26,7 @@ VAR             "."{ID}
 FUNCTION        {ID}
 FUNCTIONBEGIN   ":"{ID}
 FUNCTIONEND     ";"
+STRING          \"(\\.|[^\\"])*\"
 PRINT           "PRINT"
 BOOLTRUE        "TRUE"
 BOOLFALSE       "FALSE"
@@ -75,6 +76,22 @@ OP              [+-*/]
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
                         }
+{STRING}{WS}+           {
+                        char* trimmed = trim(yytext);
+                        //printf("Found string: %p: %s\n", trimmed, trimmed);
+                        
+                        struct {
+                            data_type_t dt;
+                            char* dn;
+                        } data;
+
+                        data.dt = f_string;
+                        data.dn = trimmed;
+
+                        appendInstruction(&programBuild, push,
+                                          sizeof data, &data)
+;
+                        }
 "+"{WS}+                {
                         appendInstruction(&programBuild, add, 0, NULL);
                         }
@@ -119,6 +136,7 @@ OP              [+-*/]
                         //printf("Trimmed Token: %s\n", trimmed);
                         // Allow ambigious functions _for now_
                         
+
                         getHashID(&(programBuild.tokenHash),
                                   h_functionName, 
                                   strlen(trimmed + 1), 

@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+//
+// BIG TODO: CHANGE POP DATA TO BE SIZE INDEPENDENT
+// Compiling can still be size agnostic - 32 bit int
+//  which is an index of where we're saving all our strings.
+//
+
 // Typedefs
 typedef unsigned char byte;
 typedef int32_t size32_t;
