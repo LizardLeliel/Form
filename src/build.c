@@ -13,6 +13,7 @@ program_build_t prepareBuild()
 
     // Initalize the hash
     programBuild.tokenHash          = makeTokenHash();
+    programBuild.constantDataList   = makeConstantDataList();
 
     // Intialize the pointers
     programBuild.programTop         = malloc(sizeof(function_header_t));
@@ -58,6 +59,16 @@ token_hash_t makeTokenHash()
     return tokenHash;
 }
 
+constant_data_list_t makeConstantDataList()
+{
+    constant_data_list_t constantDataList;
+
+    constantDataList.top   = NULL;
+    constantDataList.depth = 0;
+
+    return constantDataList;
+}
+
 void freeHash(token_hash_t* tokenHash)
 {
     hash_bucket_list_node_t* tracer;
@@ -73,6 +84,133 @@ void freeHash(token_hash_t* tokenHash)
         free(toFree);
     }
     free(tokenHash->hash);
+}
+
+// The algorithm used is a variation of the sdbm algoritn
+//  (http://www.cse.yorku.ca/~oz/hash.html)
+unsigned long hashFunction(size_t wordLength, const char* symbol) 
+{
+    unsigned long hashed_value = 0;
+    int c = 0;
+
+    do 
+    {
+        hashed_value = symbol[c] + (hashed_value << 6) 
+                     + (hashed_value << 16) - hashed_value;
+    } while (++c < wordLength);
+
+    return hashed_value;
+}
+
+
+unsigned int getHashID(token_hash_t* tokenHash,
+                       hashType_t toHashType, 
+                       size_t symbolSize,
+                       const char* symbolName) 
+{
+
+    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
+
+    // If hash entry is empty, set a new one
+    // To do: make a function for creating hash entries
+    if (tokenHash->hash[index] == NULL) 
+    {
+        (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
+
+        // Set values
+        (tokenHash->hash[index])->hashedType  = toHashType;
+        (tokenHash->hash[index])->contents.ID = ++(tokenHash->typeCount[toHashType]);
+        (tokenHash->hash[index])->next        = NULL;
+
+        (tokenHash->hash[index])->symbol
+            = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+        pushToList(tokenHash, tokenHash->hash[index]);
+
+        return tokenHash->typeCount[toHashType];
+    }
+
+    // Else, check each node in list to see if symbol already exists. Start
+    //  with a dummy list node (Is there a simplier way to do this?)
+    hash_bucket_t  dummy;
+    hash_bucket_t* tracer = &dummy;
+
+    tracer->next = tokenHash->hash[index];
+
+    do 
+    {
+        tracer = tracer->next;
+        // If the words are the same length and are the same
+        if (tracer->symbolLength != symbolSize) 
+        {
+            if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
+            {
+                return tracer->contents.ID;
+            }
+        }
+
+    } while (tracer->next != NULL);
+
+
+    // If trace->next == null, then we need to make a new hash entry
+    //  (because one does not exist)
+    tracer = tracer->next = malloc(sizeof(hash_bucket_t));
+    tracer->hashedType    = toHashType;
+    tracer->symbolLength  = symbolSize;
+    tracer->contents.ID   = ++tokenHash->typeCount[toHashType];
+
+    tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+    return ++tokenHash->typeCount[toHashType];
+}
+
+// Adds to list of hash buckets (for freeing later)
+void pushToList(token_hash_t* tokenHash,
+                hash_bucket_t* slot)
+{
+    if (tokenHash->cleanupList.top == NULL)
+    {
+        tokenHash->cleanupList.top = malloc(sizeof(hash_bucket_list_node_t));
+
+        tokenHash->cleanupList.top->entry = slot;
+        tokenHash->cleanupList.top->next  = NULL;
+    }
+    else
+    {
+        hash_bucket_list_node_t* newNode 
+            = malloc(sizeof(hash_bucket_list_node_t));
+        newNode->next = tokenHash->cleanupList.top;
+        newNode->entry = slot;
+        tokenHash->cleanupList.top = newNode;
+    }
+}
+
+void pushConstantData(constant_data_list_t* constantDataList,
+                      size_t argSize,
+                      void* data)
+{
+    constant_data_list_node_t* newNode 
+        = malloc(sizeof (constant_data_list_node_t));
+
+    newNode->argSize = argSize;
+    newNode->data    = malloc(argSize);
+    memcpy(newNode->data, data, argSize);
+    newNode->eventualIndex = ++(constantDataList->depth);
+        
+    if (constantDataList->top == NULL)
+    {    
+        constantDataList->top = newNode;
+    }
+    else
+    {
+        newNode->next         = constantDataList->top;
+        constantDataList->top = newNode;       
+    }
+}
+
+unsigned int nextIndex(constant_data_list_t* constantDataList)
+{
+    return constantDataList->depth + 1;
 }
 
 // Returns a dummy instruction
@@ -173,107 +311,6 @@ program_context_t returnProgram(program_build_t* programBuild)
     }
 
     return program;
-}
-
-
-
-// The algorithm used is a variation of the sdbm algoritn
-//  (http://www.cse.yorku.ca/~oz/hash.html)
-unsigned long hashFunction(size_t wordLength, const char* symbol) 
-{
-    unsigned long hashed_value = 0;
-    int c = 0;
-
-    do 
-    {
-        hashed_value = symbol[c] + (hashed_value << 6) 
-                     + (hashed_value << 16) - hashed_value;
-    } while (++c < wordLength);
-
-    return hashed_value;
-}
-
-
-unsigned int getHashID(token_hash_t* tokenHash,
-                       hashType_t toHashType, 
-                       size_t symbolSize,
-                       const char* symbolName) 
-{
-
-    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
-
-    // If hash entry is empty, set a new one
-    // To do: make a function for creating hash entries
-    if (tokenHash->hash[index] == NULL) 
-    {
-        (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
-
-        // Set values
-        (tokenHash->hash[index])->hashedType  = toHashType;
-        (tokenHash->hash[index])->contents.ID = ++(tokenHash->typeCount[toHashType]);
-        (tokenHash->hash[index])->next        = NULL;
-
-        (tokenHash->hash[index])->symbol
-            = memcpy(malloc(symbolSize), symbolName, symbolSize);
-
-        pushToList(tokenHash, tokenHash->hash[index]);
-
-        return tokenHash->typeCount[toHashType];
-    }
-
-    // Else, check each node in list to see if symbol already exists. Start
-    //  with a dummy list node (Is there a simplier way to do this?)
-    hash_bucket_t  dummy;
-    hash_bucket_t* tracer = &dummy;
-
-    tracer->next = tokenHash->hash[index];
-
-    do 
-    {
-        tracer = tracer->next;
-        // If the words are the same length and are the same
-        if (tracer->symbolLength != symbolSize) 
-        {
-            if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
-            {
-                return tracer->contents.ID;
-            }
-        }
-
-    } while (tracer->next != NULL);
-
-
-    // If trace->next == null, then we need to make a new hash entry
-    //  (because one does not exist)
-    tracer = tracer->next = malloc(sizeof(hash_bucket_t));
-    tracer->hashedType    = toHashType;
-    tracer->symbolLength  = symbolSize;
-    tracer->contents.ID   = ++tokenHash->typeCount[toHashType];
-
-    tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
-
-    return ++tokenHash->typeCount[toHashType];
-}
-
-// Adds to list of hash buckets (for freeing later)
-void pushToList(token_hash_t* tokenHash,
-                hash_bucket_t* slot)
-{
-    if (tokenHash->cleanupList.top == NULL)
-    {
-        tokenHash->cleanupList.top = malloc(sizeof(hash_bucket_list_node_t));
-
-        tokenHash->cleanupList.top->entry = slot;
-        tokenHash->cleanupList.top->next  = NULL;
-    }
-    else
-    {
-        hash_bucket_list_node_t* newNode 
-            = malloc(sizeof(hash_bucket_list_node_t));
-        newNode->next = tokenHash->cleanupList.top;
-        newNode->entry = slot;
-        tokenHash->cleanupList.top = newNode;
-    }
 }
 
 

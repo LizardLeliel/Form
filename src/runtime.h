@@ -159,6 +159,8 @@ typedef struct program_context
 
     instruction_t* currentInstruction;
 
+    // Static data struct
+
 } program_context_t;
 
 // Used for easier implementation of casting.

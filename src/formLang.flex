@@ -18,7 +18,7 @@ program_build_t programBuild;
 NUM             [0-9]
 UINT            {NUM}+
 INT             "-"?{UINT}
-WS              [ \n\t]
+WS              [ \n\t\r]
 CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
 ID              {CHARR}{ALPHNUM}*
@@ -72,6 +72,8 @@ OP              [+-*/]
                         data.dn = n;
 
                         appendInstruction(&programBuild, push, sizeof data, &data);
+                        pushConstantData(&(programBuild.constantDataList),
+                            sizeof n, &n);
                        
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
