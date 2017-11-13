@@ -67,8 +67,8 @@ typedef struct function_header
 typedef struct constant_data_list_node
 {
     unsigned int eventualIndex;
+    data_type_t type;
     void* data;
-    size_t argSize;
     struct constant_data_list_node* next;
 } constant_data_list_node_t;
 
@@ -80,7 +80,8 @@ typedef struct constant_data_list
 
 
 
-
+// parser
+// tokenizer
 
 // A struct meant to represent code before
 //  its converted to a bytecode array.
@@ -138,8 +139,8 @@ void pushToList(token_hash_t*  tokenHash,
                 hash_bucket_t* slot);
 
 // Push new data to the constant data stack
-void pushConstantData(constant_data_list_t* constantDataList,
-                      size_t argSize,
+int64_t pushConstantData(constant_data_list_t* constantDataList,
+                      data_type_t type,
                       void* data);
 
 unsigned int nextIndex(constant_data_list_t* constantDataList);

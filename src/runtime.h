@@ -48,8 +48,8 @@ typedef enum intsruction_set
     nop = 0,
 
     // Standard arthemtic operations
-    add,
-    sub,
+    add, // 1
+    sub, // 2
     mul,
     divs,
     mod,
@@ -150,18 +150,30 @@ typedef struct function_stack
     unsigned int depth;
 } function_stack_t;
 
+typedef struct static_data
+{
+    data_type_t type;
+    void*       data;
+} static_data_t;
+
+typedef struct static_data_bank
+{
+    static_data_t* dataBank;
+    size_t         size;
+} static_data_bank_t;
+
 // This is what's execute
 typedef struct program_context
 {
 
-    instruction_t**  code; // code[0] is main
-    function_stack_t functionStack;
+    instruction_t**    code; // code[0] is main
+    function_stack_t   functionStack;
+    static_data_bank_t staticDataBank;
+
     // Later: make a wrapper struct for stack
     stack_t*         dataStack;
 
     instruction_t* currentInstruction;
-
-    // Static data struct
 
 } program_context_t;
 

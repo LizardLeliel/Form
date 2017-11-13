@@ -13,7 +13,7 @@ extern program_context_t finishYYLEXBuild();
 
 int main(int argc, char** argv)
 {
-    printf("Hello world!\n");
+    //printf("Hello world!\n");
 
 
     //printf("Testing testx: %d", returnTestX());

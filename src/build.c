@@ -185,18 +185,20 @@ void pushToList(token_hash_t* tokenHash,
     }
 }
 
-void pushConstantData(constant_data_list_t* constantDataList,
-                      size_t argSize,
+int64_t pushConstantData(constant_data_list_t* constantDataList,
+                      data_type_t type,
                       void* data)
 {
+
     constant_data_list_node_t* newNode 
         = malloc(sizeof (constant_data_list_node_t));
 
-    newNode->argSize = argSize;
-    newNode->data    = malloc(argSize);
-    memcpy(newNode->data, data, argSize);
-    newNode->eventualIndex = ++(constantDataList->depth);
+    newNode->type = type;
+    newNode->data = data;
+    newNode->eventualIndex = (constantDataList->depth);
         
+    ++(constantDataList->depth);
+
     if (constantDataList->top == NULL)
     {    
         constantDataList->top = newNode;
@@ -206,7 +208,12 @@ void pushConstantData(constant_data_list_t* constantDataList,
         newNode->next         = constantDataList->top;
         constantDataList->top = newNode;       
     }
+
+    return newNode->eventualIndex;
 }
+
+// 
+// 
 
 unsigned int nextIndex(constant_data_list_t* constantDataList)
 {
@@ -299,6 +306,26 @@ program_context_t returnProgram(program_build_t* programBuild)
         program.code[i] = tracer->head;
         ++i;
         tracer = tracer->next;
+    }
+
+    size_t bankSize = programBuild->constantDataList.depth;
+    program.staticDataBank.size     = bankSize;
+    
+    program.staticDataBank.dataBank = calloc(bankSize, sizeof (static_data_t));
+
+    constant_data_list_node_t* static_data_tracer 
+        = programBuild->constantDataList.top;
+
+    while (static_data_tracer != NULL)
+    {
+
+        program.staticDataBank.dataBank[static_data_tracer->eventualIndex].type
+            = static_data_tracer->type;
+
+        program.staticDataBank.dataBank[static_data_tracer->eventualIndex].data 
+            = static_data_tracer->data;
+
+        static_data_tracer = static_data_tracer->next;
     }
 
     return program;

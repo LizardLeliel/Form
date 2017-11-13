@@ -58,7 +58,7 @@ int64_t popStack(stack_t** dataStack, data_type_t* outType)
     *dataStack = (*dataStack)->next;
 
     //free(freeNode->data);
-    free(freeNode);
+    //free(freeNode); <- This crashes strings (?!?)
     return returnVal;
 }
 
@@ -208,15 +208,6 @@ void i_print(program_context_t* program)
 {
     // Delete this later
     shouldNotBeBottom(&(program->dataStack));
-    if (program->dataStack->type & f_string)
-    {
-        //printf("String location: %p\n", program->dataStack->data);
-        puts((char*)program->dataStack->data);
-        //data_type_t throwAway;
-        //popStack(&(program->dataStack), &throwAway);
-        dropStack(&(program->dataStack));
-        return;
-    }
 
     data_t value = popData(&(program->dataStack));
 
@@ -238,6 +229,11 @@ void i_print(program_context_t* program)
         {
             printf("True\n");
         }
+    }
+    else if (value.dataType & f_string)
+    {
+        // unsigned int index = value.data;
+        printf("%s\n", program->staticDataBank.dataBank[value.data].data);
     }
     
 }

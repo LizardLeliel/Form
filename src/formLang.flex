@@ -46,33 +46,26 @@ OP              [+-*/]
 {INT}{WS}+              {
                         int64_t n = atoi(yytext);
 
-                        // struct {
-                        //     data_type_t dt;
-                        //     int64_t dn; 
-                        // } data;
-                        // data.dt = f_32int;
-                        // data.dn = n;
-
                         appendInstruction(&programBuild, push, f_32int, n);
 
                         //pushConstantData(&(programBuild.constantDataList),
                         //    sizeof n, &n);
                        
+
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
                         }
 {STRING}{WS}+           {
                         char* trimmed = trim(yytext);
                         //printf("Found string: %p: %s\n", trimmed, trimmed);
-                        
-                        struct {
-                            data_type_t dt;
-                            char* dn;
-                        } data;
 
-                        data.dt = f_string;
-                        data.dn = trimmed;
+                        //puts("Reaches here");
 
+                        unsigned int index = 
+                            pushConstantData(&(programBuild.constantDataList),
+                                             f_string, trimmed);
+
+                        appendInstruction(&programBuild, push, f_string, index);
                         // appendInstruction(&programBuild, push, &data);
                         }
 "+"{WS}+                {
