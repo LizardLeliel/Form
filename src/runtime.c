@@ -15,13 +15,16 @@ void shouldNotBeBottom(stack_t** dataStack)
 
 // Pushes data onto the stack.
 // Can we change it so all data isn't 32-bit?
-void pushStack(stack_t** dataStack, data_type_t dataType, void* data) 
+void pushStack(stack_t** dataStack, 
+               data_type_t dataType, 
+               int64_t data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
     // definitly get rid of these magic numbers
     
-    newNode->data    = malloc(8);
-    memcpy(newNode->data, data, 8);
+    //newNode->data    = malloc(size);
+    //memcpy(newNode->data, data, size);
+    newNode->data = data;
 
     newNode->type    = dataType;
     newNode->next    = *dataStack;
@@ -35,7 +38,6 @@ void dropStack(stack_t** dataStack) {
 
     stack_t* oldNode = *dataStack;
     *dataStack       = (*dataStack)->next;
-    free(oldNode->data); // ?
     free(oldNode);
 }
 
@@ -44,18 +46,18 @@ void dropStack(stack_t** dataStack) {
 //  with it, then returns that value.
 // Wait, it pops a value of size 32 when we store it as
 //  a void pointer?
-size32_t popStack(stack_t** dataStack, data_type_t* outType) 
+int64_t popStack(stack_t** dataStack, data_type_t* outType) 
 {
     shouldNotBeBottom(dataStack);
 
     if (outType != NULL) *outType = (*dataStack)->type;
 
-    size32_t returnVal = *(size32_t*)(*dataStack)->data;
+    int64_t returnVal = (*dataStack)->data;
     stack_t* freeNode  = (*dataStack);
 
     *dataStack = (*dataStack)->next;
 
-    free(freeNode->data);
+    //free(freeNode->data);
     free(freeNode);
     return returnVal;
 }
@@ -65,7 +67,7 @@ data_t popData(stack_t** dataStack)
 {
     shouldNotBeBottom(dataStack);
     data_type_t outType;
-    size32_t data = popStack(dataStack, &outType);
+    int64_t data = popStack(dataStack, &outType);
 
     data_t returnStruct 
         = {.dataType = outType, .data = data};
@@ -173,11 +175,11 @@ void returnFromFunction(program_context_t* program)
 
 void i_push(program_context_t* program)
 {
-    data_type_t type = ((data_type_t*)program->currentInstruction->args)[0];
+    //data_type_t type = ((data_type_t*)program->currentInstruction->args)[0];
+    data_type_t type = program->currentInstruction->arg1;
+    int64_t     data = program->currentInstruction->arg2;
 
-    pushStack(&(program->dataStack), 
-              type, 
-              program->currentInstruction->args + sizeof(data_type_t));
+    pushStack(&(program->dataStack), type, data);
     // Arg 1: type
     // Arg 2: data
 }
@@ -185,7 +187,8 @@ void i_push(program_context_t* program)
 void i_call(program_context_t* program)
 {
     unsigned int functionIndex 
-        = *(unsigned int*)program->currentInstruction->args;
+        = program->currentInstruction->arg2;
+    //*(unsigned int*)program->currentInstruction->args;
 
     pushFunction(&(program->functionStack), program->currentInstruction);
 
@@ -223,7 +226,7 @@ void i_print(program_context_t* program)
     }
     else if (value.dataType & f_32int)
     {
-        printf("%d\n", value.data);
+        printf("%ld\n", value.data);
     }
     else if (value.dataType & f_bool)
     {
@@ -239,16 +242,16 @@ void i_print(program_context_t* program)
     
 }
 
-size32_t interpretAsInt(float value)
+int64_t interpretAsInt(double value)
 {
-    any32_t result;
+    any64_t result;
     result.as_f = value;
     return result.as_i;
 }
 
-float interpretAsFloat(size32_t operandValue)
+double interpretAsFloat(int64_t operandValue)
 {
-    any32_t value;
+    any64_t value;
     value.as_i = operandValue;       
     return value.as_f;
 }
@@ -264,14 +267,14 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
     else if (operandA->dataType & f_32int)
     {
         // cast it to a float, then reinterpret cast it.
-        any32_t data;
-        data.as_f = (float)operandA->data;
+        any64_t data;
+        data.as_f = (double)operandA->data;
         operandA->data = data.as_i;
     }
     else if (operandB->dataType & f_32int)
     {
-        any32_t data;
-        data.as_f = (float)operandB->data;
+        any64_t data;
+        data.as_f = (double)operandB->data;
         operandB->data = data.as_i;
     }
 
@@ -289,7 +292,7 @@ void execute(program_context_t program)
     stack_t bottom =
     {
         f_nil,
-        NULL,
+        0,
         NULL,
     };
 

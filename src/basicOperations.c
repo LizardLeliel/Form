@@ -17,7 +17,7 @@ void i_nop(program_context_t* program)
 
 void i_add(program_context_t* program) 
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
@@ -25,7 +25,7 @@ void i_add(program_context_t* program)
     if (type == f_32int)
     {
         evaluation = operandA.data + operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
     else if (type == f_32float)
     {
@@ -34,21 +34,21 @@ void i_add(program_context_t* program)
             = interpretAsFloat(operandA.data)
             + interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
 
     }
 }
 
 void i_sub(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data - operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
     else if (type == f_32float)
     {
@@ -56,20 +56,20 @@ void i_sub(program_context_t* program)
             = interpretAsFloat(operandA.data)
             - interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
 
     }
 }
 void i_mul(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data * operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
     else if (type == f_32float)
     {
@@ -77,14 +77,14 @@ void i_mul(program_context_t* program)
             = interpretAsFloat(operandA.data)
             * interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
 
     }
 }
 
 void i_divs(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
@@ -95,7 +95,7 @@ void i_divs(program_context_t* program)
             perror("Division by zero");
         }
         evaluation = operandA.data / operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
     else if (type == f_32float)
     {
@@ -107,13 +107,13 @@ void i_divs(program_context_t* program)
             = interpretAsFloat(operandA.data)
             / interpretAsFloat(operandB.data);
         evaluation = interpretAsInt(value);
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
 }
 
 void i_mod(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
@@ -124,7 +124,7 @@ void i_mod(program_context_t* program)
             perror("Division by zero");
         }
         evaluation = operandA.data % operandB.data;
-        pushStack(&(program->dataStack), type | f_numeric, &evaluation);
+        pushStack(&(program->dataStack), type | f_numeric, evaluation);
     }
     else if (type == f_32float)
     {
@@ -135,128 +135,128 @@ void i_mod(program_context_t* program)
 // Move this to basicOPerations.c
 void i_lessthen(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data < operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             < interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }
 
 // Move this to basicOPerations.c
 void i_lesstheneq(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data <= operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             <= interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }
 
 // Move this to basicOPerations.c
 void i_greaterthen(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data > operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             > interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }
 
 void i_greatertheneq(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data >= operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             >= interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }
 
 void i_eq(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data > operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             > interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }
 
 void i_ineq(program_context_t* program)
 {
-    size32_t evaluation;
+    int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
     data_t operandA = popData(&(program->dataStack));
     data_type_t type = prepareOperands(&operandA, &operandB);
     if (type == f_32int)
     {
         evaluation = operandA.data != operandB.data;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
     else if (type == f_32float)
     {
-        size32_t value 
+        int64_t value 
             = interpretAsFloat(operandA.data)
             != interpretAsFloat(operandB.data);
         evaluation = value;
-        pushStack(&(program->dataStack), f_numeric | f_bool, &evaluation);
+        pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
     }
 }

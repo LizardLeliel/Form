@@ -111,7 +111,7 @@ typedef enum intsruction_set
 typedef struct stack 
 {
     data_type_t type;
-    void* data;
+    int64_t data;
     struct stack* next;
 } stack_t;
 
@@ -120,7 +120,7 @@ typedef struct stack
 typedef struct data
 {
     data_type_t dataType;
-    size32_t data;
+    int64_t data;
 } data_t;
 
 // Represents an executable instruction and its args.
@@ -129,8 +129,10 @@ typedef struct data
 typedef struct instruction 
 {
     instructionType_t instruction;
-    size_t argSize;
-    void* args;
+    //size_t argSize;
+    //void* args;
+    int32_t arg1;
+    int32_t arg2;
     struct instruction* next;
 } instruction_t;
 
@@ -164,11 +166,11 @@ typedef struct program_context
 } program_context_t;
 
 // Used for easier implementation of casting.
-typedef union any32 
+typedef union any64 
 {
-    int32_t as_i;
-    float   as_f;
-} any32_t;
+    int64_t as_i;
+    double  as_f;
+} any64_t;
 
 static const unsigned int maxDepth = 50;
 
@@ -178,7 +180,6 @@ static const unsigned int maxDepth = 50;
 // Or we can keep it global for now.
 extern void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
-
 // Implement this sometime.
 // void freeStack();
 
@@ -186,11 +187,16 @@ extern void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 void shouldNotBeBottom(stack_t** dataStack);
 
 // Push and pop things on the stack 
-void pushStack(stack_t** dataStack, data_type_t dataType, void* data);
+void pushStack(stack_t** dataStack, 
+               data_type_t dataType, 
+               int64_t data);
+
 // Deletes the top of the stack
 void dropStack(stack_t** dataStack);
+
 // Pops the stack, returns its value and puts the data type into outType
-size32_t popStack(stack_t** dataStack, data_type_t* outType);
+int64_t popStack(stack_t** dataStack, data_type_t* outType);
+
 // Pops the stack, then puts the data into a data_t data structe
 data_t popData();
 
@@ -200,25 +206,14 @@ void pushFunction(function_stack_t* functionStack,
 // Ends a function
 void returnFromFunction(program_context_t* program);
 
-
-// Instruction Functions 
-// Commented out instructions are still here to keep the ordering
-// void i_nop(program_context_t*);
-// void i_add(program_context_t*);
-// void i_sub(program_context_t*);
-// void i_mul(program_context_t*);
-// void i_divs(program_context_t*);
-// void i_mod(program_context_t*);
-// void i_lessthen(program_context_t*);
-
 void i_push(program_context_t*);
 void i_call(program_context_t*);
 void i_returns(program_context_t*);
 void i_print(program_context_t*);
  
 // Reinterpration procedures for arthmetic.
-size32_t interpretAsInt(float value);
-float interpretAsFloat(size32_t operandValue);
+int64_t interpretAsInt(double value);
+double interpretAsFloat(int64_t operandValue);
 
 // If either operand is a float, converts the other operand to 
 //  a float and returns f_float.

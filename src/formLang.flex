@@ -35,45 +35,28 @@ OP              [+-*/]
 %%
 
 {PRINT}{WS}+            {
-                        appendInstruction(&programBuild, print, 0, NULL);
+                        appendInstruction(&programBuild, print, 0, 0);
                         }
 {BOOLTRUE}{WS}+         {
-                        struct
-                        {
-                            data_type_t dt;
-                            int32_t dn;
-                        } data;
-
-                        data.dt = f_bool;
-                        data.dn = 1;
-
-                        appendInstruction(&programBuild, push, sizeof data, &data);
+                        appendInstruction(&programBuild, push, f_bool, 1);
                         }
 {BOOLFALSE}{WS}+        {
-                        struct
-                        {
-                            data_type_t dt;
-                            int32_t dn;
-                        } data;
-
-                        data.dt = f_bool;
-                        data.dn = 0;
-
-                        appendInstruction(&programBuild, push, sizeof data, &data);
+                        appendInstruction(&programBuild, push, f_bool, 0);
                         }
 {INT}{WS}+              {
-                        int32_t n = atoi(yytext);
-                        struct {
-                            data_type_t dt;
-                            int32_t dn; 
-                        } data;
+                        int64_t n = atoi(yytext);
 
-                        data.dt = f_32int;
-                        data.dn = n;
+                        // struct {
+                        //     data_type_t dt;
+                        //     int64_t dn; 
+                        // } data;
+                        // data.dt = f_32int;
+                        // data.dn = n;
 
-                        appendInstruction(&programBuild, push, sizeof data, &data);
-                        pushConstantData(&(programBuild.constantDataList),
-                            sizeof n, &n);
+                        appendInstruction(&programBuild, push, f_32int, n);
+
+                        //pushConstantData(&(programBuild.constantDataList),
+                        //    sizeof n, &n);
                        
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
@@ -90,45 +73,43 @@ OP              [+-*/]
                         data.dt = f_string;
                         data.dn = trimmed;
 
-                        appendInstruction(&programBuild, push,
-                                          sizeof data, &data)
-;
+                        // appendInstruction(&programBuild, push, &data);
                         }
 "+"{WS}+                {
-                        appendInstruction(&programBuild, add, 0, NULL);
+                        appendInstruction(&programBuild, add, 0, 0);
                         }
 "-"{WS}+                {
-                        appendInstruction(&programBuild, sub, 0, NULL);
+                        appendInstruction(&programBuild, sub, 0, 0);
                         }  
 "*"{WS}+                {
-                        appendInstruction(&programBuild, mul, 0, NULL);
+                        appendInstruction(&programBuild, mul, 0, 0);
                         }
 "/"{WS}+                {
-                        appendInstruction(&programBuild, divs, 0, NULL);
+                        appendInstruction(&programBuild, divs, 0, 0);
                         }
 "%"{WS}+                {
-                        appendInstruction(&programBuild, mod, 0, NULL);
+                        appendInstruction(&programBuild, mod, 0, 0);
                         }
 "<"{WS}+                {
-                        appendInstruction(&programBuild, lessthen, 0, NULL);
+                        appendInstruction(&programBuild, lessthen, 0, 0);
                         }
 "<="{WS}+               {
-                        appendInstruction(&programBuild, lesstheneq, 0, NULL);
+                        appendInstruction(&programBuild, lesstheneq, 0, 0);
                         }
 ">"{WS}+                {
-                        appendInstruction(&programBuild, greaterthen, 0, NULL);
+                        appendInstruction(&programBuild, greaterthen, 0, 0);
                         }
 ">="{WS}+               {
-                        appendInstruction(&programBuild, greatertheneq, 0, NULL);
+                        appendInstruction(&programBuild, greatertheneq, 0, 0);
                         }
 "=="{WS}+               {
-                        appendInstruction(&programBuild, eq, 0, NULL);
+                        appendInstruction(&programBuild, eq, 0, 0);
                         }
 "!="{WS}+               {
-                        appendInstruction(&programBuild, ineq, 0, NULL);
+                        appendInstruction(&programBuild, ineq, 0, 0);
                         }
 {VAR}{WS}+              {
-                        //int32_t = *(int32_t*)&strtof(yytext);
+                        //int64_t = *(int64_t*)&strtof(yytext);
                         //pushStack(f_32float, &n);
                         printf("Found a var: %s\n", yytext);
                         }
@@ -158,8 +139,8 @@ OP              [+-*/]
 
                         appendInstruction(&programBuild,
                                           call, 
-                                          sizeof(unsigned int),
-                                          &token);
+                                          0,
+                                          token);
                         }
 %%
 

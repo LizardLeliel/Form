@@ -218,36 +218,27 @@ instruction_t* dummyInstruction()
 {
     instruction_t* dummy = malloc(sizeof(instruction_t));
     dummy->instruction   = nop;
-    dummy->argSize       = 0;
-    dummy->args          = NULL;
+    //dummy->argSize       = 0;
+    //dummy->args          = NULL;
+    dummy->arg1          = 0;
+    dummy->arg2          = 0;
     dummy->next          = NULL;
     return dummy;
 }
 
 // Adds a new instruction to end of current instruction sequence.
-void appendInstruction(program_build_t* programBuild,
+void appendInstruction(program_build_t*  programBuild,
                        instructionType_t newInstruct,
-                       size_t argSize, 
-                       void* args) 
+                       int32_t           arg1,
+                       int64_t           arg2)
 {
 
     instruction_t* newInstructNode = malloc(sizeof(instruction_t));
     newInstructNode->instruction   = newInstruct;
-    newInstructNode->argSize       = argSize; // In bytes
+    //newInstructNode->argSize       = argSize; // In bytes
     newInstructNode->next          = NULL;
-
-
-    if (argSize == 0) 
-    {
-        // Make sure that NULL args aren't
-        //  free()'d.
-        newInstructNode->args = NULL; // Copying memory wouldn't be nessecary
-    }
-    else 
-    {
-        newInstructNode->args = malloc(argSize);
-        memcpy(newInstructNode->args, args, argSize);
-    }
+    newInstructNode->arg1          = arg1;
+    newInstructNode->arg2          = arg2;
 
     programBuild->currentInstruction->next = newInstructNode;
     programBuild->currentInstruction       = newInstructNode;

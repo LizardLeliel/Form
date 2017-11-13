@@ -148,10 +148,10 @@ unsigned int nextIndex(constant_data_list_t* constantDataList);
 inline instruction_t* dummyInstruction();
 
 // Adds a new instruction to buildPointers.currentInstruct
-void appendInstruction(program_build_t* programBuild,
+void appendInstruction(program_build_t*  programBuild,
                        instructionType_t newInstruct,
-                       size_t            argSize,
-                       void*             args);
+                       int32_t           arg1,
+                       int64_t           arg2);
 
 
 // Adds a new function header to the end of the function queue.
