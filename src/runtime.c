@@ -245,11 +245,11 @@ int64_t interpretAsInt(double value)
     return result.as_i;
 }
 
-double interpretAsFloat(int64_t operandValue)
+double interpretAsFloat(int64_t value)
 {
-    any64_t value;
-    value.as_i = operandValue;       
-    return value.as_f;
+    any64_t result;
+    result.as_i = value;       
+    return result.as_f;
 }
 
 data_type_t prepareOperands(data_t* operandA, data_t* operandB)

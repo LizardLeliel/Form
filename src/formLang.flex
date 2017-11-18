@@ -7,6 +7,9 @@
 
 #include "build.h"
 
+extern int64_t interpretAsInt(double value);
+extern double interpretAsFloat(int64_t value);
+
 // Utility functions
 bool isWhiteSpace(char c);
 char* trim(char* string);
@@ -20,6 +23,7 @@ program_build_t programBuild;
 NUM             [0-9]
 UINT            {NUM}+
 INT             "-"?{UINT}
+FLOAT           {UINT}"."{UINT}
 WS              [ \t\r\n]
 CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
@@ -47,6 +51,11 @@ OP              [+-*/]
                         }
 {BOOLFALSE}             {
                         appendInstruction(&programBuild, push, f_bool, 0);
+                        }
+{FLOAT}                 {
+                        double number = atof(yytext);
+                        appendInstruction(&programBuild, push, f_32float, 
+                            interpretAsInt(number));
                         }
 {INT}                   {
                         int64_t n = atoi(yytext);

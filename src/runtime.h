@@ -225,7 +225,7 @@ void i_print(program_context_t*);
  
 // Reinterpration procedures for arthmetic.
 int64_t interpretAsInt(double value);
-double interpretAsFloat(int64_t operandValue);
+double interpretAsFloat(int64_t value);
 
 // If either operand is a float, converts the other operand to 
 //  a float and returns f_float.
