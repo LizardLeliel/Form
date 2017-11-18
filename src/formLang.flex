@@ -11,6 +11,7 @@
 bool isWhiteSpace(char c);
 char* trim(char* string);
 char* trimMatchedString(char* string);
+// unsigned int = 0;
 
 // What will be returned
 program_build_t programBuild;
@@ -19,7 +20,7 @@ program_build_t programBuild;
 NUM             [0-9]
 UINT            {NUM}+
 INT             "-"?{UINT}
-WS              [ \n\t\r]
+WS              [ \t\r\n]
 CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
 ID              {CHARR}{ALPHNUM}*
@@ -35,16 +36,19 @@ OP              [+-*/]
 
 %%
 
-{PRINT}{WS}+            {
+{WS}+                   {
+                                   
+                        }
+{PRINT}                 {
                         appendInstruction(&programBuild, print, 0, 0);
                         }
-{BOOLTRUE}{WS}+         {
+{BOOLTRUE}              {
                         appendInstruction(&programBuild, push, f_bool, 1);
                         }
-{BOOLFALSE}{WS}+        {
+{BOOLFALSE}             {
                         appendInstruction(&programBuild, push, f_bool, 0);
                         }
-{INT}{WS}+              {
+{INT}                   {
                         int64_t n = atoi(yytext);
 
                         appendInstruction(&programBuild, push, f_32int, n);
@@ -56,7 +60,7 @@ OP              [+-*/]
                         //pushStack(f_32int, &n);
                         //printf("Found an unsigned: %u\n", n);
                         }
-{STRING}{WS}+           {
+{STRING}                {
                         char* trimmed = trimMatchedString(yytext);
                         //printf("Found string: %p: %s\n", trimmed, trimmed);
                         //puts("Reaches here");
@@ -68,45 +72,45 @@ OP              [+-*/]
                         appendInstruction(&programBuild, push, f_string, index);
                         // appendInstruction(&programBuild, push, &data);
                         }
-"+"{WS}+                {
+"+"                     {
                         appendInstruction(&programBuild, add, 0, 0);
                         }
-"-"{WS}+                {
+"-"                     {
                         appendInstruction(&programBuild, sub, 0, 0);
                         }  
-"*"{WS}+                {
+"*"                     {
                         appendInstruction(&programBuild, mul, 0, 0);
                         }
-"/"{WS}+                {
+"/"                     {
                         appendInstruction(&programBuild, divs, 0, 0);
                         }
-"%"{WS}+                {
+"%"                     {
                         appendInstruction(&programBuild, mod, 0, 0);
                         }
-"<"{WS}+                {
+"<"                     {
                         appendInstruction(&programBuild, lessthen, 0, 0);
                         }
-"<="{WS}+               {
+"<="                    {
                         appendInstruction(&programBuild, lesstheneq, 0, 0);
                         }
-">"{WS}+                {
+">"                     {
                         appendInstruction(&programBuild, greaterthen, 0, 0);
                         }
-">="{WS}+               {
+">="                    {
                         appendInstruction(&programBuild, greatertheneq, 0, 0);
                         }
-"=="{WS}+               {
+"=="                    {
                         appendInstruction(&programBuild, eq, 0, 0);
                         }
-"!="{WS}+               {
+"!="                    {
                         appendInstruction(&programBuild, ineq, 0, 0);
                         }
-{VAR}{WS}+              {
+{VAR}                   {
                         //int64_t = *(int64_t*)&strtof(yytext);
                         //pushStack(f_32float, &n);
                         printf("Found a var: %s\n", yytext);
                         }
-{FUNCTIONBEGIN}{WS}+    {
+{FUNCTIONBEGIN}         {
                         //:func3+231+print;
                         char* trimmed = trim(yytext + 1);
                         //printf("Trimmed Token: (size: %lu) %s\n", strlen(trimmed), trimmed);
@@ -119,10 +123,10 @@ OP              [+-*/]
                                   trimmed);
                         makeNewFunction(&programBuild);
                         }
-{FUNCTIONEND}{WS}+      {
+{FUNCTIONEND}           {
                         endFunction(&programBuild);
                         }
-{FUNCTION}{WS}+         {
+{FUNCTION}              {
                         char* trimmed = trim(yytext);
                         //printf("Matched function: (size: %lu) %s\n", strlen(trimmed), trimmed);
                         unsigned int token = 
