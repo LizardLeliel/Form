@@ -106,9 +106,9 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     i_ineq,
 
     // Boolean logic operations
-    i_nop,
-    i_nop,
-    i_nop,
+    i_logand,
+    i_logor,
+    i_lognot,
 
     // Increment and deincremetn operations
     i_nop,

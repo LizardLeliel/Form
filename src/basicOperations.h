@@ -17,5 +17,9 @@ void i_greatertheneq(program_context_t*);
 void i_eq(program_context_t*);
 void i_ineq(program_context_t*);
 
+void i_logand(program_context_t*);
+void i_logor(program_context_t*);
+void i_lognot(program_context_t*);
+
 // BASIC_OPERATIONS_HEADER
 #endif

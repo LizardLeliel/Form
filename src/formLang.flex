@@ -105,6 +105,15 @@ OP              [+-*/]
 "!="                    {
                         appendInstruction(&programBuild, ineq, 0, 0);
                         }
+"&&"                    {
+                        appendInstruction(&programBuild, logand, 0, 0);
+                        }
+"||"                    {
+                        appendInstruction(&programBuild, logor, 0, 0);
+                        }
+"!"                     {
+                        appendInstruction(&programBuild, lognot, 0, 0);
+                        }
 {VAR}                   {
                         //int64_t = *(int64_t*)&strtof(yytext);
                         //pushStack(f_32float, &n);
