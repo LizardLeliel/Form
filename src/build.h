@@ -11,14 +11,14 @@ typedef enum hash_type {
     h_functionName,    
     h_labelName,       
     h_gotoMemory,      
-} hashType_t;     
+} hash_type_t;     
 
 
 // Stores the corresponding id of a matched symbol
 //  (variable, function name, etc.)
 typedef struct hash_bucket 
 {
-    hashType_t hashedType;
+    hash_type_t hashedType;
     char* symbol;
     size_t symbolLength;
     struct hash_bucket* next;
@@ -125,13 +125,27 @@ void freeHash(token_hash_t* tokenHash);
 // The hashing function 
 unsigned long hashFunction(size_t wordLength, const char* symbol);
 
+hash_bucket_t* getBucket(token_hash_t* tokenHash,
+                         hash_type_t   hashedType,
+                         size_t        symbolSize,
+                         const char*   symbolName);
+
+
 
 // Returns the ID of a token (regardless if it exists
 //  in the hash already or not)
 unsigned int getHashID(token_hash_t* tokenHash,
-                       hashType_t    toHashType,
+                       hash_type_t   toHashType,
                        size_t        symbolSize,
                        const char*   symbolName);
+
+bool peakHash(token_hash_t* tokenHash,
+              hash_type_t   hashedType,
+              size_t        symbolSize,
+              const char*   symbolName);
+
+
+
 
 
 // Adds a new hash bucket to a hash object's bucket list.

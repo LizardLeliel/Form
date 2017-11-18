@@ -108,15 +108,15 @@ OP              [+-*/]
                         }
 {FUNCTIONBEGIN}{WS}+    {
                         //:func3+231+print;
-                        char* trimmed = trim(yytext);
-                        //printf("Trimmed Token: %s\n", trimmed);
+                        char* trimmed = trim(yytext + 1);
+                        //printf("Trimmed Token: (size: %lu) %s\n", strlen(trimmed), trimmed);
                         // Allow ambigious functions _for now_
                         
 
                         getHashID(&(programBuild.tokenHash),
                                   h_functionName, 
-                                  strlen(trimmed + 1), 
-                                  trimmed + 1);
+                                  strlen(trimmed ), 
+                                  trimmed);
                         makeNewFunction(&programBuild);
                         }
 {FUNCTIONEND}{WS}+      {
@@ -124,6 +124,7 @@ OP              [+-*/]
                         }
 {FUNCTION}{WS}+         {
                         char* trimmed = trim(yytext);
+                        //printf("Matched function: (size: %lu) %s\n", strlen(trimmed), trimmed);
                         unsigned int token = 
                             getHashID(&(programBuild.tokenHash),
                                       h_functionName,

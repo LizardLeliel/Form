@@ -39,6 +39,7 @@ token_hash_t makeTokenHash()
     int tries = 3;
     token_hash_t tokenHash;
 
+    tokenHash.cleanupList.top = NULL;
     tokenHash.hash = calloc(maxArrayVal + 1, sizeof(hash_bucket_t*));
 
     // If calloc failed, try again with a smaller size
@@ -102,11 +103,37 @@ unsigned long hashFunction(size_t wordLength, const char* symbol)
     return hashed_value;
 }
 
+hash_bucket_t* getBucket(token_hash_t* tokenHash,
+                         hash_type_t   hashedType,
+                         size_t        symbolSize,
+                         const char*   symbolName)
+{
+    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
+
+    if (tokenHash->hash[index] == NULL)
+    {
+        return NULL;
+    }
+
+    hash_bucket_t* tracer = tokenHash->hash[index];
+
+    while (tracer != NULL)
+    {
+        if (tracer->symbolLength == symbolSize 
+            && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
+        {
+            return tracer;
+        }
+        tracer = tracer->next;
+    }
+
+    return NULL;
+}
 
 unsigned int getHashID(token_hash_t* tokenHash,
-                       hashType_t toHashType, 
-                       size_t symbolSize,
-                       const char* symbolName) 
+                       hash_type_t   toHashType, 
+                       size_t        symbolSize,
+                       const char*   symbolName) 
 {
 
     unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
@@ -118,9 +145,10 @@ unsigned int getHashID(token_hash_t* tokenHash,
         (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
 
         // Set values
-        (tokenHash->hash[index])->hashedType  = toHashType;
-        (tokenHash->hash[index])->contents.ID = ++(tokenHash->typeCount[toHashType]);
-        (tokenHash->hash[index])->next        = NULL;
+        (tokenHash->hash[index])->hashedType   = toHashType;
+        (tokenHash->hash[index])->contents.ID  = ++(tokenHash->typeCount[toHashType]);
+        (tokenHash->hash[index])->next         = NULL;
+        (tokenHash->hash[index])->symbolLength = symbolSize;
 
         (tokenHash->hash[index])->symbol
             = memcpy(malloc(symbolSize), symbolName, symbolSize);
@@ -141,7 +169,7 @@ unsigned int getHashID(token_hash_t* tokenHash,
     {
         tracer = tracer->next;
         // If the words are the same length and are the same
-        if (tracer->symbolLength != symbolSize) 
+        if (tracer->symbolLength == symbolSize) 
         {
             if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
             {
@@ -150,7 +178,6 @@ unsigned int getHashID(token_hash_t* tokenHash,
         }
 
     } while (tracer->next != NULL);
-
 
     // If trace->next == null, then we need to make a new hash entry
     //  (because one does not exist)
@@ -161,7 +188,17 @@ unsigned int getHashID(token_hash_t* tokenHash,
 
     tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
-    return ++tokenHash->typeCount[toHashType];
+    return tokenHash->typeCount[toHashType];
+}
+
+bool peakHash(token_hash_t* tokenHash,
+              hash_type_t   hashedType,
+              size_t        symbolSize,
+              const char*   symbolName)
+{
+    return getBucket(tokenHash, hashedType, symbolSize, symbolName) == NULL 
+        ? false
+        : true;
 }
 
 // Adds to list of hash buckets (for freeing later)

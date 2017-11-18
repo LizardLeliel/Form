@@ -22,8 +22,13 @@ int main(int argc, char** argv)
     initializeYYLEXProgramBuilder();
 
 #ifdef test
-#include "test.h"
-    runChecks();
+//#include "test.h"
+    //runChecks();
+
+    // token_hash_t testHash = makeTokenHash();
+    // getHashID(&testHash, h_labelName, 5, "Hello");
+    // printf("Get \"Hello\"? %s\n", peakHash(&testHash, h_labelName, 5, "Hello") ? "true" : "false");
+    // printf("Get \"dne\"? %s\n", peakHash(&testHash, h_labelName, 3, "dne") ? "true" : "false");
 #endif
 
 #ifndef test
