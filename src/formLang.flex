@@ -10,6 +10,7 @@
 // Utility functions
 bool isWhiteSpace(char c);
 char* trim(char* string);
+char* trimMatchedString(char* string);
 
 // What will be returned
 program_build_t programBuild;
@@ -56,9 +57,8 @@ OP              [+-*/]
                         //printf("Found an unsigned: %u\n", n);
                         }
 {STRING}{WS}+           {
-                        char* trimmed = trim(yytext);
+                        char* trimmed = trimMatchedString(yytext);
                         //printf("Found string: %p: %s\n", trimmed, trimmed);
-
                         //puts("Reaches here");
 
                         unsigned int index = 
@@ -157,9 +157,10 @@ bool isWhiteSpace(char c)
 
 char* trim(char* string)
 {
-    char* duplicate = malloc(strlen(string));
+    char* duplicate    = malloc(strlen(string));
     unsigned int index = 0;
-    char* reader = string;
+    char* reader       = string;
+
     while (isWhiteSpace(*reader))
     {
         ++reader;
@@ -170,6 +171,45 @@ char* trim(char* string)
         duplicate[index] = *reader;
         ++index; ++reader;
     }
+    
     duplicate[index] = '\0';
     return duplicate;
+}
+
+char* trimMatchedString(char* string)
+{
+    size_t stringSize = strlen(string);
+    char* duplicate   = malloc(stringSize);
+    char* reader      = string;
+
+    while(isWhiteSpace(*reader))
+    {
+        ++reader;
+    }
+
+    ++reader;
+
+    if (*reader == '"')
+    {
+        *duplicate = '\0';
+        return duplicate;
+    }
+
+    char* endReader = string + strlen(string) - 1;
+    
+    while (isWhiteSpace(*endReader))
+    {
+        --endReader;
+    }
+
+    int index = 0;
+    while (reader != endReader)
+    {
+        duplicate[index] = *reader;
+        ++reader;
+        ++index;
+    }
+
+    return duplicate;
+
 }
