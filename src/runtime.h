@@ -105,13 +105,13 @@ typedef enum intsruction_set
     //  if this enum's size changes, this will reflect that, and... things
     instruction_ammount
 
-} instructionType_t;
+} instruction_type_t;
 
 // The stack data structure that this stack-oriented program uses
 typedef struct stack 
 {
-    data_type_t type;
-    int64_t data;
+    data_type_t   type;
+    int64_t       data;
     struct stack* next;
 } stack_t;
 
@@ -120,26 +120,22 @@ typedef struct stack
 typedef struct data
 {
     data_type_t dataType;
-    int64_t data;
+    int64_t     data;
 } data_t;
 
 // Represents an executable instruction and its args.
-// Todo: move args and instruction into a consistent-sized
-//  struct.
 typedef struct instruction 
 {
-    instructionType_t instruction;
-    //size_t argSize;
-    //void* args;
-    int32_t arg1;
-    int32_t arg2;
+    instruction_type_t  instruction;
+    int32_t             arg1;
+    int64_t             arg2;
     struct instruction* next;
 } instruction_t;
 
 typedef struct function_stack_node
 {
     struct function_stack_node* next;
-    instruction_t* returnInstruction;
+    instruction_t*              returnInstruction;
 } function_stack_node_t;
 
 // Contains information such as return address
@@ -147,7 +143,7 @@ typedef struct function_stack_node
 typedef struct function_stack
 {
     function_stack_node_t* head;
-    unsigned int depth;
+    unsigned int           depth;
 } function_stack_t;
 
 typedef struct static_data
@@ -172,8 +168,7 @@ typedef struct program_context
 
     // Later: make a wrapper struct for stack
     stack_t*         dataStack;
-
-    instruction_t* currentInstruction;
+    instruction_t*   currentInstruction;
 
 } program_context_t;
 

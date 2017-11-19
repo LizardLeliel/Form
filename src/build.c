@@ -249,8 +249,6 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
     return newNode->eventualIndex;
 }
 
-// 
-// 
 
 unsigned int nextIndex(constant_data_list_t* constantDataList)
 {
@@ -258,12 +256,10 @@ unsigned int nextIndex(constant_data_list_t* constantDataList)
 }
 
 // Returns a dummy instruction
-instruction_t* dummyInstruction() 
+instruction_node_t* dummyInstruction() 
 {
-    instruction_t* dummy = malloc(sizeof(instruction_t));
+    instruction_node_t* dummy = malloc(sizeof(instruction_t));
     dummy->instruction   = nop;
-    //dummy->argSize       = 0;
-    //dummy->args          = NULL;
     dummy->arg1          = 0;
     dummy->arg2          = 0;
     dummy->next          = NULL;
@@ -272,17 +268,16 @@ instruction_t* dummyInstruction()
 
 // Adds a new instruction to end of current instruction sequence.
 void appendInstruction(program_build_t*  programBuild,
-                       instructionType_t newInstruct,
+                       instruction_type_t newInstruct,
                        int32_t           arg1,
                        int64_t           arg2)
 {
 
-    instruction_t* newInstructNode = malloc(sizeof(instruction_t));
-    newInstructNode->instruction   = newInstruct;
-    //newInstructNode->argSize       = argSize; // In bytes
-    newInstructNode->next          = NULL;
-    newInstructNode->arg1          = arg1;
-    newInstructNode->arg2          = arg2;
+    instruction_node_t* newInstructNode = malloc(sizeof(instruction_t));
+    newInstructNode->instruction        = newInstruct;
+    newInstructNode->next               = NULL;
+    newInstructNode->arg1               = arg1;
+    newInstructNode->arg2               = arg2;
 
     programBuild->currentInstruction->next = newInstructNode;
     programBuild->currentInstruction       = newInstructNode;
@@ -323,49 +318,44 @@ void endFunction(program_build_t* programBuild)
 }
 
 
-
 program_context_t returnProgram(program_build_t* programBuild)
 {
     // Build program.
     program_context_t program;
     program.functionStack.depth = 0;
 
-    // Create a function array
+    // Initialize the function array
     program.code = malloc(sizeof(instruction_t*) 
-                               * programBuild->functionAmmount);
+                          * programBuild->functionAmmount);
+    int functionIndex = 0;
 
-    int i = 0;
+    // Fill out the function array
     function_header_t* tracer = programBuild->programTop;
-
-    // Valgrind doesn't like us using pointer arthmetic. 
     while (tracer != NULL)
     {
-        program.code[i] = tracer->head;
-        ++i;
+        program.code[functionIndex] = tracer->head;
+        ++functionIndex;
         tracer = tracer->next;
     }
 
+    // Fill out the function's code.
+
+    //Initialize the static data bank
     size_t bankSize = programBuild->constantDataList.depth;
     program.staticDataBank.size     = bankSize;
-    
     program.staticDataBank.dataBank = calloc(bankSize, sizeof (static_data_t));
 
+    // Fill out the static data bank
     constant_data_list_node_t* static_data_tracer 
         = programBuild->constantDataList.top;
-
     while (static_data_tracer != NULL)
     {
-
         program.staticDataBank.dataBank[static_data_tracer->eventualIndex].type
             = static_data_tracer->type;
-
         program.staticDataBank.dataBank[static_data_tracer->eventualIndex].data 
             = static_data_tracer->data;
-
         static_data_tracer = static_data_tracer->next;
     }
 
     return program;
 }
-
-
