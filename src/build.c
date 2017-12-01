@@ -74,11 +74,11 @@ constant_data_list_t makeConstantDataList()
 void freeHash(token_hash_t* tokenHash)
 {
     hash_bucket_list_node_t* tracer;
-    hash_bucket_list_node_t* toFree;
     tracer = tokenHash->cleanupList.top;
   
     while (tracer != NULL)
     {
+        hash_bucket_list_node_t* toFree;
         free(tracer->entry->symbol);
         free(tracer->entry);
         toFree = tracer;
@@ -312,6 +312,7 @@ void makeNewFunction(program_build_t* programBuild)
     programBuild->currentInstruction = newFunction->head;
     programBuild->lastFunction->next = newFunction;
     programBuild->lastFunction       = newFunction;
+    programBuild->functionAmmount   += 1;
 
     programBuild->onMain = false;
 }
@@ -320,13 +321,14 @@ void makeNewFunction(program_build_t* programBuild)
 //  and configures things back to main
 void endFunction(program_build_t* programBuild) 
 {
-    instruction_node_t* endInstruct = calloc(1, sizeof(instruction_node_t));
-    endInstruct->instruction   = returns;
+    //instruction_node_t* endInstruct = calloc(1, sizeof(instruction_node_t));
+    //endInstruct->instruction   = returns;
+    //programBuild->currentInstruction->next = endInstruct;
+    appendInstruction(programBuild, returns, 0, 0);
 
-    programBuild->currentInstruction->next = endInstruct;
+    programBuild->currentInstruction->next = NULL;
     programBuild->currentInstruction       = programBuild->mainLast;
-
-    programBuild->onMain = true;
+    programBuild->onMain                   = true;
 }
 
 instruction_t convertInstructionNode(instruction_node_t* instruction)
@@ -363,7 +365,6 @@ program_context_t returnProgram(program_build_t* programBuild)
                           sizeof(instruction_t*));
 
 
-
     //printf("program.code: %p\n", program.code);
     // array[2] = *(array + 2);
     // array[2][3] = *(*(array + 2) + 2)
@@ -378,7 +379,9 @@ program_context_t returnProgram(program_build_t* programBuild)
 
         //printf("depth size: %zu\n", tracer->depth);
 
+
         program.code[functionIndex] = calloc(tracer->depth, sizeof(instruction_t));
+
 
         //printf("Function index, pointer: %zu %p\n", tracer->depth, program.code);
 
@@ -387,7 +390,7 @@ program_context_t returnProgram(program_build_t* programBuild)
 
         while (instructionTracer != NULL)
         {
-            program.code[functionIndex][instructionIndex]
+            (program.code[functionIndex])[instructionIndex]
                 = convertInstructionNode(instructionTracer);
 
             instruction_node_t* freeInstruction = instructionTracer;
@@ -406,16 +409,16 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.staticDataBank.dataBank = calloc(bankSize, sizeof (static_data_t));
 
     // Fill out the static data bank
-    constant_data_list_node_t* static_data_tracer 
+    constant_data_list_node_t* staticDataTracer 
         = programBuild->constantDataList.top;
 
-    while (static_data_tracer != NULL)
+    while (staticDataTracer != NULL)
     {
-        program.staticDataBank.dataBank[static_data_tracer->eventualIndex].type
-            = static_data_tracer->type;
-        program.staticDataBank.dataBank[static_data_tracer->eventualIndex].data 
-            = static_data_tracer->data;
-        static_data_tracer = static_data_tracer->next;
+        program.staticDataBank.dataBank[staticDataTracer->eventualIndex].type
+            = staticDataTracer->type;
+        program.staticDataBank.dataBank[staticDataTracer->eventualIndex].data 
+            = staticDataTracer->data;
+        staticDataTracer = staticDataTracer->next;
     }
 
     // Initialize function stack
