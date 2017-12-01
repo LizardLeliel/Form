@@ -64,6 +64,7 @@ typedef struct function_header
 {
     instruction_node_t*     head;
     struct function_header* next;
+    size_t                  depth;
 } function_header_t;
 
 typedef struct constant_data_list_node
@@ -156,7 +157,7 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
 unsigned int nextIndex(constant_data_list_t* constantDataList);
 
 // Makes a dummy head
-inline instruction_node_t* dummyInstruction();
+instruction_node_t* dummyInstruction();
 
 // Adds a new instruction to buildPointers.currentInstruct
 void appendInstruction(program_build_t*  programBuild,
@@ -170,6 +171,8 @@ void makeNewFunction(program_build_t* programBuild);
 
 // Ends a function
 void endFunction(program_build_t* programBuild);
+
+instruction_t convertInstructionNode(instruction_node_t* instruction);
 
 // takes a programBuild object and creates a complete 
 //  initialized program context object ready for execution

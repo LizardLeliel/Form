@@ -48,62 +48,62 @@ typedef enum intsruction_set
     nop = 0,
 
     // Standard arthemtic operations
-    add, // 1
-    sub, // 2
-    mul,
-    divs,
-    mod,
+    add,  // 1
+    sub,  // 2
+    mul,  // 3
+    divs, // 4 
+    mod,  // 5
 
     // Standard bitwise operations
-    bitwand,
-    bitwor,
-    bitwnot,
-    bitwleft,
-    bitwright,
-    bitwxor,
+    bitwand,   // 6
+    bitwor,    // 7
+    bitwnot,   // 8
+    bitwleft,  // 9
+    bitwright, // 10
+    bitwxor,   // 11
 
     // Standard comparison operations
-    lessthen,
-    lesstheneq,
-    greaterthen,
-    greatertheneq,
-    eq,
-    ineq,
+    lessthen,      // 12
+    lesstheneq,    // 13
+    greaterthen,   // 14
+    greatertheneq, // 15
+    eq,            // 16
+    ineq,          // 17
 
     // Boolean logic operations
-    logand,
-    logor,
-    lognot,
+    logand, // 18
+    logor,  // 19
+    lognot, // 20
 
     // Increment and deincrement operations
-    incr,
-    decr,
+    incr, // 21
+    decr, // 22
 
     // Standard stack-related operations
-    push,
-    drop,
-    over,
-    swaps,
-    rot,
+    push,  // 23
+    drop,  // 24
+    over,  // 25
+    swaps, // 26
+    rot,   // 27
 
     // Form goto operations
-    gotos,
-    congotos,
+    gotos,    // 28
+    congotos, // 29
 
     // Variable-related operations
-    scope,
-    assigns,
-    get,
+    scope,   // 30
+    assigns, // 31
+    get,     // 32
 
     // Misc operations (function call, return, output, end program)
-    call,
-    returns,
-    print,
-    endProg,
+    call,    // 33
+    returns, // 34
+    print,   // 35
+    endProg, // 36
 
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that, and... things
-    instruction_ammount
+    instruction_ammount // 37
 
 } instruction_type_t;
 
@@ -129,13 +129,14 @@ typedef struct instruction
     instruction_type_t  instruction;
     int32_t             arg1;
     int64_t             arg2;
-    struct instruction* next;
 } instruction_t;
 
 typedef struct function_stack_node
 {
     struct function_stack_node* next;
-    instruction_t*              returnInstruction;
+    unsigned int                functionIndex;
+    unsigned int                instructionIndex;
+    //instruction_t*            returnInstruction;
 } function_stack_node_t;
 
 // Contains information such as return address
@@ -168,7 +169,11 @@ typedef struct program_context
 
     // Later: make a wrapper struct for stack
     stack_t*         dataStack;
-    instruction_t*   currentInstruction;
+    instruction_t    currentInstruction;
+    unsigned int     currentFunctionIndex;
+    unsigned int     currentInstructionIndex;
+    unsigned int     nextInstructionIndex;
+    unsigned int     nextFunctionIndex;
 
 } program_context_t;
 
@@ -209,7 +214,8 @@ data_t popData();
 
 // Calls a new function
 void pushFunction(function_stack_t* functionStack,
-                  instruction_t* returnInstruction);
+                  unsigned int callingFunction,
+                  unsigned int instructionDestination);
 // Ends a function
 void returnFromFunction(program_context_t* program);
 

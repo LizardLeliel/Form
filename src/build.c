@@ -17,10 +17,11 @@ program_build_t prepareBuild()
 
     // Intialize the pointers
     programBuild.programTop         = malloc(sizeof(function_header_t));
-    programBuild.currentInstruction = malloc(sizeof(instruction_t));
+    programBuild.currentInstruction = dummyInstruction();//malloc(sizeof(instruction_node_t));
 
     programBuild.programTop->head   = programBuild.currentInstruction;
     programBuild.programTop->next   = NULL;
+    programBuild.programTop->depth  = 1;
 
     programBuild.lastFunction       = programBuild.programTop;
     programBuild.mainLast           = programBuild.currentInstruction;
@@ -202,7 +203,7 @@ bool peakHash(token_hash_t* tokenHash,
 }
 
 // Adds to list of hash buckets (for freeing later)
-void pushToList(token_hash_t* tokenHash,
+void pushToList(token_hash_t*  tokenHash,
                 hash_bucket_t* slot)
 {
     if (tokenHash->cleanupList.top == NULL)
@@ -223,8 +224,8 @@ void pushToList(token_hash_t* tokenHash,
 }
 
 int64_t pushConstantData(constant_data_list_t* constantDataList,
-                      data_type_t type,
-                      void* data)
+                        data_type_t            type,
+                        void*                  data)
 {
 
     constant_data_list_node_t* newNode 
@@ -258,7 +259,7 @@ unsigned int nextIndex(constant_data_list_t* constantDataList)
 // Returns a dummy instruction
 instruction_node_t* dummyInstruction() 
 {
-    instruction_node_t* dummy = malloc(sizeof(instruction_t));
+    instruction_node_t* dummy = malloc(sizeof(instruction_node_t));
     dummy->instruction   = nop;
     dummy->arg1          = 0;
     dummy->arg2          = 0;
@@ -267,17 +268,26 @@ instruction_node_t* dummyInstruction()
 }
 
 // Adds a new instruction to end of current instruction sequence.
-void appendInstruction(program_build_t*  programBuild,
+void appendInstruction(program_build_t*   programBuild,
                        instruction_type_t newInstruct,
-                       int32_t           arg1,
-                       int64_t           arg2)
+                       int32_t            arg1,
+                       int64_t            arg2)
 {
 
-    instruction_node_t* newInstructNode = malloc(sizeof(instruction_t));
+    instruction_node_t* newInstructNode = malloc(sizeof(instruction_node_t));
     newInstructNode->instruction        = newInstruct;
     newInstructNode->next               = NULL;
     newInstructNode->arg1               = arg1;
     newInstructNode->arg2               = arg2;
+
+    if (programBuild->onMain == true)
+    {
+        programBuild->programTop->depth += 1;
+    }
+    else
+    {
+        programBuild->lastFunction->depth += 1;
+    }
 
     programBuild->currentInstruction->next = newInstructNode;
     programBuild->currentInstruction       = newInstructNode;
@@ -293,8 +303,10 @@ void makeNewFunction(program_build_t* programBuild)
 {
     // Allocates and initialize memory
     function_header_t* newFunction = malloc(sizeof(function_header_t));
-    newFunction->next = NULL;
-    newFunction->head = dummyInstruction();
+
+    newFunction->next  = NULL;
+    newFunction->head  = dummyInstruction();
+    newFunction->depth = 1;
 
     // Assigns build pointer functions 
     programBuild->currentInstruction = newFunction->head;
@@ -308,7 +320,7 @@ void makeNewFunction(program_build_t* programBuild)
 //  and configures things back to main
 void endFunction(program_build_t* programBuild) 
 {
-    instruction_t* endInstruct = calloc(1, sizeof(instruction_t));
+    instruction_node_t* endInstruct = calloc(1, sizeof(instruction_node_t));
     endInstruct->instruction   = returns;
 
     programBuild->currentInstruction->next = endInstruct;
@@ -317,37 +329,86 @@ void endFunction(program_build_t* programBuild)
     programBuild->onMain = true;
 }
 
+instruction_t convertInstructionNode(instruction_node_t* instruction)
+{
+    instruction_t flatInstruction;
+
+    flatInstruction.instruction = instruction->instruction;
+    flatInstruction.arg1        = instruction->arg1;
+    flatInstruction.arg2        = instruction->arg2;
+
+    return flatInstruction;
+}
 
 program_context_t returnProgram(program_build_t* programBuild)
 {
+    // Move into formLang.flex somehow later - appending the end program 
+    //  instruction to end of program
+    if (programBuild->onMain == false)
+    {
+        puts("Error: reached EOF while parsing function");
+        exit(0);
+    }
+
+    appendInstruction(programBuild, endProg, 0, 0);
+
     // Build program.
     program_context_t program;
     program.functionStack.depth = 0;
 
     // Initialize the function array
-    program.code = malloc(sizeof(instruction_t*) 
-                          * programBuild->functionAmmount);
-    int functionIndex = 0;
+    //printf("function functionAmmount: %d\n", programBuild->functionAmmount);
+
+    program.code = calloc(programBuild->functionAmmount,
+                          sizeof(instruction_t*));
+
+
+
+    //printf("program.code: %p\n", program.code);
+    // array[2] = *(array + 2);
+    // array[2][3] = *(*(array + 2) + 2)
+    // array[2][3] = *(pointer-in-array + 2)
 
     // Fill out the function array
-    function_header_t* tracer = programBuild->programTop;
+    unsigned int functionIndex = 0;
+    function_header_t* tracer  = programBuild->programTop;
+
     while (tracer != NULL)
     {
-        program.code[functionIndex] = tracer->head;
+
+        //printf("depth size: %zu\n", tracer->depth);
+
+        program.code[functionIndex] = calloc(tracer->depth, sizeof(instruction_t));
+
+        //printf("Function index, pointer: %zu %p\n", tracer->depth, program.code);
+
+        instruction_node_t* instructionTracer = tracer->head;
+        unsigned int instructionIndex         = 0;
+
+        while (instructionTracer != NULL)
+        {
+            program.code[functionIndex][instructionIndex]
+                = convertInstructionNode(instructionTracer);
+
+            instruction_node_t* freeInstruction = instructionTracer;
+            instructionTracer                   = instructionTracer->next;
+            ++instructionIndex;
+            free(freeInstruction);
+        }
+
         ++functionIndex;
         tracer = tracer->next;
     }
 
-    // Fill out the function's code.
-
     //Initialize the static data bank
-    size_t bankSize = programBuild->constantDataList.depth;
+    size_t bankSize                 = programBuild->constantDataList.depth;
     program.staticDataBank.size     = bankSize;
     program.staticDataBank.dataBank = calloc(bankSize, sizeof (static_data_t));
 
     // Fill out the static data bank
     constant_data_list_node_t* static_data_tracer 
         = programBuild->constantDataList.top;
+
     while (static_data_tracer != NULL)
     {
         program.staticDataBank.dataBank[static_data_tracer->eventualIndex].type
@@ -356,6 +417,11 @@ program_context_t returnProgram(program_build_t* programBuild)
             = static_data_tracer->data;
         static_data_tracer = static_data_tracer->next;
     }
+
+    // Initialize function stack
+    program.functionStack.depth = 0;
+    program.functionStack.head  = NULL;
+
 
     return program;
 }

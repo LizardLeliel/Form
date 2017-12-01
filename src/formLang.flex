@@ -130,14 +130,14 @@ OP              [+-*/]
                         }
 {FUNCTIONBEGIN}         {
                         //:func3+231+print;
-                        char* trimmed = trim(yytext + 1);
+                        char* trimmed =  yytext + 1; //trim(yytext + 1);
                         //printf("Trimmed Token: (size: %lu) %s\n", strlen(trimmed), trimmed);
                         // Allow ambigious functions _for now_
                         
 
                         getHashID(&(programBuild.tokenHash),
                                   h_functionName, 
-                                  strlen(trimmed ), 
+                                  strlen(trimmed), 
                                   trimmed);
                         makeNewFunction(&programBuild);
                         }
@@ -145,7 +145,7 @@ OP              [+-*/]
                         endFunction(&programBuild);
                         }
 {FUNCTION}              {
-                        char* trimmed = trim(yytext);
+                        char* trimmed = yytext; //trim(yytext);
                         //printf("Matched function: (size: %lu) %s\n", strlen(trimmed), trimmed);
                         unsigned int token = 
                             getHashID(&(programBuild.tokenHash),
@@ -158,7 +158,8 @@ OP              [+-*/]
                                           0,
                                           token);
                         }
-%%
+
+%%  
 
 void initializeYYLEXProgramBuilder()
 {

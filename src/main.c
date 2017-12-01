@@ -38,6 +38,7 @@ int main(int argc, char** argv)
         if (yyin == NULL)
         {
             perror("File does not exist");
+            exit(0);
         }
         yylex();
         execute(finishYYLEXBuild());

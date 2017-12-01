@@ -1,7 +1,7 @@
 Compilier 	  = clang
 Program   	  = form
 Sources  	  = $(wildcard *.c)
-Flags         = -Wall -std=c99 -g
+Flags         = -Wall -std=c99 -g3 -ggdb 
 Objects       = $(Sources:.c=.o) 
 
 
