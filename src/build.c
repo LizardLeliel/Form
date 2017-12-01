@@ -237,33 +237,21 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
         
     ++(constantDataList->depth);
 
-    if (constantDataList->top == NULL)
-    {    
-        constantDataList->top = newNode;
-    }
-    else
-    {
-        newNode->next         = constantDataList->top;
-        constantDataList->top = newNode;       
-    }
+    newNode->next         = constantDataList->top;
+    constantDataList->top = newNode;       
 
     return newNode->eventualIndex;
 }
 
 
-unsigned int nextIndex(constant_data_list_t* constantDataList)
-{
-    return constantDataList->depth + 1;
-}
-
 // Returns a dummy instruction
 instruction_node_t* dummyInstruction() 
 {
     instruction_node_t* dummy = malloc(sizeof(instruction_node_t));
-    dummy->instruction   = nop;
-    dummy->arg1          = 0;
-    dummy->arg2          = 0;
-    dummy->next          = NULL;
+    dummy->instruction        = nop;
+    dummy->arg1               = 0;
+    dummy->arg2               = 0;
+    dummy->next               = NULL;
     return dummy;
 }
 
@@ -379,9 +367,7 @@ program_context_t returnProgram(program_build_t* programBuild)
 
         //printf("depth size: %zu\n", tracer->depth);
 
-
         program.code[functionIndex] = calloc(tracer->depth, sizeof(instruction_t));
-
 
         //printf("Function index, pointer: %zu %p\n", tracer->depth, program.code);
 
@@ -406,7 +392,7 @@ program_context_t returnProgram(program_build_t* programBuild)
     //Initialize the static data bank
     size_t bankSize                 = programBuild->constantDataList.depth;
     program.staticDataBank.size     = bankSize;
-    program.staticDataBank.dataBank = calloc(bankSize, sizeof (static_data_t));
+    program.staticDataBank.dataBank = calloc(bankSize, sizeof(static_data_t));
 
     // Fill out the static data bank
     constant_data_list_node_t* staticDataTracer 
@@ -414,6 +400,7 @@ program_context_t returnProgram(program_build_t* programBuild)
 
     while (staticDataTracer != NULL)
     {
+        // Assigning type here may be redundant
         program.staticDataBank.dataBank[staticDataTracer->eventualIndex].type
             = staticDataTracer->type;
         program.staticDataBank.dataBank[staticDataTracer->eventualIndex].data 

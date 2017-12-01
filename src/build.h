@@ -154,7 +154,6 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
                          data_type_t type,
                          void* data);
 
-unsigned int nextIndex(constant_data_list_t* constantDataList);
 
 // Makes a dummy head
 instruction_node_t* dummyInstruction();

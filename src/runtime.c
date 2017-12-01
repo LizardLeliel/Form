@@ -244,7 +244,6 @@ void i_print(program_context_t* program)
     }
     else if (value.dataType & f_string)
     {
-        // unsigned int index = value.data;
         printf("%s\n", program->staticDataBank.dataBank[value.data].data);
     }
     

@@ -19,3 +19,7 @@ lex.yy.c:
 clean: 
 	rm -f *.o $(Program)
 	rm -f lex.yy.*
+
+remake:
+	make clean
+	make

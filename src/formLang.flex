@@ -79,7 +79,6 @@ OP              [+-*/]
                                              f_string, trimmed);
 
                         appendInstruction(&programBuild, push, f_string, index);
-                        // appendInstruction(&programBuild, push, &data);
                         }
 "+"                     {
                         appendInstruction(&programBuild, add, 0, 0);
@@ -202,7 +201,6 @@ char* trim(char* string)
 char* trimMatchedString(char* string)
 {
     size_t stringSize = strlen(string);
-    char* duplicate   = malloc(stringSize);
     char* reader      = string;
 
     while(isWhiteSpace(*reader))
@@ -214,6 +212,7 @@ char* trimMatchedString(char* string)
 
     if (*reader == '"')
     {
+        char* duplicate = malloc(sizeof (char));
         *duplicate = '\0';
         return duplicate;
     }
@@ -225,6 +224,9 @@ char* trimMatchedString(char* string)
         --endReader;
     }
 
+    char* duplicate 
+        = calloc((endReader - reader) / sizeof (char) + 1,
+          sizeof (char));
     int index = 0;
     while (reader != endReader)
     {
