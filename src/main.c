@@ -9,14 +9,10 @@
 extern void initializeYYLEXProgramBuilder();
 extern program_context_t finishYYLEXBuild();
 
-//extern int returnTestX(void);
 
 int main(int argc, char** argv)
 {
-    //printf("Hello world!\n");
 
-
-    //printf("Testing testx: %d", returnTestX());
 //#define test
 
     initializeYYLEXProgramBuilder();
@@ -25,10 +21,6 @@ int main(int argc, char** argv)
 //#include "test.h"
     //runChecks();
 
-    // token_hash_t testHash = makeTokenHash();
-    // getHashID(&testHash, h_labelName, 5, "Hello");
-    // printf("Get \"Hello\"? %s\n", peakHash(&testHash, h_labelName, 5, "Hello") ? "true" : "false");
-    // printf("Get \"dne\"? %s\n", peakHash(&testHash, h_labelName, 3, "dne") ? "true" : "false");
 #endif
 
 #ifndef test
@@ -51,10 +43,6 @@ int main(int argc, char** argv)
 #endif
 #undef test
 
-
-
-    //freeHash();
-    //freeInstructions();
     return 0;
 }
 

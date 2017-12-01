@@ -14,10 +14,7 @@
 typedef unsigned char byte;
 typedef int32_t size32_t;
 
-/* An enumeration of run-time data types. All data types in Form should
- *  be 32 bits (even char; although strings will be treated like a special
- *  array type
- */
+// An enumeration representing run-time data types.
 typedef enum data_type {
     f_nil       = 0x0000,
 
@@ -40,8 +37,8 @@ typedef enum data_type {
 } data_type_t;
 
 // Each enumeration's integer representation
-//  corresponds to an index in a function pointer
-//  array.
+//  corresponds to an index to the function array
+//  holding implementations of the functions.
 typedef enum intsruction_set 
 {
     // No operation
@@ -136,7 +133,6 @@ typedef struct function_stack_node
     struct function_stack_node* next;
     unsigned int                functionIndex;
     unsigned int                instructionIndex;
-    //instruction_t*            returnInstruction;
 } function_stack_node_t;
 
 // Contains information such as return address

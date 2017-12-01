@@ -12,9 +12,8 @@ extern double interpretAsFloat(int64_t value);
 
 // Utility functions
 bool isWhiteSpace(char c);
-char* trim(char* string);
 char* trimMatchedString(char* string);
-// unsigned int = 0;
+
 
 // What will be returned
 program_build_t programBuild;
@@ -59,20 +58,10 @@ OP              [+-*/]
                         }
 {INT}                   {
                         int64_t n = atoi(yytext);
-
                         appendInstruction(&programBuild, push, f_32int, n);
-
-                        //pushConstantData(&(programBuild.constantDataList),
-                        //    sizeof n, &n);
-                       
-
-                        //pushStack(f_32int, &n);
-                        //printf("Found an unsigned: %u\n", n);
                         }
 {STRING}                {
                         char* trimmed = trimMatchedString(yytext);
-                        //printf("Found string: %p: %s\n", trimmed, trimmed);
-                        //puts("Reaches here");
 
                         unsigned int index = 
                             pushConstantData(&(programBuild.constantDataList),
@@ -123,17 +112,10 @@ OP              [+-*/]
                         appendInstruction(&programBuild, lognot, 0, 0);
                         }
 {VAR}                   {
-                        //int64_t = *(int64_t*)&strtof(yytext);
-                        //pushStack(f_32float, &n);
                         printf("Found a var: %s\n", yytext);
                         }
 {FUNCTIONBEGIN}         {
-                        //:func3+231+print;
-                        char* trimmed =  yytext + 1; //trim(yytext + 1);
-                        //printf("Trimmed Token: (size: %lu) %s\n", strlen(trimmed), trimmed);
-                        // Allow ambigious functions _for now_
-                        
-
+                        char* trimmed =  yytext + 1;
                         getHashID(&(programBuild.tokenHash),
                                   h_functionName, 
                                   strlen(trimmed), 
@@ -144,8 +126,8 @@ OP              [+-*/]
                         endFunction(&programBuild);
                         }
 {FUNCTION}              {
-                        char* trimmed = yytext; //trim(yytext);
-                        //printf("Matched function: (size: %lu) %s\n", strlen(trimmed), trimmed);
+                        char* trimmed = yytext;
+
                         unsigned int token = 
                             getHashID(&(programBuild.tokenHash),
                                       h_functionName,
@@ -177,26 +159,6 @@ bool isWhiteSpace(char c)
     return (c == ' ' || c == '\n' || c == '\t' || c == 26);
 }
 
-char* trim(char* string)
-{
-    char* duplicate    = malloc(strlen(string));
-    unsigned int index = 0;
-    char* reader       = string;
-
-    while (isWhiteSpace(*reader))
-    {
-        ++reader;
-    }
-
-    while (!isWhiteSpace(*reader))
-    {
-        duplicate[index] = *reader;
-        ++index; ++reader;
-    }
-    
-    duplicate[index] = '\0';
-    return duplicate;
-}
 
 char* trimMatchedString(char* string)
 {
@@ -226,7 +188,7 @@ char* trimMatchedString(char* string)
 
     char* duplicate 
         = calloc((endReader - reader) / sizeof (char) + 1,
-          sizeof (char));
+                 sizeof (char));
     int index = 0;
     while (reader != endReader)
     {

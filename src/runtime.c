@@ -10,7 +10,12 @@
 void shouldNotBeBottom(stack_t** dataStack) 
 {
     // Try changing later. Make better warning error for user
-    if ((*dataStack)->next == NULL) puts("Stack underflow in shouldNotBeBottom");
+    if ((*dataStack)->next == NULL) 
+    {
+        puts("Stack underflow in shouldNotBeBottom()");
+        // Todo: print helpful debugging info
+        exit(1);
+    }
 }
 
 // Pushes data onto the stack.
@@ -20,10 +25,6 @@ void pushStack(stack_t**   dataStack,
                int64_t     data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
-    // definitly get rid of these magic numbers
-    
-    //newNode->data    = malloc(size);
-    //memcpy(newNode->data, data, size);
     newNode->data = data;
 
     newNode->type    = dataType;
@@ -53,11 +54,9 @@ int64_t popStack(stack_t** dataStack, data_type_t* outType)
     if (outType != NULL) *outType = (*dataStack)->type;
 
     int64_t returnVal = (*dataStack)->data;
-    //stack_t* freeNode  = (*dataStack);
 
     *dataStack = (*dataStack)->next;
 
-    //free(freeNode->data);
     //free(freeNode); <- This crashes strings (?!?)
     return returnVal;
 }
@@ -144,9 +143,9 @@ void pushFunction(function_stack_t* functionStack,
 {
     if (functionStack->head == NULL)
     {
-        functionStack->head       = malloc(sizeof(function_stack_node_t));
-        functionStack->head->next = NULL;
-        //functionStack->head->returnInstruction = returnInstruction;
+        functionStack->head
+            = malloc(sizeof(function_stack_node_t));
+        functionStack->head->next             = NULL;
         functionStack->head->functionIndex    = callingFunction;
         functionStack->head->instructionIndex = instructionDestination;
         ++(functionStack->depth);
@@ -154,11 +153,10 @@ void pushFunction(function_stack_t* functionStack,
     else
     {
         function_stack_node_t* newFunction = malloc(sizeof(function_stack_t));
-        newFunction->next                 = functionStack->head;
-        //newFunction->returnInstruction    = returnInstruction;
-        newFunction->functionIndex    = callingFunction;
-        newFunction->instructionIndex = instructionDestination;
-        functionStack->head                   = newFunction;
+        newFunction->next                  = functionStack->head;
+        newFunction->functionIndex         = callingFunction;
+        newFunction->instructionIndex      = instructionDestination;
+        functionStack->head                = newFunction;
     }
 }
 
@@ -168,8 +166,6 @@ void returnFromFunction(program_context_t* program)
     {
         perror("Function stack underflow");
     }
-    //program->currentInstruction 
-    //    = program->functionStack.head->returnInstruction;
 
     program->nextFunctionIndex    = program->functionStack.head->functionIndex;
     program->nextInstructionIndex = program->functionStack.head->instructionIndex;
@@ -183,7 +179,6 @@ void returnFromFunction(program_context_t* program)
 
 void i_push(program_context_t* program)
 {
-    //data_type_t type = ((data_type_t*)program->currentInstruction->args)[0];
     data_type_t type = program->currentInstruction.arg1;
     int64_t     data = program->currentInstruction.arg2;
 
@@ -196,7 +191,6 @@ void i_call(program_context_t* program)
 {
     unsigned int functionIndex 
         = program->currentInstruction.arg2;
-    //*(unsigned int*)program->currentInstruction->args;
 
     pushFunction(&(program->functionStack), 
                  program->currentFunctionIndex,
@@ -204,8 +198,7 @@ void i_call(program_context_t* program)
 
     program->nextFunctionIndex    = functionIndex;
     program->nextInstructionIndex = 0;
-    //program->currentInstruction 
-    //    = program->code[functionIndex];
+
 }
 
 void i_returns(program_context_t* program)
@@ -307,20 +300,11 @@ void execute(program_context_t program)
     program.currentInstructionIndex = 0;
     program.currentFunctionIndex    = 0;
     program.nextFunctionIndex       = program.currentFunctionIndex;
-    //program.nextInstructionIndex = 1;   
-
-    // printf("Base Instruction and program location: %p %p\n", 
-    //     program.currentInstruction,
-    //     &program);
-    //puts("Reaches here 1");
 
     while (program.currentInstruction.instruction != endProg)
     {
-        //puts("Reaches here 2");
-        //unsigned int i = 0;
-        // printf("Instruction: %d\n", program.currentInstruction->instruction);
+
         program.nextInstructionIndex = program.currentInstructionIndex + 1;
-        //program.currentInstructionIndex += 1
         EXEC_INSTRUCTION[program.currentInstruction.instruction](&program);
 
         program.currentInstruction 
@@ -328,10 +312,5 @@ void execute(program_context_t program)
 
         program.currentFunctionIndex    = program.nextFunctionIndex;
         program.currentInstructionIndex = program.nextInstructionIndex;
-        // printf("Current and Next Instruction Location: %p %p\n", 
-        //     program.currentInstruction,
-        //     program.currentInstruction + 1);
-
-        //program.currentInstruction = program.currentInstruction + 1;
     }
 }

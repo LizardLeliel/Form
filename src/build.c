@@ -309,9 +309,6 @@ void makeNewFunction(program_build_t* programBuild)
 //  and configures things back to main
 void endFunction(program_build_t* programBuild) 
 {
-    //instruction_node_t* endInstruct = calloc(1, sizeof(instruction_node_t));
-    //endInstruct->instruction   = returns;
-    //programBuild->currentInstruction->next = endInstruct;
     appendInstruction(programBuild, returns, 0, 0);
 
     programBuild->currentInstruction->next = NULL;
@@ -347,16 +344,9 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.functionStack.depth = 0;
 
     // Initialize the function array
-    //printf("function functionAmmount: %d\n", programBuild->functionAmmount);
-
     program.code = calloc(programBuild->functionAmmount,
                           sizeof(instruction_t*));
 
-
-    //printf("program.code: %p\n", program.code);
-    // array[2] = *(array + 2);
-    // array[2][3] = *(*(array + 2) + 2)
-    // array[2][3] = *(pointer-in-array + 2)
 
     // Fill out the function array
     unsigned int functionIndex = 0;
@@ -364,12 +354,8 @@ program_context_t returnProgram(program_build_t* programBuild)
 
     while (tracer != NULL)
     {
-
-        //printf("depth size: %zu\n", tracer->depth);
-
-        program.code[functionIndex] = calloc(tracer->depth, sizeof(instruction_t));
-
-        //printf("Function index, pointer: %zu %p\n", tracer->depth, program.code);
+        program.code[functionIndex] 
+            = calloc(tracer->depth, sizeof(instruction_t));
 
         instruction_node_t* instructionTracer = tracer->head;
         unsigned int instructionIndex         = 0;
