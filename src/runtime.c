@@ -77,61 +77,61 @@ data_t popData(stack_t** dataStack)
 //  are called during runtime.
 void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
 {
-    i_nop, // No operation
+    FORM_NOP, // No operation
 
     // Standard arthmetic opertaions
-    i_add, 
-    i_sub,
-    i_mul,
-    i_divs,
-    i_mod,
+    FORM_ADD, 
+    FORM_SUB,
+    FORM_MUL,
+    FORM_DIV,
+    FORM_MOD,
 
     // Standard bitwise operations
-    i_nop,
-    i_nop,
-    i_nop,
-    i_nop,
-    i_nop,
-    i_nop,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
 
     // Standard comparison operations
-    i_lessthen,
-    i_lesstheneq,
-    i_greaterthen,
-    i_greatertheneq,
-    i_eq,
-    i_ineq,
+    FORM_LESS_THEN,
+    FORM_LESS_THEN_EQ,
+    FORM_GREATER_THEN,
+    FORM_GREATER_THEN_EQ,
+    FORM_EQ,
+    FORM_INEQ,
 
     // Boolean logic operations
-    i_logand,
-    i_logor,
-    i_lognot,
+    FORM_LOG_AND,
+    FORM_LOG_OR,
+    FORM_LOG_NOT,
 
     // Increment and deincremetn operations
-    i_nop,
-    i_nop,
+    FORM_NOP,
+    FORM_NOP,
 
     // Standard stack-related operations
-    i_push,
-    i_nop,
-    i_nop,
-    i_nop,
-    i_nop,
+    FORM_PUSH,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
 
     // Form goto operations
-    i_nop,
-    i_nop,
+    FORM_NOP,
+    FORM_NOP,
 
     // Variable-related operations
-    i_nop,
-    i_nop,
-    i_nop,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
 
     // Misc operations 
-    i_call,
-    i_returns,
-    i_print,
-    i_nop
+    FORM_CALL,
+    FORM_RETURN,
+    FORM_PRINT,
+    FORM_NOP
 };
 
 // Calls a new function.
@@ -242,7 +242,7 @@ void execute(program_context_t program)
     program.nextFunctionIndex       = program.currentFunctionIndex;
 
     // Iterate through each instruction until the end of the program is reached.
-    while (program.currentInstruction.instruction != endProg)
+    while (program.currentInstruction.instruction != i_endprog)
     {
         // Set the default next instruction.
         program.nextInstructionIndex = program.currentInstructionIndex + 1;

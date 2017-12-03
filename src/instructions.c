@@ -7,12 +7,12 @@
 #include <string.h>
 
 // No operation
-void i_nop(program_context_t* program) 
+void FORM_NOP(program_context_t* program) 
 {
     return;
 }
 
-void i_add(program_context_t* program) 
+void FORM_ADD(program_context_t* program) 
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -36,7 +36,7 @@ void i_add(program_context_t* program)
     }
 }
 
-void i_sub(program_context_t* program)
+void FORM_SUB(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -57,7 +57,7 @@ void i_sub(program_context_t* program)
 
     }
 }
-void i_mul(program_context_t* program)
+void FORM_MUL(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -79,7 +79,7 @@ void i_mul(program_context_t* program)
     }
 }
 
-void i_divs(program_context_t* program)
+void FORM_DIV(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -108,7 +108,7 @@ void i_divs(program_context_t* program)
     }
 }
 
-void i_mod(program_context_t* program)
+void FORM_MOD(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -130,7 +130,7 @@ void i_mod(program_context_t* program)
 }
 
 // Move this to basicOPerations.c
-void i_lessthen(program_context_t* program)
+void FORM_LESS_THEN(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -152,7 +152,7 @@ void i_lessthen(program_context_t* program)
 }
 
 // Move this to basicOPerations.c
-void i_lesstheneq(program_context_t* program)
+void FORM_LESS_THEN_EQ(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -174,7 +174,7 @@ void i_lesstheneq(program_context_t* program)
 }
 
 // Move this to basicOPerations.c
-void i_greaterthen(program_context_t* program)
+void FORM_GREATER_THEN(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -195,7 +195,7 @@ void i_greaterthen(program_context_t* program)
     }
 }
 
-void i_greatertheneq(program_context_t* program)
+void FORM_GREATER_THEN_EQ(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -216,7 +216,7 @@ void i_greatertheneq(program_context_t* program)
     }
 }
 
-void i_eq(program_context_t* program)
+void FORM_EQ(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -237,7 +237,7 @@ void i_eq(program_context_t* program)
     }
 }
 
-void i_ineq(program_context_t* program)
+void FORM_INEQ(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -258,7 +258,7 @@ void i_ineq(program_context_t* program)
     }
 }
 
-void i_logand(program_context_t* program)
+void FORM_LOG_AND(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -279,7 +279,7 @@ void i_logand(program_context_t* program)
     }
 }
 
-void i_logor(program_context_t* program)
+void FORM_LOG_OR(program_context_t* program)
 {
     int64_t evaluation;
     data_t operandB = popData(&(program->dataStack));
@@ -300,7 +300,7 @@ void i_logor(program_context_t* program)
     }
 }
 
-void i_lognot(program_context_t* program)
+void FORM_LOG_NOT(program_context_t* program)
 {
     int64_t evaluation;
     data_t operand   = popData(&(program->dataStack));
@@ -318,7 +318,7 @@ void i_lognot(program_context_t* program)
     }
 }
 
-void i_push(program_context_t* program)
+void FORM_PUSH(program_context_t* program)
 {
     data_type_t type = program->currentInstruction.arg1;
     int64_t     data = program->currentInstruction.arg2;
@@ -326,7 +326,7 @@ void i_push(program_context_t* program)
     pushStack(&(program->dataStack), type, data);
 }
 
-void i_call(program_context_t* program)
+void FORM_CALL(program_context_t* program)
 {
     unsigned int functionIndex 
         = program->currentInstruction.arg2;
@@ -339,12 +339,12 @@ void i_call(program_context_t* program)
     program->nextInstructionIndex = 0;
 }
 
-void i_returns(program_context_t* program)
+void FORM_RETURN(program_context_t* program)
 {
     returnFromFunction(program);
 }
 
-void i_print(program_context_t* program)
+void FORM_PRINT(program_context_t* program)
 {
     shouldNotBeBottom(&(program->dataStack));
 

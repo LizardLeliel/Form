@@ -3,28 +3,30 @@
 
 #include "runtime.h"
 
-void i_nop(program_context_t*);
-void i_add(program_context_t*);
-void i_sub(program_context_t*);
-void i_mul(program_context_t*);
-void i_divs(program_context_t*);
-void i_mod(program_context_t*);
+// These functions are given special style
+//  since they're meant to be access from an array.
+void FORM_NOP(program_context_t*);
+void FORM_ADD(program_context_t*);
+void FORM_SUB(program_context_t*);
+void FORM_MUL(program_context_t*);
+void FORM_DIV(program_context_t*);
+void FORM_MOD(program_context_t*);
 
-void i_lessthen(program_context_t*);
-void i_lesstheneq(program_context_t*);
-void i_greaterthen(program_context_t*);
-void i_greatertheneq(program_context_t*);
-void i_eq(program_context_t*);
-void i_ineq(program_context_t*);
+void FORM_LESS_THEN(program_context_t*);
+void FORM_LESS_THEN_EQ(program_context_t*);
+void FORM_GREATER_THEN(program_context_t*);
+void FORM_GREATER_THEN_EQ(program_context_t*);
+void FORM_EQ(program_context_t*);
+void FORM_INEQ(program_context_t*);
 
-void i_logand(program_context_t*);
-void i_logor(program_context_t*);
-void i_lognot(program_context_t*);
+void FORM_LOG_AND(program_context_t*);
+void FORM_LOG_OR(program_context_t*);
+void FORM_LOG_NOT(program_context_t*);
 
-void i_push(program_context_t*);
-void i_call(program_context_t*);
-void i_returns(program_context_t*);
-void i_print(program_context_t*);
+void FORM_PUSH(program_context_t*);
+void FORM_CALL(program_context_t*);
+void FORM_RETURN(program_context_t*);
+void FORM_PRINT(program_context_t*);
 
 // BASIC_OPERATIONS_HEADER
 #endif

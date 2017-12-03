@@ -42,22 +42,22 @@ OP              [+-*/]
                         // Eat whitespace   
                         }
 {PRINT}                 {
-                        appendInstruction(&programBuild, print, 0, 0);
+                        appendInstruction(&programBuild, i_print, 0, 0);
                         }
 {BOOLTRUE}              {
-                        appendInstruction(&programBuild, push, f_bool, 1);
+                        appendInstruction(&programBuild, i_push, f_bool, 1);
                         }
 {BOOLFALSE}             {
-                        appendInstruction(&programBuild, push, f_bool, 0);
+                        appendInstruction(&programBuild, i_push, f_bool, 0);
                         }
 {FLOAT}                 {
                         double number = atof(yytext);
-                        appendInstruction(&programBuild, push, f_32float, 
+                        appendInstruction(&programBuild, i_push, f_32float, 
                             interpretAsInt(number));
                         }
 {INT}                   {
                         int64_t n = atoi(yytext);
-                        appendInstruction(&programBuild, push, f_32int, n);
+                        appendInstruction(&programBuild, i_push, f_32int, n);
                         }
 {STRING}                {
                         char* trimmed = trimMatchedString(yytext);
@@ -66,49 +66,49 @@ OP              [+-*/]
                             pushConstantData(&(programBuild.constantDataList),
                                              f_string, trimmed);
 
-                        appendInstruction(&programBuild, push, f_string, index);
+                        appendInstruction(&programBuild, i_push, f_string, index);
                         }
 "+"                     {
-                        appendInstruction(&programBuild, add, 0, 0);
+                        appendInstruction(&programBuild, i_add, 0, 0);
                         }
 "-"                     {
-                        appendInstruction(&programBuild, sub, 0, 0);
+                        appendInstruction(&programBuild, i_sub, 0, 0);
                         }  
 "*"                     {
-                        appendInstruction(&programBuild, mul, 0, 0);
+                        appendInstruction(&programBuild, i_mul, 0, 0);
                         }
 "/"                     {
-                        appendInstruction(&programBuild, divs, 0, 0);
+                        appendInstruction(&programBuild, i_div, 0, 0);
                         }
 "%"                     {
-                        appendInstruction(&programBuild, mod, 0, 0);
+                        appendInstruction(&programBuild, i_mod, 0, 0);
                         }
 "<"                     {
-                        appendInstruction(&programBuild, lessthen, 0, 0);
+                        appendInstruction(&programBuild, i_lessthen, 0, 0);
                         }
 "<="                    {
-                        appendInstruction(&programBuild, lesstheneq, 0, 0);
+                        appendInstruction(&programBuild, i_lesstheneq, 0, 0);
                         }
 ">"                     {
-                        appendInstruction(&programBuild, greaterthen, 0, 0);
+                        appendInstruction(&programBuild, i_greaterthen, 0, 0);
                         }
 ">="                    {
-                        appendInstruction(&programBuild, greatertheneq, 0, 0);
+                        appendInstruction(&programBuild, i_greatertheneq, 0, 0);
                         }
 "=="                    {
-                        appendInstruction(&programBuild, eq, 0, 0);
+                        appendInstruction(&programBuild, i_eq, 0, 0);
                         }
 "!="                    {
-                        appendInstruction(&programBuild, ineq, 0, 0);
+                        appendInstruction(&programBuild, i_ineq, 0, 0);
                         }
 "&&"                    {
-                        appendInstruction(&programBuild, logand, 0, 0);
+                        appendInstruction(&programBuild, i_logand, 0, 0);
                         }
 "||"                    {
-                        appendInstruction(&programBuild, logor, 0, 0);
+                        appendInstruction(&programBuild, i_logor, 0, 0);
                         }
 "!"                     {
-                        appendInstruction(&programBuild, lognot, 0, 0);
+                        appendInstruction(&programBuild, i_lognot, 0, 0);
                         }
 {VAR}                   {
                         printf("Found a var: %s\n", yytext);
@@ -135,7 +135,7 @@ OP              [+-*/]
                                       trimmed);
 
                         appendInstruction(&programBuild,
-                                          call, 
+                                          i_call, 
                                           0,
                                           token);
                         }

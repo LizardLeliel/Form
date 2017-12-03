@@ -36,61 +36,61 @@ typedef enum data_type {
 typedef enum intsruction_set 
 {
     // No operation
-    nop = 0,
+    i_nop = 0,
 
     // Standard arthemtic operations
-    add,  // 1
-    sub,  // 2
-    mul,  // 3
-    divs, // 4 
-    mod,  // 5
+    i_add,  // 1
+    i_sub,  // 2
+    i_mul,  // 3
+    i_div,  // 4 
+    i_mod,  // 5
 
     // Standard bitwise operations
-    bitwand,   // 6
-    bitwor,    // 7
-    bitwnot,   // 8
-    bitwleft,  // 9
-    bitwright, // 10
-    bitwxor,   // 11
+    i_bitwand,   // 6
+    i_bitwor,    // 7
+    i_bitwnot,   // 8
+    i_bitwleft,  // 9
+    i_bitwright, // 10
+    i_bitwxor,   // 11
 
     // Standard comparison operations
-    lessthen,      // 12
-    lesstheneq,    // 13
-    greaterthen,   // 14
-    greatertheneq, // 15
-    eq,            // 16
-    ineq,          // 17
+    i_lessthen,      // 12
+    i_lesstheneq,    // 13
+    i_greaterthen,   // 14
+    i_greatertheneq, // 15
+    i_eq,            // 16
+    i_ineq,          // 17
 
     // Boolean logic operations
-    logand, // 18
-    logor,  // 19
-    lognot, // 20
+    i_logand, // 18
+    i_logor,  // 19
+    i_lognot, // 20
 
     // Increment and deincrement operations
-    incr, // 21
-    decr, // 22
+    i_incr, // 21
+    i_decr, // 22
 
     // Standard stack-related operations
-    push,  // 23
-    drop,  // 24
-    over,  // 25
-    swaps, // 26
-    rot,   // 27
+    i_push,  // 23
+    i_drop,  // 24
+    i_over,  // 25
+    i_swaps, // 26
+    i_rot,   // 27
 
     // Form goto operations
-    gotos,    // 28
-    congotos, // 29
+    i_gotos,    // 28
+    i_congotos, // 29
 
     // Variable-related operations
-    scope,   // 30
-    assigns, // 31
-    get,     // 32
+    i_scope,   // 30
+    i_assigns, // 31
+    i_get,     // 32
 
     // Special operations (function call, return, output, end program)
-    call,    // 33
-    returns, // 34
-    print,   // 35
-    endProg, // 36
+    i_call,    // 33
+    i_return,  // 34
+    i_print,   // 35
+    i_endprog, // 36
 
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that.

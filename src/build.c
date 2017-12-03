@@ -264,7 +264,7 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
 instruction_node_t* dummyInstruction() 
 {
     instruction_node_t* dummy = malloc(sizeof(instruction_node_t));
-    dummy->instruction        = nop;
+    dummy->instruction        = i_nop;
     dummy->arg1               = 0;
     dummy->arg2               = 0;
     dummy->next               = NULL;
@@ -331,7 +331,7 @@ void makeNewFunction(program_build_t* programBuild)
 void endFunction(program_build_t* programBuild) 
 {
     // Append the return instruction to end of function
-    appendInstruction(programBuild, returns, 0, 0);
+    appendInstruction(programBuild, i_return, 0, 0);
 
     // End the function's instruction list
     programBuild->currentInstruction->next = NULL;
@@ -358,7 +358,7 @@ instruction_t convertInstructionNode(instruction_node_t* instruction)
 program_context_t returnProgram(program_build_t* programBuild)
 {
     // Append the end program instruction
-    appendInstruction(programBuild, endProg, 0, 0);
+    appendInstruction(programBuild, i_endprog, 0, 0);
 
     // Initialize the program object.
     program_context_t program;
