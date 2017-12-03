@@ -181,8 +181,11 @@ typedef union any64
 
 static const unsigned int maxDepth = 50;
 
-#include "basicOperations.h"
+// Note: this has to included here.
+#include "instructions.h"
+
 // Array of functions implementing the instructions.
+// Note: this has to be defined after instruction.h is included.
 void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
 // Raise error if at bottom of runtime data stack
@@ -209,12 +212,6 @@ void pushFunction(function_stack_t* functionStack,
 
 // Sets execution back to previous function. 
 void returnFromFunction(program_context_t* program);
-
-// Special instructions
-void i_push(program_context_t*);
-void i_call(program_context_t*);
-void i_returns(program_context_t*);
-void i_print(program_context_t*);
  
 // Reinterpration functions for arthmetic instructions.
 int64_t interpretAsInt(double value);

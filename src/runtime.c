@@ -1,5 +1,5 @@
 #include "runtime.h"
-#include "basicOperations.h"
+#include "instructions.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -177,66 +177,6 @@ void returnFromFunction(program_context_t* program)
     program->functionStack.head     = program->functionStack.head->next;
     --program->functionStack.depth;
     free(freeThis);
-}
-
-void i_push(program_context_t* program)
-{
-    data_type_t type = program->currentInstruction.arg1;
-    int64_t     data = program->currentInstruction.arg2;
-
-    pushStack(&(program->dataStack), type, data);
-}
-
-void i_call(program_context_t* program)
-{
-    unsigned int functionIndex 
-        = program->currentInstruction.arg2;
-
-    pushFunction(&(program->functionStack), 
-                 program->currentFunctionIndex,
-                 program->nextInstructionIndex);
-
-    program->nextFunctionIndex    = functionIndex;
-    program->nextInstructionIndex = 0;
-
-}
-
-void i_returns(program_context_t* program)
-{
-    returnFromFunction(program);
-}
-
-void i_print(program_context_t* program)
-{
-    shouldNotBeBottom(&(program->dataStack));
-
-    data_t value = popData(&(program->dataStack));
-
-    // Determine how to print based on type.
-    if (value.dataType & f_32float)
-    {
-        printf("%f\n", interpretAsFloat(value.data));
-    }
-    else if (value.dataType & f_32int)
-    {
-        printf("%ld\n", value.data);
-    }
-    else if (value.dataType & f_bool)
-    {
-        if (value.data == 0)
-        {
-            printf("False\n");
-        }
-        else
-        {
-            printf("True\n");
-        }
-    }
-    else if (value.dataType & f_string)
-    {
-        printf("%s\n", program->staticDataBank.dataBank[value.data].data);
-    }
-    
 }
 
 // Reinterpretation casting functions.

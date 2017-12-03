@@ -21,5 +21,10 @@ void i_logand(program_context_t*);
 void i_logor(program_context_t*);
 void i_lognot(program_context_t*);
 
+void i_push(program_context_t*);
+void i_call(program_context_t*);
+void i_returns(program_context_t*);
+void i_print(program_context_t*);
+
 // BASIC_OPERATIONS_HEADER
 #endif
