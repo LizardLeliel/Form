@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-
+// Raise error if at bottom of runtime data stack
 void shouldNotBeBottom(stack_t** dataStack) 
 {
     // Try changing later. Make better warning error for user
@@ -18,22 +18,20 @@ void shouldNotBeBottom(stack_t** dataStack)
     }
 }
 
-// Pushes data onto the stack.
-// Can we change it so all data isn't 32-bit?
+// Push data on the run-time stack.
 void pushStack(stack_t**   dataStack, 
                data_type_t dataType, 
                int64_t     data) 
 {
     stack_t* newNode = malloc(sizeof(stack_t));
-    newNode->data = data;
-
+    newNode->data    = data;
     newNode->type    = dataType;
     newNode->next    = *dataStack;
     *dataStack       = newNode;
 
 }
 
-// Pops data and frees it
+// Deletes the top of the stack
 void dropStack(stack_t** dataStack) {
     shouldNotBeBottom(dataStack);
 
@@ -42,38 +40,38 @@ void dropStack(stack_t** dataStack) {
     free(oldNode);
 }
 
-//! Todo: Fix popping behaviour
-// Pops data from the stack, frees dynamic memory associated
-//  with it, then returns that value.
-// Wait, it pops a value of size 32 when we store it as
-//  a void pointer?
+// Pops the stack, returns its value and puts the data type into outType
 int64_t popStack(stack_t** dataStack, data_type_t* outType) 
 {
     shouldNotBeBottom(dataStack);
 
+    // Fetch the data.
     if (outType != NULL) *outType = (*dataStack)->type;
-
     int64_t returnVal = (*dataStack)->data;
 
+    // Free the top of the stack.
+    stack_t* freeNode = *dataStack;
     *dataStack = (*dataStack)->next;
+    free(freeNode); 
 
-    //free(freeNode); <- This crashes strings (?!?)
     return returnVal;
 }
 
-// Like popStack, but puts the data into a data_t struct.
+// Pops the stack, then puts the data into a data_t data struct
 data_t popData(stack_t** dataStack)
 {
     shouldNotBeBottom(dataStack);
+
+    // Get values from popping the stack.
     data_type_t outType;
     int64_t data = popStack(dataStack, &outType);
 
+    // Wrap the dta into a data_t struct.
     data_t returnStruct 
         = {.dataType = outType, .data = data};
+
     return returnStruct;
 }
-
-
 
 // This is an array of function pointers. These functions
 //  are called during runtime.
@@ -136,7 +134,7 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     i_nop
 };
 
-
+// Calls a new function.
 void pushFunction(function_stack_t* functionStack, 
                   unsigned int callingFunction,
                   unsigned int instructionDestination)
@@ -160,21 +158,25 @@ void pushFunction(function_stack_t* functionStack,
     }
 }
 
+// Sets execution back to previous function.
 void returnFromFunction(program_context_t* program)
 {
+    // Check for underflow.
     if (program->functionStack.head == NULL)
     {
-        perror("Function stack underflow");
+        perror("Function stack underflow (no function to return to");
+        exit(1);
     }
 
+    // Sets next instructions to go back to previous function
     program->nextFunctionIndex    = program->functionStack.head->functionIndex;
     program->nextInstructionIndex = program->functionStack.head->instructionIndex;
 
+    // Frees node from function stack.
     function_stack_node_t* freeThis = program->functionStack.head;
     program->functionStack.head     = program->functionStack.head->next;
     --program->functionStack.depth;
     free(freeThis);
-    return;
 }
 
 void i_push(program_context_t* program)
@@ -183,8 +185,6 @@ void i_push(program_context_t* program)
     int64_t     data = program->currentInstruction.arg2;
 
     pushStack(&(program->dataStack), type, data);
-    // Arg 1: type
-    // Arg 2: data
 }
 
 void i_call(program_context_t* program)
@@ -204,18 +204,15 @@ void i_call(program_context_t* program)
 void i_returns(program_context_t* program)
 {
     returnFromFunction(program);
-    return;
 }
 
-// Please fix how strings work and how printing works,
-//  I'm just hacking it in for now.
 void i_print(program_context_t* program)
 {
-    // Delete this later
     shouldNotBeBottom(&(program->dataStack));
 
     data_t value = popData(&(program->dataStack));
 
+    // Determine how to print based on type.
     if (value.dataType & f_32float)
     {
         printf("%f\n", interpretAsFloat(value.data));
@@ -242,13 +239,13 @@ void i_print(program_context_t* program)
     
 }
 
+// Reinterpretation casting functions.
 int64_t interpretAsInt(double value)
 {
     any64_t result;
     result.as_f = value;
     return result.as_i;
 }
-
 double interpretAsFloat(int64_t value)
 {
     any64_t result;
@@ -256,6 +253,10 @@ double interpretAsFloat(int64_t value)
     return result.as_f;
 }
 
+// If either operand is a float, converts the other operand to 
+//  a float and returns f_float.
+// Else, if they're both integer types, leave them be and return
+//  f_int
 data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 {
     if ((operandA->dataType & f_32int) 
@@ -281,35 +282,39 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
     return f_32float;
 } 
 
-
+// Executes the program.
 void execute(program_context_t program)
 {   
 
-    // Stack starts initialized with a null node
+    // Create a dummy stack bottom.
     stack_t bottom =
     {
         f_nil,
         0,
         NULL,
     };
-
     program.dataStack = &bottom;
 
-
-    program.currentInstruction = program.code[0][0];
+    // Initialize values so execution starts at main.
+    program.currentInstruction      = program.code[0][0];
     program.currentInstructionIndex = 0;
     program.currentFunctionIndex    = 0;
     program.nextFunctionIndex       = program.currentFunctionIndex;
 
+    // Iterate through each instruction until the end of the program is reached.
     while (program.currentInstruction.instruction != endProg)
     {
-
+        // Set the default next instruction.
         program.nextInstructionIndex = program.currentInstructionIndex + 1;
+
+        // Execute the next instruction.
         EXEC_INSTRUCTION[program.currentInstruction.instruction](&program);
 
+        // Fetch the next instruction.
         program.currentInstruction 
             = program.code[program.nextFunctionIndex][program.nextInstructionIndex];
 
+        // Update current instruction/function markers.
         program.currentFunctionIndex    = program.nextFunctionIndex;
         program.currentInstructionIndex = program.nextInstructionIndex;
     }

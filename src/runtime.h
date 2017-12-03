@@ -4,15 +4,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-//
-// BIG TODO: CHANGE POP DATA TO BE SIZE INDEPENDENT
-// Compiling can still be size agnostic - 32 bit int
-//  which is an index of where we're saving all our strings.
-//
 
-// Typedefs
 typedef unsigned char byte;
-typedef int32_t size32_t;
 
 // An enumeration representing run-time data types.
 typedef enum data_type {
@@ -36,9 +29,10 @@ typedef enum data_type {
 
 } data_type_t;
 
-// Each enumeration's integer representation
-//  corresponds to an index to the function array
-//  holding implementations of the functions.
+// Enumeration representing the instruction to be executed.
+//  The enumeration's intergral value is used as an index
+//  to a function array holding the implementation for
+//  the instructions.
 typedef enum intsruction_set 
 {
     // No operation
@@ -92,19 +86,19 @@ typedef enum intsruction_set
     assigns, // 31
     get,     // 32
 
-    // Misc operations (function call, return, output, end program)
+    // Special operations (function call, return, output, end program)
     call,    // 33
     returns, // 34
     print,   // 35
     endProg, // 36
 
     // This isn't an instruction; this is just as the size of the enumeration
-    //  if this enum's size changes, this will reflect that, and... things
+    //  if this enum's size changes, this will reflect that.
     instruction_ammount // 37
 
 } instruction_type_t;
 
-// The stack data structure that this stack-oriented program uses
+// Stack which stores runtime data.
 typedef struct stack 
 {
     data_type_t   type;
@@ -112,15 +106,14 @@ typedef struct stack
     struct stack* next;
 } stack_t;
 
-// Major to do: get rid of this, make
-//  this into actual_data.
+// Struct representing ddata that can be stored.
 typedef struct data
 {
     data_type_t dataType;
     int64_t     data;
 } data_t;
 
-// Represents an executable instruction and its args.
+// Represents an executable instruction and its arguments.
 typedef struct instruction 
 {
     instruction_type_t  instruction;
@@ -128,6 +121,7 @@ typedef struct instruction
     int64_t             arg2;
 } instruction_t;
 
+// Stack node representing the stack of called functions.
 typedef struct function_stack_node
 {
     struct function_stack_node* next;
@@ -135,37 +129,42 @@ typedef struct function_stack_node
     unsigned int                instructionIndex;
 } function_stack_node_t;
 
-// Contains information such as return address
-//  and (later) local variables.
+// Wrapper for the function stack.
 typedef struct function_stack
 {
     function_stack_node_t* head;
     unsigned int           depth;
 } function_stack_t;
 
+// Struct to hold composite data type
+//  (ie dicts, arrays, string, etc.)
 typedef struct static_data
 {
     data_type_t type;
     void*       data;
 } static_data_t;
 
+// Holds all static data the program may use.
 typedef struct static_data_bank
 {
     static_data_t* dataBank;
     size_t         size;
 } static_data_bank_t;
 
-// This is what's execute
+// Holds all needed data for the program to execute.
 typedef struct program_context
 {
+    // array of functions. Higher-level index is function index,
+    //  lower-level index is instruction index. code[0] is main.
+    instruction_t** code; 
 
-    instruction_t**    code; // code[0] is main
-    function_stack_t   functionStack;
+    // Run-time data.
     static_data_bank_t staticDataBank;
+    stack_t*           dataStack;
+    instruction_t      currentInstruction;
 
-    // Later: make a wrapper struct for stack
-    stack_t*         dataStack;
-    instruction_t    currentInstruction;
+    // Values used to track which instruction gets executed next.
+    function_stack_t functionStack;
     unsigned int     currentFunctionIndex;
     unsigned int     currentInstructionIndex;
     unsigned int     nextInstructionIndex;
@@ -183,21 +182,16 @@ typedef union any64
 static const unsigned int maxDepth = 50;
 
 #include "basicOperations.h"
+// Array of functions implementing the instructions.
+void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
-// Remove externs sometime - test.h can extern them.
-// Or we can keep it global for now.
-extern void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
-
-// Implement this sometime.
-// void freeStack();
-
-// Raise error if at bottom of stack
+// Raise error if at bottom of runtime data stack
 void shouldNotBeBottom(stack_t** dataStack);
 
-// Push and pop things on the stack 
-void pushStack(stack_t** dataStack, 
+// Push data on the run-time stack.
+void pushStack(stack_t**   dataStack, 
                data_type_t dataType, 
-               int64_t data);
+               int64_t     data);
 
 // Deletes the top of the stack
 void dropStack(stack_t** dataStack);
@@ -205,22 +199,24 @@ void dropStack(stack_t** dataStack);
 // Pops the stack, returns its value and puts the data type into outType
 int64_t popStack(stack_t** dataStack, data_type_t* outType);
 
-// Pops the stack, then puts the data into a data_t data structe
+// Pops the stack, then puts the data into a data_t data struct
 data_t popData();
 
-// Calls a new function
+// Calls a new function.
 void pushFunction(function_stack_t* functionStack,
                   unsigned int callingFunction,
                   unsigned int instructionDestination);
-// Ends a function
+
+// Sets execution back to previous function. 
 void returnFromFunction(program_context_t* program);
 
+// Special instructions
 void i_push(program_context_t*);
 void i_call(program_context_t*);
 void i_returns(program_context_t*);
 void i_print(program_context_t*);
  
-// Reinterpration procedures for arthmetic.
+// Reinterpration functions for arthmetic instructions.
 int64_t interpretAsInt(double value);
 double interpretAsFloat(int64_t value);
 
@@ -230,7 +226,7 @@ double interpretAsFloat(int64_t value);
 //  f_int
 data_type_t prepareOperands(data_t* operandA, data_t* operandB);
 
-// Execute a chain of instructions
+// Executes the program.
 void execute(program_context_t program);
 
 // RUNTIME_HEADER

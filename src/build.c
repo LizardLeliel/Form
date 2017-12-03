@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+// Returns an empty program build object.
 program_build_t prepareBuild()
 {
     program_build_t programBuild;
@@ -15,18 +16,16 @@ program_build_t prepareBuild()
     programBuild.tokenHash          = makeTokenHash();
     programBuild.constantDataList   = makeConstantDataList();
 
-    // Intialize the pointers
+    // Intialize pointers
     programBuild.programTop         = malloc(sizeof(function_header_t));
-    programBuild.currentInstruction = dummyInstruction();//malloc(sizeof(instruction_node_t));
-
-    programBuild.programTop->head   = programBuild.currentInstruction;
-    programBuild.programTop->next   = NULL;
-    programBuild.programTop->depth  = 1;
-
+    programBuild.currentInstruction = dummyInstruction();
     programBuild.lastFunction       = programBuild.programTop;
     programBuild.mainLast           = programBuild.currentInstruction;
 
-    programBuild.currentInstruction->instruction = nop;
+    // Initializes the main function
+    programBuild.programTop->head   = programBuild.currentInstruction;
+    programBuild.programTop->next   = NULL;
+    programBuild.programTop->depth  = 1;
 
     // Initialize the misc variables
     programBuild.onMain = true;
@@ -35,32 +34,39 @@ program_build_t prepareBuild()
     return programBuild;
 }
 
+// Allocates and initializes an empty token hash.
 token_hash_t makeTokenHash()
 {
-    int tries = 3;
+    // Initializes token hash
     token_hash_t tokenHash;
-
+    unsigned int size         = MAX_HASH_ARRAY_SIZE;
     tokenHash.cleanupList.top = NULL;
-    tokenHash.hash = calloc(maxArrayVal + 1, sizeof(hash_bucket_t*));
+    tokenHash.hash
+        = calloc(size, sizeof(hash_bucket_t*));
 
-    // If calloc failed, try again with a smaller size
+    // Tru to allocate the hash array (default ~1mb of ram)
+    unsigned int tries = 3;
     while (tokenHash.hash == NULL)
     {
-        maxArrayVal >>= 1;
-        tokenHash.hash = calloc(maxArrayVal + 1, sizeof(hash_bucket_t*));
+        size >>= 1;
+        tokenHash.hash = calloc(size, sizeof(hash_bucket_t*));
 
         if (--tries == 0)
         {
             perror
             ("Unable to allocate memory for hash table while scanning\n");
+            exit(1);
         }
     }
+    tokenHash.size = size;
 
+    // Fill the typecount array with default values
     memset(tokenHash.typeCount, 0, sizeof tokenHash.typeCount);
 
     return tokenHash;
 }
 
+// Allocates a constant data list.
 constant_data_list_t makeConstantDataList()
 {
     constant_data_list_t constantDataList;
@@ -71,11 +77,14 @@ constant_data_list_t makeConstantDataList()
     return constantDataList;
 }
 
+// Deletes the token hash 
 void freeHash(token_hash_t* tokenHash)
 {
     hash_bucket_list_node_t* tracer;
     tracer = tokenHash->cleanupList.top;
   
+    // Iterate through the list, deleting each node's entry, symbol,
+    //  and the node itself
     while (tracer != NULL)
     {
         hash_bucket_list_node_t* toFree;
@@ -88,39 +97,44 @@ void freeHash(token_hash_t* tokenHash)
     free(tokenHash->hash);
 }
 
-// The algorithm used is a variation of the sdbm algoritn
+// The hashing function to calculate a key's hash value.
+// The algorithm used is a variation of the sdbm algorithm
 //  (http://www.cse.yorku.ca/~oz/hash.html)
 unsigned long hashFunction(size_t wordLength, const char* symbol) 
 {
     unsigned long hashed_value = 0;
-    int c = 0;
-
+    int c                      = 0;
     do 
     {
         hashed_value = symbol[c] + (hashed_value << 6) 
                      + (hashed_value << 16) - hashed_value;
     } while (++c < wordLength);
-
     return hashed_value;
 }
 
+// Get a key's corresponding bucket
 hash_bucket_t* getBucket(token_hash_t* tokenHash,
                          hash_type_t   hashedType,
                          size_t        symbolSize,
                          const char*   symbolName)
 {
-    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
+    // Hash the data.
+    unsigned long index = tokenHash->size & hashFunction(symbolSize, symbolName);
 
+    // Return nothing if the bucket doesn't exist.
     if (tokenHash->hash[index] == NULL)
     {
         return NULL;
     }
 
+    // If a bucket exists, search through the list (since they'll be a list
+    //  if there's a collision).
     hash_bucket_t* tracer = tokenHash->hash[index];
 
     while (tracer != NULL)
     {
         if (tracer->symbolLength == symbolSize 
+            && tracer->hashedType == hashedType
             && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
         {
             return tracer;
@@ -128,6 +142,7 @@ hash_bucket_t* getBucket(token_hash_t* tokenHash,
         tracer = tracer->next;
     }
 
+    // We reached end of list, there is no 
     return NULL;
 }
 
@@ -137,15 +152,14 @@ unsigned int getHashID(token_hash_t* tokenHash,
                        const char*   symbolName) 
 {
 
-    unsigned long index = maxArrayVal & hashFunction(symbolSize, symbolName);
+    unsigned long index = tokenHash->size & hashFunction(symbolSize, symbolName);
 
-    // If hash entry is empty, set a new one
-    // To do: make a function for creating hash entries
+    // If hash element is NULL, create a new one.
     if (tokenHash->hash[index] == NULL) 
     {
         (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
 
-        // Set values
+        // Set values.
         (tokenHash->hash[index])->hashedType   = toHashType;
         (tokenHash->hash[index])->contents.ID  = ++(tokenHash->typeCount[toHashType]);
         (tokenHash->hash[index])->next         = NULL;
@@ -154,44 +168,44 @@ unsigned int getHashID(token_hash_t* tokenHash,
         (tokenHash->hash[index])->symbol
             = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
+        // Put the bucket into the list for later deallocation.
         pushToList(tokenHash, tokenHash->hash[index]);
 
         return tokenHash->typeCount[toHashType];
     }
 
     // Else, check each node in list to see if symbol already exists. Start
-    //  with a dummy list node (Is there a simplier way to do this?)
+    //  with a dummy list node
     hash_bucket_t  dummy;
     hash_bucket_t* tracer = &dummy;
 
     tracer->next = tokenHash->hash[index];
-
     do 
     {
         tracer = tracer->next;
-        // If the words are the same length and are the same
-        if (tracer->symbolLength == symbolSize) 
+
+        // If the tokens are the same length, type, and are the same
+        if (tracer->symbolLength  == symbolSize 
+            && tracer->hashedType == toHashType
+            && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
         {
-            if (memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
-            {
-                return tracer->contents.ID;
-            }
+            return tracer->contents.ID;
         }
 
     } while (tracer->next != NULL);
 
-    // If trace->next == null, then we need to make a new hash entry
-    //  (because one does not exist)
+    // The end of the list is reached, so the element doesn't already 
+    //  exist, and needs to be added
     tracer = tracer->next = malloc(sizeof(hash_bucket_t));
     tracer->hashedType    = toHashType;
     tracer->symbolLength  = symbolSize;
     tracer->contents.ID   = ++tokenHash->typeCount[toHashType];
-
-    tracer->symbol = memcpy(malloc(symbolSize), symbolName, symbolSize);
+    tracer->symbol        = memcpy(malloc(symbolSize), symbolName, symbolSize);
 
     return tokenHash->typeCount[toHashType];
 }
 
+// Checks for the existance of a token
 bool peakHash(token_hash_t* tokenHash,
               hash_type_t   hashedType,
               size_t        symbolSize,
@@ -202,14 +216,14 @@ bool peakHash(token_hash_t* tokenHash,
         : true;
 }
 
-// Adds to list of hash buckets (for freeing later)
+// Adds a new hash bucket to a hash object's bucket list.
 void pushToList(token_hash_t*  tokenHash,
                 hash_bucket_t* slot)
 {
     if (tokenHash->cleanupList.top == NULL)
     {
-        tokenHash->cleanupList.top = malloc(sizeof(hash_bucket_list_node_t));
-
+        tokenHash->cleanupList.top
+            = malloc(sizeof(hash_bucket_list_node_t));
         tokenHash->cleanupList.top->entry = slot;
         tokenHash->cleanupList.top->next  = NULL;
     }
@@ -217,26 +231,28 @@ void pushToList(token_hash_t*  tokenHash,
     {
         hash_bucket_list_node_t* newNode 
             = malloc(sizeof(hash_bucket_list_node_t));
-        newNode->next = tokenHash->cleanupList.top;
-        newNode->entry = slot;
+        newNode->next              = tokenHash->cleanupList.top;
+        newNode->entry             = slot;
         tokenHash->cleanupList.top = newNode;
     }
 }
 
+// Push new data to the constant data stack, returns which
+//  index it'll be stored at during runtime.
 int64_t pushConstantData(constant_data_list_t* constantDataList,
                         data_type_t            type,
                         void*                  data)
 {
-
+    // Initialize constant data node.
     constant_data_list_node_t* newNode 
         = malloc(sizeof (constant_data_list_node_t));
-
     newNode->type = type;
     newNode->data = data;
     newNode->eventualIndex = (constantDataList->depth);
         
     ++(constantDataList->depth);
 
+    // Add the new node
     newNode->next         = constantDataList->top;
     constantDataList->top = newNode;       
 
@@ -261,13 +277,15 @@ void appendInstruction(program_build_t*   programBuild,
                        int32_t            arg1,
                        int64_t            arg2)
 {
-
+    // Initialize the instruction pointer
     instruction_node_t* newInstructNode = malloc(sizeof(instruction_node_t));
     newInstructNode->instruction        = newInstruct;
     newInstructNode->next               = NULL;
     newInstructNode->arg1               = arg1;
     newInstructNode->arg2               = arg2;
 
+    // Determine if we need to increase the main function's depth
+    //  or the last-function-added's depther
     if (programBuild->onMain == true)
     {
         programBuild->programTop->depth += 1;
@@ -277,21 +295,23 @@ void appendInstruction(program_build_t*   programBuild,
         programBuild->lastFunction->depth += 1;
     }
 
+    // Append instruction to end of function.
     programBuild->currentInstruction->next = newInstructNode;
     programBuild->currentInstruction       = newInstructNode;
 
+    // Save the last instruction in main for when we finish
+    //  scanning a function.
     if (programBuild->onMain == true) 
     {
         programBuild->mainLast = newInstructNode;
     }
 }
 
-
+// Adds a new function header to the end of the function queue.
 void makeNewFunction(program_build_t* programBuild) 
 {
     // Allocates and initialize memory
     function_header_t* newFunction = malloc(sizeof(function_header_t));
-
     newFunction->next  = NULL;
     newFunction->head  = dummyInstruction();
     newFunction->depth = 1;
@@ -300,22 +320,28 @@ void makeNewFunction(program_build_t* programBuild)
     programBuild->currentInstruction = newFunction->head;
     programBuild->lastFunction->next = newFunction;
     programBuild->lastFunction       = newFunction;
-    programBuild->functionAmmount   += 1;
 
-    programBuild->onMain = false;
+    // set other values.
+    programBuild->functionAmmount += 1;
+    programBuild->onMain           = false;
 }
 
 // Places return instruction on end of the instruction queue,
-//  and configures things back to main
+//  and sets things back to main.
 void endFunction(program_build_t* programBuild) 
 {
+    // Append the return instruction to end of function
     appendInstruction(programBuild, returns, 0, 0);
 
+    // End the function's instruction list
     programBuild->currentInstruction->next = NULL;
-    programBuild->currentInstruction       = programBuild->mainLast;
-    programBuild->onMain                   = true;
+
+    // Set things back onto main
+    programBuild->currentInstruction = programBuild->mainLast;
+    programBuild->onMain             = true;
 }
 
+// Takes an instruction node and converts it to an instruction data struct
 instruction_t convertInstructionNode(instruction_node_t* instruction)
 {
     instruction_t flatInstruction;
@@ -327,26 +353,20 @@ instruction_t convertInstructionNode(instruction_node_t* instruction)
     return flatInstruction;
 }
 
+// takes a programBuild object and creates a complete 
+//  initialized program context object ready for execution.
 program_context_t returnProgram(program_build_t* programBuild)
 {
-    // Move into formLang.flex somehow later - appending the end program 
-    //  instruction to end of program
-    if (programBuild->onMain == false)
-    {
-        puts("Error: reached EOF while parsing function");
-        exit(0);
-    }
-
+    // Append the end program instruction
     appendInstruction(programBuild, endProg, 0, 0);
 
-    // Build program.
+    // Initialize the program object.
     program_context_t program;
     program.functionStack.depth = 0;
 
-    // Initialize the function array
+    // Initialize the function array.
     program.code = calloc(programBuild->functionAmmount,
                           sizeof(instruction_t*));
-
 
     // Fill out the function array
     unsigned int functionIndex = 0;
@@ -354,23 +374,29 @@ program_context_t returnProgram(program_build_t* programBuild)
 
     while (tracer != NULL)
     {
+        // Allocate enough memory for the function to fit into an array
         program.code[functionIndex] 
             = calloc(tracer->depth, sizeof(instruction_t));
 
+        // Beging the tracer and index marker
         instruction_node_t* instructionTracer = tracer->head;
         unsigned int instructionIndex         = 0;
 
         while (instructionTracer != NULL)
         {
+            // Convert the instruction node and save it in the proper
+            //  place int he array.
             (program.code[functionIndex])[instructionIndex]
                 = convertInstructionNode(instructionTracer);
 
+            // Deallocate the instruction node and move to next node.    
             instruction_node_t* freeInstruction = instructionTracer;
             instructionTracer                   = instructionTracer->next;
             ++instructionIndex;
             free(freeInstruction);
         }
 
+        // Update tracer and index marker.
         ++functionIndex;
         tracer = tracer->next;
     }
@@ -380,7 +406,7 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.staticDataBank.size     = bankSize;
     program.staticDataBank.dataBank = calloc(bankSize, sizeof(static_data_t));
 
-    // Fill out the static data bank
+    // Fill out the static data bank, using another tracer.
     constant_data_list_node_t* staticDataTracer 
         = programBuild->constantDataList.top;
 
@@ -397,7 +423,6 @@ program_context_t returnProgram(program_build_t* programBuild)
     // Initialize function stack
     program.functionStack.depth = 0;
     program.functionStack.head  = NULL;
-
 
     return program;
 }

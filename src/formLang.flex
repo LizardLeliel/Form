@@ -14,7 +14,6 @@ extern double interpretAsFloat(int64_t value);
 bool isWhiteSpace(char c);
 char* trimMatchedString(char* string);
 
-
 // What will be returned
 program_build_t programBuild;
 %}
@@ -40,7 +39,7 @@ OP              [+-*/]
 %%
 
 {WS}+                   {
-                                   
+                        // Eat whitespace   
                         }
 {PRINT}                 {
                         appendInstruction(&programBuild, print, 0, 0);
@@ -115,6 +114,7 @@ OP              [+-*/]
                         printf("Found a var: %s\n", yytext);
                         }
 {FUNCTIONBEGIN}         {
+                        // yytext + 1 to cut off the ':'
                         char* trimmed =  yytext + 1;
                         getHashID(&(programBuild.tokenHash),
                                   h_functionName, 
@@ -139,7 +139,14 @@ OP              [+-*/]
                                           0,
                                           token);
                         }
-
+<<EOF>>                 {
+                        if (programBuild.onMain == false)
+                        {
+                            puts("Reached EOF while parsing function");
+                            exit(1);
+                        }
+                        return 0;
+                        }
 %%  
 
 void initializeYYLEXProgramBuilder()
@@ -152,13 +159,10 @@ program_context_t finishYYLEXBuild()
     return returnProgram(&programBuild);
 }
 
-
-// Move these bottom two into formLang.flex
 bool isWhiteSpace(char c)
 {
     return (c == ' ' || c == '\n' || c == '\t' || c == 26);
 }
-
 
 char* trimMatchedString(char* string)
 {
@@ -198,5 +202,4 @@ char* trimMatchedString(char* string)
     }
 
     return duplicate;
-
 }

@@ -3,6 +3,9 @@
 
 #include "runtime.h"
 
+// The max size of the array used by the hash.
+// Must be 2^n-1
+#define MAX_HASH_ARRAY_SIZE 0xFFFF;
 
 // Represents the type of data stored in a hash bucket
 typedef enum hash_type {
@@ -42,15 +45,17 @@ typedef struct hash_bucket_list
     hash_bucket_list_node_t* top;
 } hash_bucket_list_t;
 
-// A structur suitable for storing values related to
-//  different tokens
+// A list node to keep track of allocated hash buckets
+//  (for later deallocation)
 typedef struct token_hash
 {  
     hash_bucket_t**    hash;
     unsigned int       typeCount[h_gotoMemory+1];
     hash_bucket_list_t cleanupList;
+    size_t             size;
 } token_hash_t;
 
+// A wrapper for hash bucket list
 typedef struct instruction_node
 {
     instruction_type_t       instruction;
@@ -67,6 +72,7 @@ typedef struct function_header
     size_t                  depth;
 } function_header_t;
 
+// List node to hold scanned constant data
 typedef struct constant_data_list_node
 {
     unsigned int                    eventualIndex;
@@ -75,6 +81,7 @@ typedef struct constant_data_list_node
     struct constant_data_list_node* next;
 } constant_data_list_node_t;
 
+// Wrapper struct for scanned constant data list.
 typedef struct constant_data_list
 {
     constant_data_list_node_t* top;
@@ -83,7 +90,7 @@ typedef struct constant_data_list
 
 
 // A struct for building a list of instructions and tracking
-//  static ddta before it gets converting to a program object.
+//  static data before converting to a program object.
 typedef struct program_build
 {
     // The hash
@@ -102,27 +109,24 @@ typedef struct program_build
 } program_build_t;
 
 
-// The max size of the array.
-// Note: turn this into a macro.
-static unsigned long maxArrayVal = 0xFFFF;
-
 // Returns an empty program build object.
-// Todo: rename?
 program_build_t prepareBuild();
 
-// Note: make tries and hash type a parameter
-// Allocates and initializes a new token hash.
+// Allocates and initializes an empty token hash.
 token_hash_t makeTokenHash();
+
+// Allocates a constant data list.
 constant_data_list_t makeConstantDataList();
 
-// Todo: GARBAGE CLEAN
-
-// Free a token Hash
+// Deletes the token hash 
 void freeHash(token_hash_t* tokenHash);
 
-// The hashing function 
+// The hashing function to calculate a key's hash value.
+// The algorithm used is a variation of the sdbm algorithm
+//  (http://www.cse.yorku.ca/~oz/hash.html)
 unsigned long hashFunction(size_t wordLength, const char* symbol);
 
+// Get a key's corresponding bucket
 hash_bucket_t* getBucket(token_hash_t* tokenHash,
                          hash_type_t   hashedType,
                          size_t        symbolSize,
@@ -135,6 +139,7 @@ unsigned int getHashID(token_hash_t* tokenHash,
                        size_t        symbolSize,
                        const char*   symbolName);
 
+// Checks for the existance of a token
 bool peakHash(token_hash_t* tokenHash,
               hash_type_t   hashedType,
               size_t        symbolSize,
@@ -149,10 +154,11 @@ bool peakHash(token_hash_t* tokenHash,
 void pushToList(token_hash_t*  tokenHash, 
                 hash_bucket_t* slot);
 
-// Push new data to the constant data stack
+// Push new data to the constant data stack, returns which
+//  index it'll be stored at during runtime.
 int64_t pushConstantData(constant_data_list_t* constantDataList,
-                         data_type_t type,
-                         void* data);
+                         data_type_t           type,
+                         void*                 data);
 
 
 // Makes a dummy head
@@ -168,13 +174,15 @@ void appendInstruction(program_build_t*  programBuild,
 // Adds a new function header to the end of the function queue.
 void makeNewFunction(program_build_t* programBuild);
 
-// Ends a function
+// Places return instruction on end of the instruction queue,
+//  and sets things back to main.
 void endFunction(program_build_t* programBuild);
 
+// Takes an instruction node and converts it to an instruction data struct
 instruction_t convertInstructionNode(instruction_node_t* instruction);
 
 // takes a programBuild object and creates a complete 
-//  initialized program context object ready for execution
+//  initialized program context object ready for execution.
 program_context_t returnProgram(program_build_t* program);
 
 #define BUILD_HEADER
