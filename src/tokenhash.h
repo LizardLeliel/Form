@@ -26,12 +26,8 @@ typedef struct hash_bucket
     hash_type_t         hashType;
     char*               symbol;
     size_t              symbolLength;
-    struct hash_bucket* next;
-    union 
-    {
-        unsigned int   ID;
-        // instruction_t* gotoDestination;
-    } contents;
+    struct hash_bucket* next;    
+    unsigned int        ID;
 
 } hash_bucket_t;
 

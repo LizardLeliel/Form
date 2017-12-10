@@ -98,12 +98,12 @@ bool createHashBucket(token_hash_t* tokenHash,
 
         if (nextID == true)
         {
-            (tokenHash->hash[index])->contents.ID 
+            (tokenHash->hash[index])->ID 
                 = ++(tokenHash->typeCount[hashType]);
         }
         else
         {
-            (tokenHash->hash[index])->contents.ID = 0;
+            (tokenHash->hash[index])->ID = 0;
         }
 
         (tokenHash->hash[index])->symbol
@@ -115,16 +115,12 @@ bool createHashBucket(token_hash_t* tokenHash,
         return true;
     }
 
-    // Else, check each node in list to see if symbol already exists. Start
-    //  with a dummy list node
-    hash_bucket_t  dummy;
-    hash_bucket_t* tracer = &dummy;
+    // Else, check each node in list to see if symbol already exists.a
+    hash_bucket_t* tracer = tokenHash->hash[index];
 
-    tracer->next = tokenHash->hash[index];
-    do 
+    
+    while (tracer != NULL) 
     {
-        tracer = tracer->next;
-
         // If the tokens are the same length, type, and are the same
         if (tracer->symbolLength == symbolSize 
             && tracer->hashType  == hashType
@@ -133,7 +129,8 @@ bool createHashBucket(token_hash_t* tokenHash,
             return false;
         }
 
-    } while (tracer->next != NULL);
+        tracer = tracer->next;
+    }
 
     // The end of the list is reached, so the element doesn't already 
     //  exist, and needs to be added
@@ -144,12 +141,12 @@ bool createHashBucket(token_hash_t* tokenHash,
 
     if (nextID == true)
     {
-        tracer->contents.ID 
+        tracer->ID 
             = ++(tokenHash->typeCount[hashType]);
     }
     else
     {
-        tracer->contents.ID = 0;
+        tracer->ID = 0;
     }
 
     return true;
@@ -205,7 +202,7 @@ unsigned int getHashValue(token_hash_t* tokenHash,
         exit(1);
     }
 
-    return bucket->contents.ID;
+    return bucket->ID;
 }
 
 // Sets the value for a key. The bool returns true if the bucket 
@@ -224,7 +221,7 @@ bool setHashValue(token_hash_t* tokenHash,
         return false;
     }
 
-    bucket->contents.ID = newID;
+    bucket->ID = newID;
     return true;
 }
 
@@ -235,7 +232,7 @@ bool peakHash(token_hash_t* tokenHash,
               size_t        symbolSize,
               const char*   symbolName)
 {
-    return getBucket(tokenHash, hashType  , symbolSize, symbolName) == NULL 
+    return getBucket(tokenHash, hashType, symbolSize, symbolName) == NULL 
         ? false
         : true;
 }
