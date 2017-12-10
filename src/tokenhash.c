@@ -208,6 +208,8 @@ unsigned int getHashValue(token_hash_t* tokenHash,
     return bucket->contents.ID;
 }
 
+// Sets the value for a key. The bool returns true if the bucket 
+//  has existed previously.
 bool setHashValue(token_hash_t* tokenHash,
                   hash_type_t   hashType,
                   size_t        symbolSize,
@@ -226,40 +228,6 @@ bool setHashValue(token_hash_t* tokenHash,
     return true;
 }
 
-
-// Returns the ID of a token (regardless if it exists
-//  in the hash already or not)
-unsigned int getHashID(token_hash_t* tokenHash,
-                       hash_type_t   hashType, 
-                       size_t        symbolSize,
-                       const char*   symbolName) 
-{
-    bool bucketExists = peakHash(tokenHash,
-                                 hashType, 
-                                 symbolSize,
-                                 symbolName);
-
-    if (bucketExists)
-    {
-        return getHashValue(tokenHash,
-                            hashType, 
-                            symbolSize,
-                            symbolName);
-    }
-    else
-    {
-        createHashBucket(tokenHash,
-                         hashType, 
-                         symbolSize,
-                         symbolName,
-                         true);
-
-        return getHashValue(tokenHash,
-                            hashType, 
-                            symbolSize,
-                            symbolName);
-    }
-}
 
 // Checks for the existance of a token
 bool peakHash(token_hash_t* tokenHash,

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "build.h"
 
@@ -116,10 +117,19 @@ OP              [+-*/]
 {FUNCTIONBEGIN}         {
                         // yytext + 1 to cut off the ':'
                         char* trimmed =  yytext + 1;
-                        getHashID(&(programBuild.tokenHash),
+
+                        if (!createHashBucket(
+                                  &(programBuild.tokenHash),
                                   h_functionName, 
                                   strlen(trimmed), 
-                                  trimmed);
+                                  trimmed,
+                                  true))
+                        {
+                            printf("Function \"%s\" already defined\n", 
+                                   trimmed);
+                            exit(1);
+                        }
+
                         makeNewFunction(&programBuild);
                         }
 {FUNCTIONEND}           {
@@ -129,10 +139,10 @@ OP              [+-*/]
                         char* trimmed = yytext;
 
                         unsigned int token = 
-                            getHashID(&(programBuild.tokenHash),
-                                      h_functionName,
-                                      strlen(trimmed),
-                                      trimmed);
+                            getHashValue(&(programBuild.tokenHash),
+                                         h_functionName,
+                                         strlen(trimmed),
+                                         trimmed);
 
                         appendInstruction(&programBuild,
                                           i_call, 

@@ -91,7 +91,8 @@ unsigned int getHashValue(token_hash_t* tokenHash,
                           size_t        symbolSize,
                           const char*   symbolName);
 
-// Sets a value. The bool returns true if the bucket has existed previously.
+// Sets the value for a key. The bool returns true if the bucket 
+//  has existed previously.
 bool setHashValue(token_hash_t* tokenHash,
                   hash_type_t   toHashType,
                   size_t        symbolSize,
@@ -100,23 +101,12 @@ bool setHashValue(token_hash_t* tokenHash,
 
 
 
-// Returns the ID of a token (regardless if it exists
-//  in the hash already or not)
-unsigned int getHashID(token_hash_t* tokenHash,
-                       hash_type_t   toHashType,
-                       size_t        symbolSize,
-                       const char*   symbolName);
-
 // Checks for the existance of a token
 bool peakHash(token_hash_t* tokenHash,
               hash_type_t   hashedType,
               size_t        symbolSize,
               const char*   symbolName);
 
-// bool setHash(token_hash_t* tokenHash,
-//              hash_type_t   hashedType,
-//              size_t        symbolSize,
-//              const char*   symbolName);
 
 // Adds a new hash bucket to a hash object's bucket list.
 void pushToList(token_hash_t*  tokenHash, 
