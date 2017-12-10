@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-
-typedef unsigned char byte;
-
 // An enumeration representing run-time data types.
 typedef enum data_type {
     f_nil       = 0x0000,

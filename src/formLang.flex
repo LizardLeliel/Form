@@ -166,7 +166,6 @@ bool isWhiteSpace(char c)
 
 char* trimMatchedString(char* string)
 {
-    size_t stringSize = strlen(string);
     char* reader      = string;
 
     while(isWhiteSpace(*reader))

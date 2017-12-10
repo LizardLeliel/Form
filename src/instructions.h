@@ -1,5 +1,5 @@
-#ifndef BASIC_OPERATIONS_HEADER
-#define BASIC_OPERATIONS_HEADER
+#ifndef INSTRUCTIONS_HEADER
+#define INSTRUCTIONS_HEADER
 
 #include "runtime.h"
 
@@ -32,5 +32,5 @@ void FORM_PRINT(program_context_t*);
 int64_t interpretAsInt(double value);
 double interpretAsFloat(int64_t value);
 
-// BASIC_OPERATIONS_HEADER
+// INSTRUCTIONS_HEADER
 #endif
