@@ -179,20 +179,6 @@ void returnFromFunction(program_context_t* program)
     free(freeThis);
 }
 
-// Reinterpretation casting functions.
-int64_t interpretAsInt(double value)
-{
-    any64_t result;
-    result.as_f = value;
-    return result.as_i;
-}
-double interpretAsFloat(int64_t value)
-{
-    any64_t result;
-    result.as_i = value;       
-    return result.as_f;
-}
-
 // If either operand is a float, converts the other operand to 
 //  a float and returns f_float.
 // Else, if they're both integer types, leave them be and return

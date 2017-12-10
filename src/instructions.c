@@ -375,3 +375,17 @@ void FORM_PRINT(program_context_t* program)
         printf("%s\n", program->staticDataBank.dataBank[value.data].data);
     }
 }
+
+// Reinterpretation casting functions.
+int64_t interpretAsInt(double value)
+{
+    any64_t result;
+    result.as_f = value;
+    return result.as_i;
+}
+double interpretAsFloat(int64_t value)
+{
+    any64_t result;
+    result.as_i = value;       
+    return result.as_f;
+}

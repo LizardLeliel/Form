@@ -212,10 +212,6 @@ void pushFunction(function_stack_t* functionStack,
 
 // Sets execution back to previous function. 
 void returnFromFunction(program_context_t* program);
- 
-// Reinterpration functions for arthmetic instructions.
-int64_t interpretAsInt(double value);
-double interpretAsFloat(int64_t value);
 
 // If either operand is a float, converts the other operand to 
 //  a float and returns f_float.

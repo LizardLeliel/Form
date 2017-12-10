@@ -28,5 +28,9 @@ void FORM_CALL(program_context_t*);
 void FORM_RETURN(program_context_t*);
 void FORM_PRINT(program_context_t*);
 
+// Reinterpration functions for arthmetic instructions.
+int64_t interpretAsInt(double value);
+double interpretAsFloat(int64_t value);
+
 // BASIC_OPERATIONS_HEADER
 #endif
