@@ -23,7 +23,7 @@ typedef enum hash_type {
 //  (variable, function name, etc.)
 typedef struct hash_bucket 
 {
-    hash_type_t         hashedType;
+    hash_type_t         hashType;
     char*               symbol;
     size_t              symbolLength;
     struct hash_bucket* next;
@@ -69,11 +69,36 @@ void freeHash(token_hash_t* tokenHash);
 //  (http://www.cse.yorku.ca/~oz/hash.html)
 unsigned long hashFunction(size_t wordLength, const char* symbol);
 
+// Creates hash bucket for new key, intializes it with next value
+//  as displayed in array if nextID is true, or 0 if false. Bool returned
+//  is false if key already exists (and therefore fails) or true
+//  if key does not already exist.
+bool createHashBucket(token_hash_t* tokenHash,
+                      hash_type_t   hashedType,
+                      size_t        symbolSize,
+                      const char*   symbolName,
+                      bool          nextID);
+
 // Get a key's corresponding bucket
 hash_bucket_t* getBucket(token_hash_t* tokenHash,
                          hash_type_t   hashedType,
                          size_t        symbolSize,
                          const char*   symbolName);
+
+// Returns the value associated with the key
+unsigned int getHashValue(token_hash_t* tokenHash,
+                          hash_type_t   toHashType,
+                          size_t        symbolSize,
+                          const char*   symbolName);
+
+// Sets a value. The bool returns true if the bucket has existed previously.
+bool setHashValue(token_hash_t* tokenHash,
+                  hash_type_t   toHashType,
+                  size_t        symbolSize,
+                  const char*   symbolName,
+                  unsigned int  newID);
+
+
 
 // Returns the ID of a token (regardless if it exists
 //  in the hash already or not)

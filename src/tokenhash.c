@@ -73,14 +73,97 @@ unsigned long hashFunction(size_t wordLength, const char* symbol)
     return hashed_value;
 }
 
+// Creates hash bucket for new key, intializes it with next value
+//  as displayed in array if nextID is true, or 0 if false. Bool returned
+//  is false if key already exists (and therefore fails) or true
+//  if key does not already exist.
+bool createHashBucket(token_hash_t* tokenHash,
+                      hash_type_t   hashType,
+                      size_t        symbolSize,
+                      const char*   symbolName,
+                      bool          nextID)
+{
+    // Hash the data.
+    unsigned long index 
+        = tokenHash->size & hashFunction(symbolSize, symbolName);
+
+    if (tokenHash->hash[index] == NULL)
+    {
+        (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
+
+        // Set values.
+        (tokenHash->hash[index])->hashType     = hashType;
+        (tokenHash->hash[index])->next         = NULL;
+        (tokenHash->hash[index])->symbolLength = symbolSize;
+
+        if (nextID == true)
+        {
+            (tokenHash->hash[index])->contents.ID 
+                = ++(tokenHash->typeCount[hashType]);
+        }
+        else
+        {
+            (tokenHash->hash[index])->contents.ID = 0;
+        }
+
+        (tokenHash->hash[index])->symbol
+            = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+        // Put the bucket into the list for later deallocation.
+        pushToList(tokenHash, tokenHash->hash[index]);
+
+        return true;
+    }
+
+    // Else, check each node in list to see if symbol already exists. Start
+    //  with a dummy list node
+    hash_bucket_t  dummy;
+    hash_bucket_t* tracer = &dummy;
+
+    tracer->next = tokenHash->hash[index];
+    do 
+    {
+        tracer = tracer->next;
+
+        // If the tokens are the same length, type, and are the same
+        if (tracer->symbolLength == symbolSize 
+            && tracer->hashType  == hashType
+            && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
+        {
+            return false;
+        }
+
+    } while (tracer->next != NULL);
+
+    // The end of the list is reached, so the element doesn't already 
+    //  exist, and needs to be added
+    tracer = tracer->next = malloc(sizeof(hash_bucket_t));
+    tracer->hashType      = hashType;
+    tracer->symbolLength  = symbolSize;
+    tracer->symbol        = memcpy(malloc(symbolSize), symbolName, symbolSize);
+
+    if (nextID == true)
+    {
+        tracer->contents.ID 
+            = ++(tokenHash->typeCount[hashType]);
+    }
+    else
+    {
+        tracer->contents.ID = 0;
+    }
+
+    return true;
+}
+
 // Get a key's corresponding bucket
 hash_bucket_t* getBucket(token_hash_t* tokenHash,
-                         hash_type_t   hashedType,
+                         hash_type_t   hashType,
                          size_t        symbolSize,
                          const char*   symbolName)
 {
     // Hash the data.
-    unsigned long index = tokenHash->size & hashFunction(symbolSize, symbolName);
+    unsigned long index 
+        = tokenHash->size & hashFunction(symbolSize, symbolName);
 
     // Return nothing if the bucket doesn't exist.
     if (tokenHash->hash[index] == NULL)
@@ -95,7 +178,7 @@ hash_bucket_t* getBucket(token_hash_t* tokenHash,
     while (tracer != NULL)
     {
         if (tracer->symbolLength == symbolSize 
-            && tracer->hashedType == hashedType
+            && tracer->hashType  == hashType  
             && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
         {
             return tracer;
@@ -107,72 +190,84 @@ hash_bucket_t* getBucket(token_hash_t* tokenHash,
     return NULL;
 }
 
+// Returns the value associated with the key
+unsigned int getHashValue(token_hash_t* tokenHash,
+                          hash_type_t   hashType,
+                          size_t        symbolSize,
+                          const char*   symbolName)
+{
+    hash_bucket_t* bucket = getBucket(tokenHash, hashType, 
+                                      symbolSize, symbolName);
+
+    if (bucket == NULL)
+    {
+        printf("Value corresponding to %s not found\n", symbolName);
+        exit(1);
+    }
+
+    return bucket->contents.ID;
+}
+
+bool setHashValue(token_hash_t* tokenHash,
+                  hash_type_t   hashType,
+                  size_t        symbolSize,
+                  const char*   symbolName,
+                  unsigned int  newID)
+{
+    hash_bucket_t* bucket = getBucket(tokenHash, hashType, 
+                                      symbolSize, symbolName);
+
+    if (bucket == NULL)
+    {
+        return false;
+    }
+
+    bucket->contents.ID = newID;
+    return true;
+}
+
+
+// Returns the ID of a token (regardless if it exists
+//  in the hash already or not)
 unsigned int getHashID(token_hash_t* tokenHash,
-                       hash_type_t   toHashType, 
+                       hash_type_t   hashType, 
                        size_t        symbolSize,
                        const char*   symbolName) 
 {
+    bool bucketExists = peakHash(tokenHash,
+                                 hashType, 
+                                 symbolSize,
+                                 symbolName);
 
-    unsigned long index = tokenHash->size & hashFunction(symbolSize, symbolName);
-
-    // If hash element is NULL, create a new one.
-    if (tokenHash->hash[index] == NULL) 
+    if (bucketExists)
     {
-        (tokenHash->hash[index]) = malloc(sizeof(hash_bucket_t));
-
-        // Set values.
-        (tokenHash->hash[index])->hashedType   = toHashType;
-        (tokenHash->hash[index])->contents.ID  = ++(tokenHash->typeCount[toHashType]);
-        (tokenHash->hash[index])->next         = NULL;
-        (tokenHash->hash[index])->symbolLength = symbolSize;
-
-        (tokenHash->hash[index])->symbol
-            = memcpy(malloc(symbolSize), symbolName, symbolSize);
-
-        // Put the bucket into the list for later deallocation.
-        pushToList(tokenHash, tokenHash->hash[index]);
-
-        return tokenHash->typeCount[toHashType];
+        return getHashValue(tokenHash,
+                            hashType, 
+                            symbolSize,
+                            symbolName);
     }
-
-    // Else, check each node in list to see if symbol already exists. Start
-    //  with a dummy list node
-    hash_bucket_t  dummy;
-    hash_bucket_t* tracer = &dummy;
-
-    tracer->next = tokenHash->hash[index];
-    do 
+    else
     {
-        tracer = tracer->next;
+        createHashBucket(tokenHash,
+                         hashType, 
+                         symbolSize,
+                         symbolName,
+                         true);
 
-        // If the tokens are the same length, type, and are the same
-        if (tracer->symbolLength  == symbolSize 
-            && tracer->hashedType == toHashType
-            && memcmp(tracer->symbol, symbolName, symbolSize) == 0) 
-        {
-            return tracer->contents.ID;
-        }
-
-    } while (tracer->next != NULL);
-
-    // The end of the list is reached, so the element doesn't already 
-    //  exist, and needs to be added
-    tracer = tracer->next = malloc(sizeof(hash_bucket_t));
-    tracer->hashedType    = toHashType;
-    tracer->symbolLength  = symbolSize;
-    tracer->contents.ID   = ++tokenHash->typeCount[toHashType];
-    tracer->symbol        = memcpy(malloc(symbolSize), symbolName, symbolSize);
-
-    return tokenHash->typeCount[toHashType];
+        return getHashValue(tokenHash,
+                            hashType, 
+                            symbolSize,
+                            symbolName);
+    }
 }
 
 // Checks for the existance of a token
 bool peakHash(token_hash_t* tokenHash,
-              hash_type_t   hashedType,
+              hash_type_t   hashType  ,
               size_t        symbolSize,
               const char*   symbolName)
 {
-    return getBucket(tokenHash, hashedType, symbolSize, symbolName) == NULL 
+    return getBucket(tokenHash, hashType  , symbolSize, symbolName) == NULL 
         ? false
         : true;
 }
@@ -197,3 +292,4 @@ void pushToList(token_hash_t*  tokenHash,
         tokenHash->cleanupList.top = newNode;
     }
 }
+

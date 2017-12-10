@@ -22,7 +22,8 @@ int main(int argc, char** argv)
             exit(0);
         }
         yylex();
-        execute(finishYYLEXBuild());
+        program_context_t program = finishYYLEXBuild();
+        execute(program);
     }
     else
     {
