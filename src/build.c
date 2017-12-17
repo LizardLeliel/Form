@@ -58,13 +58,25 @@ if_sequence_tracker_t createIfTracker(unsigned int functionNumber)
 
     tracker.sequence       = 0;
     tracker.functionNumber = functionNumber;
-    tracker.elseSequence   = 0;
+    tracker.elifSequence   = 0;
     tracker.scope          = 0;
     tracker.thenFlag       = false;
     tracker.elseFlag       = false;
     tracker.nextID         = 0;
 
     return tracker;;
+}
+
+if_sequence_tracker_t* getTracker(program_build_t* program)
+{
+    if (program->onMain == true)
+    {
+        return &(program->programTop->ifTracker);
+    }
+    else
+    {
+        return &(program->lastFunction->ifTracker);
+    }
 }
 
 // Push new data to the constant data stack, returns which

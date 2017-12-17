@@ -44,7 +44,7 @@ typedef struct if_sequence_tracker
     unsigned int sequence; 
     unsigned int functionNumber; // Might be able to be infered
                                  // from the function header.
-    unsigned int elseSequence;
+    unsigned int elifSequence;
     unsigned int scope; // 0, then not in if sequence
     bool         thenFlag; // Might be a boolean?
     bool         elseFlag; // Might also aalso be a boolean?
@@ -129,7 +129,8 @@ program_build_t prepareBuild();
 constant_data_list_t makeConstantDataList();
 
 // Creates empty if tracker struct
-if_sequence_tracker_t createIfTracker(unsigned int functionNumber);
+if_sequence_tracker_t  createIfTracker(unsigned int functionNumber);
+if_sequence_tracker_t* getTracker(program_build_t* program);
 
 // Push new data to the constant data stack, returns which
 //  index it'll be stored at during runtime.

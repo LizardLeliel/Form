@@ -79,24 +79,26 @@ OP              [+-*/]
                         // If in a current if sequence, set a new scope
                         // If not in a current if sequence, start one.
                         //  Also increment sequence by one.
-                        // There must eventually be an endif. 
-                        if_sequence_tracker_t* tracker;
-                        
-                        if (programBuild.onMain == true)
-                        {
-                            tracker = &(programBuild.programTop->ifTracker);
-                        }
-                        else
-                        {  
-                            tracker = &(programBuild.lastFunction->ifTracker);
-                        }
+                        // There must eventually be an endif.
+                        // Consider disabling it for the conditional between
+                        //  then and elif. 
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
 
                         if (tracker->scope == 0)
                         {
+                            tracker->sequence    += 1;
+                            // Function number already taken care of
+                            tracker->elifSequence = 0;
+                            tracker->scope       += 1;
+                            tracker->thenFlag     = false;
+                            tracker->elseFlag     = false;
+                            tracker->nextID      += 1;
+
                             // Start a new one
                         }
                         else
                         {
+                            puts("Warning: scoped ifs not implemented");
                             // push into one, rewrite some tracker
                             //  values.
                         }
@@ -105,17 +107,95 @@ OP              [+-*/]
 {THEN}                  {
                         // Needs to check to see if there is a matching
                         //  if, or else if. (but no then)
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
+
+                        if (tracker->scope == 0)
+                        {
+                            // also add line number to this error messageS
+                            puts("Then found with no previous if");
+                            exit(1);
+                        }
+                        if (tracker->thenFlag == true)
+                        {
+                            puts("Then found when expecting elif");
+                            exit(1);
+                        }
+                        if (tracker->elseFlag == true)
+                        {
+                            puts("Then found inside an else statement");
+                            exit(1);
+                        }
+
+                        tracker->thenFlag = true;
                         }
 {ELIF}                  {
-                        // Needs to check if there is a matching then.
+                        // Needs to check if there is a matching then, and
+                        //  in an if sequence
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
+                        
+                        if (tracker->scope == 0)
+                        {
+                            // also add line number to this error messageS
+                            puts("elif found with no previous if");
+                            exit(1);
+                        }
+                        if (tracker->thenFlag == false)
+                        {
+                            puts("Elif must have a corresponding then keyword");
+                            exit(1);
+                        }
+                        // This is technically redundant
+                        if (tracker->elseFlag == true)
+                        {
+                            puts("elif inside else statement");
+                            exit(1);
+                        }
+
+                        tracker->thenFlag      = false;
+                        // tracker->elseFlag    = true;
+                        tracker->elifSequence += 1;
+
                         }
 {ELSE}                  {
                         // Needs to check if there is a previous if
                         //  or elif (but not then)
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
+                        
+                        if (tracker->scope == 0)
+                        {
+                            // also add line number to this error messageS
+                            puts("Else found with no previous if");
+                            exit(1);
+                        }
+                        if (tracker->thenFlag == true)
+                        {
+                            puts("Found else when expecting an elif");
+                            exit(1);
+                        }
+                        tracker->elseFlag = true;
                         }
 {ENDIF}                 {
                         // Needs to check if there is a matching if,
-                        // no then.
+                        // no then. (check scope)
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
+                        
+                        if (tracker->scope == 0)
+                        {
+                            // also add line number to this error messageS
+                            puts("elif found with no previous if");
+                            exit(1);
+                        }
+
+                        if (tracker->thenFlag == true)
+                        {
+                            puts("Found endif when expecting an elif");
+                            exit(0);
+                        }
+
+                        tracker->elseFlag      = false;
+                        tracker->elifSequence  = 0;
+                        tracker->scope        -= 1;
+                        // If not at scope 1, pop previous scope.
                         } 
 "+"                     {
                         appendInstruction(&programBuild, i_add, 0, 0);
@@ -207,6 +287,14 @@ OP              [+-*/]
                             puts("Reached EOF while parsing function");
                             exit(1);
                         }
+                        if_sequence_tracker_t* tracker = getTracker(&programBuild);
+
+                        if (tracker->scope != 0)
+                        {
+                            puts("Reached end of file while expecting an elif or endif");
+                            exit(1);
+                        }
+
                         return 0;
                         }
 %%  
