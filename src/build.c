@@ -37,6 +37,7 @@ program_build_t prepareBuild()
     // Initialize the misc variables
     programBuild.onMain         = true;
     programBuild.functionAmount = 1;
+    programBuild.lineNumber     = 1;
 
     return programBuild;
 }

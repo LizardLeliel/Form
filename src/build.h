@@ -34,11 +34,6 @@ typedef struct if_hash_sequence
     unsigned int sequence;
 } if_hash_sequence_t;
 
-
-
-
-
-
 typedef struct if_sequence_tracker
 {
     unsigned int sequence; 
@@ -51,8 +46,6 @@ typedef struct if_sequence_tracker
     unsigned int nextID;
 } if_sequence_tracker_t;
 
-
-
 // Saves info about the parsing of an if sequence in a previous scope.
 typedef struct scope_branch_info
 {
@@ -62,12 +55,6 @@ typedef struct scope_branch_info
     unsigned int id;
     unsigned int sequence; // notes say this can also be inferred.
 } scope_branch_info_t;
-
-
-
-
-
-
 
 typedef struct scope_branch_info_node
 {
@@ -119,6 +106,7 @@ typedef struct program_build
     // Other
     bool         onMain;
     unsigned int functionAmount;
+    unsigned int lineNumber;
 } program_build_t;
 
 

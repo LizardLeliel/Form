@@ -23,6 +23,8 @@ NUM             [0-9]
 UINT            {NUM}+
 INT             "-"?{UINT}
 FLOAT           {UINT}"."{UINT}
+NL              [\n]
+NNL             [ \t\r]
 WS              [ \t\r\n]
 CHARR           [a-zA-Z]
 ALPHNUM         {NUM}|{CHARR}
@@ -45,7 +47,10 @@ OP              [+-*/]
 
 %%
 
-{WS}+                   {
+{NL}                    {
+                        programBuild.lineNumber += 1;
+                        }
+{NNL}+                  {
                         // Eat whitespace   
                         }
 {PRINT}                 {
@@ -102,7 +107,6 @@ OP              [+-*/]
                             // push into one, rewrite some tracker
                             //  values.
                         }
-
                         }
 {THEN}                  {
                         // Needs to check to see if there is a matching
@@ -112,17 +116,20 @@ OP              [+-*/]
                         if (tracker->scope == 0)
                         {
                             // also add line number to this error messageS
-                            puts("Then found with no previous if");
+                            printf("Then found with no previous if (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         if (tracker->thenFlag == true)
                         {
-                            puts("Then found when expecting elif");
+                            printf("Then found when expecting elif (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         if (tracker->elseFlag == true)
                         {
-                            puts("Then found inside an else statement");
+                            printf("Then found inside an else statement (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
 
@@ -136,18 +143,20 @@ OP              [+-*/]
                         if (tracker->scope == 0)
                         {
                             // also add line number to this error messageS
-                            puts("elif found with no previous if");
+                            printf("elif found with no previous if (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         if (tracker->thenFlag == false)
                         {
-                            puts("Elif must have a corresponding then keyword");
+                            printf("Elif must have a corresponding then keyword (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         // This is technically redundant
                         if (tracker->elseFlag == true)
                         {
-                            puts("elif inside else statement");
+                            printf("elif inside else statement");
                             exit(1);
                         }
 
@@ -164,12 +173,14 @@ OP              [+-*/]
                         if (tracker->scope == 0)
                         {
                             // also add line number to this error messageS
-                            puts("Else found with no previous if");
+                            printf("Else found with no previous if (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         if (tracker->thenFlag == true)
                         {
-                            puts("Found else when expecting an elif");
+                            printf("Found else when expecting an elif (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(1);
                         }
                         tracker->elseFlag = true;
@@ -182,13 +193,15 @@ OP              [+-*/]
                         if (tracker->scope == 0)
                         {
                             // also add line number to this error messageS
-                            puts("elif found with no previous if");
+                            printf("elif found with no previous if (line #%u)\n",
+                                programBuild.lineNumber);                            
                             exit(1);
                         }
 
                         if (tracker->thenFlag == true)
                         {
-                            puts("Found endif when expecting an elif");
+                            printf("Found endif when expecting an elif (line #%u)\n",
+                                programBuild.lineNumber);
                             exit(0);
                         }
 
