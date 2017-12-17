@@ -6,22 +6,6 @@
 #include "runtime.h"
 #include "tokenhash.h"
 
-// A wrapper for hash bucket list
-typedef struct instruction_node
-{
-    instruction_type_t       instruction;
-    int32_t                  arg1;
-    int64_t                  arg2;
-    struct instruction_node* next;
-} instruction_node_t;
-
-// A list node representing the beginning of a function
-typedef struct function_header
-{
-    instruction_node_t*     head;
-    struct function_header* next;
-    size_t                  depth;
-} function_header_t;
 
 // List node to hold scanned constant data
 typedef struct constant_data_list_node
@@ -39,6 +23,84 @@ typedef struct constant_data_list
     unsigned int               depth;
 } constant_data_list_t;
 
+// Might not be nessecary; a function to convert this could be
+//  made instead.
+typedef struct if_hash_sequence
+{
+    unsigned int functionNumber;
+    unsigned int idNumber;
+    unsigned int elseNumber;
+    unsigned int scoping; // May not be nessecary
+    unsigned int sequence;
+} if_hash_sequence_t;
+
+
+
+
+
+
+typedef struct if_sequence_tracker
+{
+    unsigned int sequence; 
+    unsigned int functionNumber; // Might be able to be infered
+                                 // from the function header.
+    unsigned int elseSequence;
+    unsigned int scope; // 0, then not in if sequence
+    bool         thenFlag; // Might be a boolean?
+    bool         elseFlag; // Might also aalso be a boolean?
+    unsigned int nextID;
+} if_sequence_tracker_t;
+
+
+
+// Saves info about the parsing of an if sequence in a previous scope.
+typedef struct scope_branch_info
+{
+    unsigned int scope; // "Can be infered" my notes say.
+    bool         thenFlag;
+    bool         elseFlag;
+    unsigned int id;
+    unsigned int sequence; // notes say this can also be inferred.
+} scope_branch_info_t;
+
+
+
+
+
+
+
+typedef struct scope_branch_info_node
+{
+    struct scope_branch_info_node* next;
+    scope_branch_info_t            info;
+} scope_branch_info_node_t;
+
+typedef struct scope_branch_info_stack
+{
+    scope_branch_info_node_t* head;
+    unsigned int              depth; // Might not be nessecary.
+} scope_branch_info_stack_t;
+
+
+// A wrapper for hash bucket list
+typedef struct instruction_node
+{
+    instruction_type_t       instruction;
+    unsigned int             index;
+    int32_t                  arg1;
+    int64_t                  arg2;
+    struct instruction_node* next;
+} instruction_node_t;
+
+// A list node representing the beginning of a function
+typedef struct function_header
+{
+    instruction_node_t*       head;
+    struct function_header*   next;
+    size_t                    depth;
+    if_sequence_tracker_t     ifTracker;
+    scope_branch_info_stack_t scopeBranchInfoStack;
+} function_header_t;
 
 // A struct for building a list of instructions and tracking
 //  static data before converting to a program object.
@@ -56,7 +118,7 @@ typedef struct program_build
 
     // Other
     bool         onMain;
-    unsigned int functionAmmount;
+    unsigned int functionAmount;
 } program_build_t;
 
 
@@ -66,12 +128,20 @@ program_build_t prepareBuild();
 // Allocates a constant data list.
 constant_data_list_t makeConstantDataList();
 
+// Creates empty if tracker struct
+if_sequence_tracker_t createIfTracker(unsigned int functionNumber);
+
 // Push new data to the constant data stack, returns which
 //  index it'll be stored at during runtime.
 int64_t pushConstantData(constant_data_list_t* constantDataList,
                          data_type_t           type,
                          void*                 data);
 
+void pushScopeBranchInfo(scope_branch_info_stack_t* infoStack,
+                         if_sequence_tracker_t      info);
+ 
+void popScopeBranchInfo(scope_branch_info_stack_t* infoStack,
+                        if_sequence_tracker_t*     info);
 // Makes a dummy head
 instruction_node_t* dummyInstruction();
 

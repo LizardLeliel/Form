@@ -35,7 +35,13 @@ STRING          \"(\\.|[^\\"])*\"
 PRINT           "PRINT"
 BOOLTRUE        "TRUE"
 BOOLFALSE       "FALSE"
+IF              "IF"
+THEN            "THEN"
+ELIF            "ELIF"
+ELSE            "ELSE"
+ENDIF           "ENDIF"
 OP              [+-*/]
+
 
 %%
 
@@ -69,6 +75,48 @@ OP              [+-*/]
 
                         appendInstruction(&programBuild, i_push, f_string, index);
                         }
+{IF}                    {
+                        // If in a current if sequence, set a new scope
+                        // If not in a current if sequence, start one.
+                        //  Also increment sequence by one.
+                        // There must eventually be an endif. 
+                        if_sequence_tracker_t* tracker;
+                        
+                        if (programBuild.onMain == true)
+                        {
+                            tracker = &(programBuild.programTop->ifTracker);
+                        }
+                        else
+                        {  
+                            tracker = &(programBuild.lastFunction->ifTracker);
+                        }
+
+                        if (tracker->scope == 0)
+                        {
+                            // Start a new one
+                        }
+                        else
+                        {
+                            // push into one, rewrite some tracker
+                            //  values.
+                        }
+
+                        }
+{THEN}                  {
+                        // Needs to check to see if there is a matching
+                        //  if, or else if. (but no then)
+                        }
+{ELIF}                  {
+                        // Needs to check if there is a matching then.
+                        }
+{ELSE}                  {
+                        // Needs to check if there is a previous if
+                        //  or elif (but not then)
+                        }
+{ENDIF}                 {
+                        // Needs to check if there is a matching if,
+                        // no then.
+                        } 
 "+"                     {
                         appendInstruction(&programBuild, i_add, 0, 0);
                         }
@@ -134,6 +182,8 @@ OP              [+-*/]
                         }
 {FUNCTIONEND}           {
                         endFunction(&programBuild);
+                        // Also check: see if not in
+                        //  invalid if sequence state.
                         }
 {FUNCTION}              {
                         char* trimmed = yytext;
@@ -150,6 +200,8 @@ OP              [+-*/]
                                           token);
                         }
 <<EOF>>                 {
+                        // Also check: see if not in
+                        //  invalid if sequence state.
                         if (programBuild.onMain == false)
                         {
                             puts("Reached EOF while parsing function");

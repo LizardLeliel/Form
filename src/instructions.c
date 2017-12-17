@@ -383,9 +383,15 @@ int64_t interpretAsInt(double value)
     result.as_f = value;
     return result.as_i;
 }
+
 double interpretAsFloat(int64_t value)
 {
     any64_t result;
     result.as_i = value;       
     return result.as_f;
 }
+
+// if 
+// then elif
+// then elif
+// else endif

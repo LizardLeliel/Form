@@ -23,14 +23,20 @@ program_build_t prepareBuild()
     programBuild.lastFunction       = programBuild.programTop;
     programBuild.mainLast           = programBuild.currentInstruction;
 
+    // Initialize main function's scope info stack
+    programBuild.programTop->scopeBranchInfoStack.depth = 0;
+    programBuild.programTop->scopeBranchInfoStack.head  = NULL;
+
     // Initializes the main function
-    programBuild.programTop->head   = programBuild.currentInstruction;
-    programBuild.programTop->next   = NULL;
-    programBuild.programTop->depth  = 1;
+    programBuild.programTop->head      = programBuild.currentInstruction;
+    programBuild.programTop->next      = NULL;
+    programBuild.programTop->depth     = 1;
+    programBuild.programTop->ifTracker 
+        = createIfTracker(programBuild.programTop->depth);
 
     // Initialize the misc variables
-    programBuild.onMain = true;
-    programBuild.functionAmmount = 1;
+    programBuild.onMain         = true;
+    programBuild.functionAmount = 1;
 
     return programBuild;
 }
@@ -44,6 +50,21 @@ constant_data_list_t makeConstantDataList()
     constantDataList.depth = 0;
 
     return constantDataList;
+}
+
+if_sequence_tracker_t createIfTracker(unsigned int functionNumber)
+{
+    if_sequence_tracker_t tracker;
+
+    tracker.sequence       = 0;
+    tracker.functionNumber = functionNumber;
+    tracker.elseSequence   = 0;
+    tracker.scope          = 0;
+    tracker.thenFlag       = false;
+    tracker.elseFlag       = false;
+    tracker.nextID         = 0;
+
+    return tracker;;
 }
 
 // Push new data to the constant data stack, returns which
@@ -68,11 +89,56 @@ int64_t pushConstantData(constant_data_list_t* constantDataList,
     return newNode->eventualIndex;
 }
 
+// These two functions are untested.
+void pushScopeBranchInfo(scope_branch_info_stack_t* infoStack,
+                         if_sequence_tracker_t      info) 
+{
+    scope_branch_info_node_t* newInfo 
+        = malloc(sizeof (scope_branch_info_node_t));
+
+    newInfo->info.scope    = info.scope;
+    newInfo->info.thenFlag = info.thenFlag;
+    newInfo->info.elseFlag = info.elseFlag;
+    newInfo->info.id       = info.nextID;
+    newInfo->info.sequence = info.sequence;
+
+    newInfo->next     = infoStack->head;
+    infoStack->head   = newInfo;
+    infoStack->depth += 1;
+    return;
+}
+void popScopeBranchInfo(scope_branch_info_stack_t* infoStack,
+                        if_sequence_tracker_t*     info)
+{
+    if (infoStack->head == NULL)
+    {
+        // Think about why this error may happen and if this could happen,
+        //  change the error message.
+        perror("Fatal Error: no scope to return in popScopeBranchInfo");
+        exit(1);
+    }
+
+    scope_branch_info_t revertInfo = infoStack->head->info;
+
+    info->scope    = revertInfo.scope;
+    info->thenFlag = revertInfo.thenFlag;
+    info->elseFlag = revertInfo.elseFlag;
+    info->nextID   = revertInfo.id;
+    info->sequence = revertInfo.sequence;
+
+    scope_branch_info_node_t* freeNode = infoStack->head;
+    infoStack->head                    = infoStack->head->next;
+    free(freeNode);
+
+    return;
+}
+
 // Returns a dummy instruction
 instruction_node_t* dummyInstruction() 
 {
     instruction_node_t* dummy = malloc(sizeof(instruction_node_t));
     dummy->instruction        = i_nop;
+    dummy->index              = 0;
     dummy->arg1               = 0;
     dummy->arg2               = 0;
     dummy->next               = NULL;
@@ -97,10 +163,12 @@ void appendInstruction(program_build_t*   programBuild,
     if (programBuild->onMain == true)
     {
         programBuild->programTop->depth += 1;
+        newInstructNode->index            = programBuild->programTop->depth;
     }
     else
     {
         programBuild->lastFunction->depth += 1;
+        newInstructNode->index             = programBuild->lastFunction->depth;
     }
 
     // Append instruction to end of function.
@@ -109,7 +177,7 @@ void appendInstruction(program_build_t*   programBuild,
 
     // Save the last instruction in main for when we finish
     //  scanning a function.
-    if (programBuild->onMain == true) 
+    if (programBuild->onMain == true)  
     {
         programBuild->mainLast = newInstructNode;
     }
@@ -118,20 +186,23 @@ void appendInstruction(program_build_t*   programBuild,
 // Adds a new function header to the end of the function queue.
 void makeNewFunction(program_build_t* programBuild) 
 {
+    // set other values.
+    programBuild->functionAmount += 1;
+    programBuild->onMain          = false;
+
     // Allocates and initialize memory
     function_header_t* newFunction = malloc(sizeof(function_header_t));
-    newFunction->next  = NULL;
-    newFunction->head  = dummyInstruction();
-    newFunction->depth = 1;
+    newFunction->next              = NULL;
+    newFunction->head              = dummyInstruction();
+    newFunction->depth             = 1;
+    newFunction->ifTracker         
+        = createIfTracker(programBuild->functionAmount);
 
     // Assigns build pointer functions 
     programBuild->currentInstruction = newFunction->head;
     programBuild->lastFunction->next = newFunction;
     programBuild->lastFunction       = newFunction;
 
-    // set other values.
-    programBuild->functionAmmount += 1;
-    programBuild->onMain           = false;
 }
 
 // Places return instruction on end of the instruction queue,
@@ -173,7 +244,7 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.functionStack.depth = 0;
 
     // Initialize the function array.
-    program.code = calloc(programBuild->functionAmmount,
+    program.code = calloc(programBuild->functionAmount,
                           sizeof(instruction_t*));
 
     // Fill out the function array
