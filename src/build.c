@@ -80,6 +80,26 @@ if_sequence_tracker_t* getTracker(program_build_t* program)
     }
 }
 
+#define uint unsigned int
+void hashableIfInfo(char* buffer,
+                    uint  fn, // function number
+                    uint  seq, // sequence
+                    uint  eiseq, // elifsequence
+                    uint  scope,
+                    uint  tflag, // then flag
+                    uint  eflag) //else flag
+#undef uint
+{
+    buffer[0] = 1; // Unique non-printable character (trun this into macro)
+    buffer[1] = fn;
+    buffer[2] = seq;
+    buffer[3] = eiseq;
+    buffer[4] = scope;
+    buffer[5] = tflag;
+    buffer[6] = eflag;
+}
+
+
 // Push new data to the constant data stack, returns which
 //  index it'll be stored at during runtime.
 int64_t pushConstantData(constant_data_list_t* constantDataList,
@@ -154,6 +174,7 @@ instruction_node_t* dummyInstruction()
     dummy->index              = 0;
     dummy->arg1               = 0;
     dummy->arg2               = 0;
+    dummy->arg2ref            = 0;
     dummy->next               = NULL;
     return dummy;
 }
@@ -170,13 +191,14 @@ void appendInstruction(program_build_t*   programBuild,
     newInstructNode->next               = NULL;
     newInstructNode->arg1               = arg1;
     newInstructNode->arg2               = arg2;
+    newInstructNode->arg2ref            = NULL;
 
     // Determine if we need to increase the main function's depth
     //  or the last-function-added's depther
     if (programBuild->onMain == true)
     {
         programBuild->programTop->depth += 1;
-        newInstructNode->index            = programBuild->programTop->depth;
+        newInstructNode->index           = programBuild->programTop->depth;
     }
     else
     {
@@ -194,6 +216,21 @@ void appendInstruction(program_build_t*   programBuild,
     {
         programBuild->mainLast = newInstructNode;
     }
+}
+
+void attachBucket(program_build_t* programBuild,
+                  hash_bucket_t*   bucket)
+{
+    instruction_node_t* node = programBuild->currentInstruction;
+
+    // This warning may be removed later
+    if (node->arg2ref != NULL)
+    {
+        printf("Warning: assigning an argument reference to an ");
+        printf("instruction which already has one\n");
+    }
+
+    node->arg2ref = bucket;
 }
 
 // Adds a new function header to the end of the function queue.
@@ -276,6 +313,12 @@ program_context_t returnProgram(program_build_t* programBuild)
 
         while (instructionTracer != NULL)
         {
+            if (instructionTracer->arg2ref != NULL)
+            {
+                instructionTracer->arg2 
+                 = instructionTracer->arg2ref->ID;
+            }
+
             // Convert the instruction node and save it in the proper
             //  place int he array.
             (program.code[functionIndex])[instructionIndex]

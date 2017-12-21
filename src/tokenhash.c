@@ -211,7 +211,7 @@ bool setHashValue(token_hash_t* tokenHash,
                   hash_type_t   hashType,
                   size_t        symbolSize,
                   const char*   symbolName,
-                  unsigned int  newID)
+                  int64_t       newID)
 {
     hash_bucket_t* bucket = getBucket(tokenHash, hashType, 
                                       symbolSize, symbolName);

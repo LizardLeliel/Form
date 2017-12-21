@@ -43,6 +43,7 @@ typedef struct if_sequence_tracker
     unsigned int scope; // 0, then not in if sequence
     bool         thenFlag; // Might be a boolean?
     bool         elseFlag; // Might also aalso be a boolean?
+
     unsigned int nextID;
 } if_sequence_tracker_t;
 
@@ -69,13 +70,13 @@ typedef struct scope_branch_info_stack
 } scope_branch_info_stack_t;
 
 
-// A wrapper for hash bucket list
 typedef struct instruction_node
 {
     instruction_type_t       instruction;
     unsigned int             index;
     int32_t                  arg1;
     int64_t                  arg2;
+    hash_bucket_t*           arg2ref;
     struct instruction_node* next;
 } instruction_node_t;
 
@@ -120,6 +121,16 @@ constant_data_list_t makeConstantDataList();
 if_sequence_tracker_t  createIfTracker(unsigned int functionNumber);
 if_sequence_tracker_t* getTracker(program_build_t* program);
 
+#define uint unsigned int
+void hashableIfInfo(char* buffer,
+                    uint  fn, // function number
+                    uint  seq, // sequence
+                    uint  eiseq, // elifsequence
+                    uint  scope,
+                    uint  tflag, // then flag
+                    uint  eflag); //else flag
+#undef uint
+
 // Push new data to the constant data stack, returns which
 //  index it'll be stored at during runtime.
 int64_t pushConstantData(constant_data_list_t* constantDataList,
@@ -135,10 +146,13 @@ void popScopeBranchInfo(scope_branch_info_stack_t* infoStack,
 instruction_node_t* dummyInstruction();
 
 // Adds a new instruction to buildPointers.currentInstruct
-void appendInstruction(program_build_t*  programBuild,
+void appendInstruction(program_build_t*   programBuild,
                        instruction_type_t newInstruct,
-                       int32_t           arg1,
-                       int64_t           arg2);
+                       int32_t            arg1,
+                       int64_t            arg2);
+
+void attachBucket(program_build_t* programBuild,
+                  hash_bucket_t*   bucket);
 
 // Adds a new function header to the end of the function queue.
 void makeNewFunction(program_build_t* programBuild);

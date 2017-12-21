@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 // The max size of the array used by the hash.
 // Must be 2^n-1
@@ -27,7 +28,7 @@ typedef struct hash_bucket
     char*               symbol;
     size_t              symbolLength;
     struct hash_bucket* next;    
-    unsigned int        ID;
+    int64_t             ID;
 
 } hash_bucket_t;
 
@@ -39,6 +40,7 @@ typedef struct hash_bucket_list_node
     struct hash_bucket_list_node* next; 
 } hash_bucket_list_node_t;
 
+// A wrapper for hash bucket list
 typedef struct hash_bucket_list
 {
     hash_bucket_list_node_t* top;
@@ -93,7 +95,7 @@ bool setHashValue(token_hash_t* tokenHash,
                   hash_type_t   toHashType,
                   size_t        symbolSize,
                   const char*   symbolName,
-                  unsigned int  newID);
+                  int64_t       newID);
 
 
 

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 // No operation
 void FORM_NOP(program_context_t* program) 
@@ -315,6 +316,48 @@ void FORM_LOG_NOT(program_context_t* program)
     {
         evaluation = !interpretAsFloat(operand.data);
         pushStack(&(program->dataStack), f_numeric | f_bool, evaluation);
+    }
+}
+
+void FORM_GOTO(program_context_t* program)
+{
+    program->nextInstructionIndex = program->currentInstruction.arg2;
+}
+
+void FORM_COND_GOTO(program_context_t* program)
+{
+    data_t operand   = popData(&(program->dataStack));
+    data_type_t type = operand.dataType;
+    bool gotoFlag;
+
+    if (type & f_32float)
+    {
+        gotoFlag = interpretAsFloat(operand.data) == 0.0;
+    }    
+    else
+    {
+        gotoFlag = operand.data;
+    }
+    
+    if (program->currentInstruction.arg1 == 1
+        && gotoFlag)
+    {
+        program->nextInstructionIndex = program->currentInstruction.arg2;
+    }
+    else if (program->currentInstruction.arg1 == 0
+             && !gotoFlag)
+    {
+        program->nextInstructionIndex = program->currentInstruction.arg2;
+    }
+    else if (program->currentInstruction.arg1 > 1)
+    {
+        printf("Improper first instruction argument: %u for conditional goto.\n",
+               program->currentInstruction.arg1);
+    }
+    else
+    {
+        // Don't goto anywhere.
+        return;
     }
 }
 

@@ -119,8 +119,8 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     FORM_NOP,
 
     // Form goto operations
-    FORM_NOP,
-    FORM_NOP,
+    FORM_GOTO,
+    FORM_COND_GOTO,
 
     // Variable-related operations
     FORM_NOP,

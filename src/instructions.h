@@ -23,6 +23,9 @@ void FORM_LOG_AND(program_context_t*);
 void FORM_LOG_OR(program_context_t*);
 void FORM_LOG_NOT(program_context_t*);
 
+void FORM_GOTO(program_context_t*);
+void FORM_COND_GOTO(program_context_t*);
+
 void FORM_PUSH(program_context_t*);
 void FORM_CALL(program_context_t*);
 void FORM_RETURN(program_context_t*);

@@ -75,8 +75,8 @@ typedef enum intsruction_set
     i_rot,   // 27
 
     // Form goto operations
-    i_gotos,    // 28
-    i_congotos, // 29
+    i_goto,    // 28
+    i_condgoto, // 29
 
     // Variable-related operations
     i_scope,   // 30
