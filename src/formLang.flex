@@ -164,7 +164,7 @@ OP              [+-*/]
                         exit(1);
                     }
 
-                    // Set if to go here if failed.
+                    // Add a goto to go tot he end, once condition is done.
                     char ifHashBuffer[7];
 
                     hashableIfInfo(ifHashBuffer,
@@ -188,6 +188,20 @@ OP              [+-*/]
                             false);       
                     }   
 
+                    // get hash bucket
+                    hash_bucket_t* bucket
+                        = getBucket(&(programBuild.tokenHash),
+                          h_labelName,
+                          7,
+                          ifHashBuffer);
+                                      
+                    // append goto
+                    appendInstruction(&programBuild, i_goto, 0, 0);
+                    // attack bucket
+                    attachBucket(&programBuild, bucket);
+
+
+                    // Set if to go here on fail
                     ifHashBuffer[3] = tracker->elifSequence;
                     setHashValue(&(programBuild.tokenHash),
                                  h_labelName,
@@ -226,6 +240,36 @@ OP              [+-*/]
                     // tracker->elseFlag    = true;
                     tracker->elifSequence += 1;
 
+                    char ifHashBuffer[7];
+                    hashableIfInfo(ifHashBuffer,
+                        tracker->functionNumber,
+                        tracker->sequence,
+                        tracker->elifSequence,
+                        tracker->scope,
+                        tracker->thenFlag,
+                        tracker->elseFlag);
+
+                    // This might be able to go further down out of scope?
+                    if (!createHashBucket(
+                              &(programBuild.tokenHash),
+                              h_labelName, 
+                              7, 
+                              ifHashBuffer,
+                              false))
+                    {
+                        printf("This goto at %u already has a bucket\n",
+                            programBuild.lineNumber);
+                        exit(1);
+                    }
+
+                    hash_bucket_t* bucket
+                        = getBucket(&(programBuild.tokenHash),
+                          h_labelName,
+                          7,
+                          ifHashBuffer);
+
+                    appendInstruction(&programBuild, i_condgoto, 0, 0);
+                    attachBucket(&programBuild, bucket);
                     }
 {ELSE}              {
                     // Needs to check if there is a previous if
@@ -245,6 +289,54 @@ OP              [+-*/]
                             programBuild.lineNumber);
                         exit(1);
                     }
+                    char ifHashBuffer[7];
+                    
+                    if (tracker->elifSequence == 1)
+                    {
+                        hashableIfInfo(ifHashBuffer,
+                            tracker->functionNumber,
+                            tracker->sequence,
+                            0,
+                            tracker->scope,
+                            0,
+                            0);
+
+                        createHashBucket(
+                            &(programBuild.tokenHash),
+                            h_labelName, 
+                            7, 
+                            ifHashBuffer,
+                            false);       
+
+                        // get hash bucket
+                        hash_bucket_t* bucket
+                            = getBucket(&(programBuild.tokenHash),
+                              h_labelName,
+                              7,
+                              ifHashBuffer);
+                                          
+                        // append goto
+                        appendInstruction(&programBuild, i_goto, 0, 0);
+                        // attack bucket
+                        attachBucket(&programBuild, bucket);                        
+                    }
+
+                    // Set 
+                    hashableIfInfo(ifHashBuffer,
+                        tracker->functionNumber,
+                        tracker->sequence,
+                        tracker->elifSequence,
+                        tracker->scope,
+                        tracker->thenFlag,
+                        tracker->elseFlag);
+
+                    setHashValue(&(programBuild.tokenHash),
+                        h_labelName,
+                        7,
+                        ifHashBuffer,
+                        *(programBuild.currentDepth));
+
+
                     tracker->elseFlag = true;
                     }
 {ENDIF}             {
@@ -284,6 +376,24 @@ OP              [+-*/]
                                  7,
                                  ifHashBuffer,
                                  index);
+
+                    if (tracker->elseFlag == false)
+                    {
+                        // set the last elifseq to go here.
+                        hashableIfInfo(ifHashBuffer,
+                            tracker->functionNumber,
+                            tracker->sequence,
+                            tracker->elifSequence,
+                            tracker->scope,
+                            tracker->thenFlag,
+                            false);
+
+                        setHashValue(&(programBuild.tokenHash),
+                            h_labelName,
+                            7,
+                            ifHashBuffer,
+                            *(programBuild.currentDepth));
+                    }
 
                     tracker->elseFlag      = false;
                     tracker->elifSequence  = 0;

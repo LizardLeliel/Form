@@ -198,7 +198,7 @@ unsigned int getHashValue(token_hash_t* tokenHash,
 
     if (bucket == NULL)
     {
-        printf("Value corresponding to %s not found\n", symbolName);
+        printf("Get Hash Value failed\n");
         exit(1);
     }
 
