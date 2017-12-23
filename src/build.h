@@ -23,16 +23,6 @@ typedef struct constant_data_list
     unsigned int               depth;
 } constant_data_list_t;
 
-// Might not be nessecary; a function to convert this could be
-//  made instead.
-typedef struct if_hash_sequence
-{
-    unsigned int functionNumber;
-    unsigned int idNumber;
-    unsigned int elseNumber;
-    unsigned int scoping; // May not be nessecary
-    unsigned int sequence;
-} if_hash_sequence_t;
 
 typedef struct if_sequence_tracker
 {
@@ -56,7 +46,9 @@ typedef struct scope_branch_info
     bool         elseFlag;
     unsigned int id;
     unsigned int sequence; // notes say this can also be inferred.
+    unsigned int elifSequence;
 } scope_branch_info_t;
+
 
 typedef struct scope_branch_info_node
 {

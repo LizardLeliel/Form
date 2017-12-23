@@ -94,7 +94,7 @@ OP              [+-*/]
 
                     if (tracker->scope == 0)
                     {
-                        tracker->sequence    += 1;
+                        tracker->sequence     = 1;
                         // Function number already taken care of
                         tracker->elifSequence = 1;
                         tracker->scope        = 1;
@@ -103,37 +103,6 @@ OP              [+-*/]
                         tracker->currentID    = tracker->nextID;
                         tracker->nextID      += 1;
 
-
-                        char ifHashBuffer[IF_HASHABLE_SIZE];
-                        hashableIfInfo(ifHashBuffer,
-                            tracker->functionNumber,
-                            tracker->sequence,
-                            tracker->elifSequence,
-                            tracker->scope,
-                            tracker->currentID);
-
-                        // This might be able to go further down out of scope?
-                        if (!createHashBucket(
-                                  &(programBuild.tokenHash),
-                                  h_labelName, 
-                                  IF_HASHABLE_SIZE, 
-                                  ifHashBuffer,
-                                  false))
-                        {
-                            printf("This goto at %u already has a bucket\n",
-                                programBuild.lineNumber);
-                            exit(1);
-                        }
-
-                        hash_bucket_t* bucket
-                            = getBucket(&(programBuild.tokenHash),
-                              h_labelName,
-                              IF_HASHABLE_SIZE,
-                              ifHashBuffer);
-
-                        appendInstruction(&programBuild, i_condgoto, 0, 0);
-                        attachBucket(&programBuild, bucket);
-                        // Start a new one
                     }
                     else
                     {
@@ -149,6 +118,37 @@ OP              [+-*/]
                         tracker->currentID    = tracker->nextID;
                         tracker->nextID      += 1;
                     }
+
+                    char ifHashBuffer[IF_HASHABLE_SIZE];
+                    hashableIfInfo(ifHashBuffer,
+                        tracker->functionNumber,
+                        tracker->sequence,
+                        tracker->elifSequence,
+                        tracker->scope,
+                        tracker->currentID);
+
+                    // This might be able to go further down out of scope?
+                    if (!createHashBucket(
+                              &(programBuild.tokenHash),
+                              h_labelName, 
+                              IF_HASHABLE_SIZE, 
+                              ifHashBuffer,
+                              false))
+                    {
+                        printf("This goto at %u already has a bucket\n",
+                            programBuild.lineNumber);
+                        exit(1);
+                    }
+
+                    hash_bucket_t* bucket
+                        = getBucket(&(programBuild.tokenHash),
+                          h_labelName,
+                          IF_HASHABLE_SIZE,
+                          ifHashBuffer);
+
+                    appendInstruction(&programBuild, i_condgoto, 0, 0);
+                    attachBucket(&programBuild, bucket);
+                    // Start a new one
                     }
 {THEN}              {
                     // Needs to check to see if there is a matching
@@ -313,7 +313,7 @@ OP              [+-*/]
                         h_labelName, 
                         IF_HASHABLE_SIZE, 
                         ifHashBuffer,
-                        tracker->currentID);       
+                        false);       
 
                     // get hash bucket
                     hash_bucket_t* bucket
@@ -343,7 +343,8 @@ OP              [+-*/]
                         *(programBuild.currentDepth));
 
 
-                    tracker->elseFlag = true;
+                    tracker->elseFlag  = true;
+                    // tracker->sequence += 1;
                     }
 {ENDIF}             {
                     // Needs to check if there is a matching if,

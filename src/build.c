@@ -90,6 +90,7 @@ void hashableIfInfo(char* buffer,
                     uint  id)
 #undef uint
 {
+    printf("seq: %d eiseq: %d scope: %d id: %d\n", seq, eiseq, scope, id);
     buffer[0] = 1; // Unique non-printable character (trun this into macro)
     buffer[1] = fn;
     buffer[2] = seq;
@@ -128,11 +129,12 @@ void pushScopeBranchInfo(scope_branch_info_stack_t* infoStack,
     scope_branch_info_node_t* newInfo 
         = malloc(sizeof (scope_branch_info_node_t));
 
-    newInfo->info.scope    = info.scope;
-    newInfo->info.thenFlag = info.thenFlag;
-    newInfo->info.elseFlag = info.elseFlag;
-    newInfo->info.id       = info.currentID;
-    newInfo->info.sequence = info.sequence;
+    newInfo->info.scope        = info.scope;
+    newInfo->info.thenFlag     = info.thenFlag;
+    newInfo->info.elseFlag     = info.elseFlag;
+    newInfo->info.id           = info.currentID;
+    newInfo->info.sequence     = info.sequence;
+    //newInfo->info.elifSequence = info.elifSequence;
 
     newInfo->next     = infoStack->head;
     infoStack->head   = newInfo;
@@ -152,11 +154,12 @@ void popScopeBranchInfo(scope_branch_info_stack_t* infoStack,
 
     scope_branch_info_t revertInfo = infoStack->head->info;
 
-    info->scope     = revertInfo.scope;
-    info->thenFlag  = revertInfo.thenFlag;
-    info->elseFlag  = revertInfo.elseFlag;
-    info->currentID = revertInfo.id;
-    info->sequence  = revertInfo.sequence;
+    info->scope        = revertInfo.scope;
+    info->thenFlag     = revertInfo.thenFlag;
+    info->elseFlag     = revertInfo.elseFlag;
+    info->currentID    = revertInfo.id;
+    info->sequence     = revertInfo.sequence;
+    info->elifSequence = revertInfo.elifSequence;
 
     scope_branch_info_node_t* freeNode = infoStack->head;
     infoStack->head                    = infoStack->head->next;
