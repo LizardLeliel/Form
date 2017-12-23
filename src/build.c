@@ -24,8 +24,8 @@ program_build_t prepareBuild()
     programBuild.mainLast           = programBuild.currentInstruction;
 
     // Initialize main function's scope info stack
-    programBuild.programTop->scopeBranchInfoStack.depth = 0;
-    programBuild.programTop->scopeBranchInfoStack.head  = NULL;
+    programBuild.scopeBranchInfoStack.depth = 0;
+    programBuild.scopeBranchInfoStack.head  = NULL;
 
     // Initializes the main function
     programBuild.programTop->head      = programBuild.currentInstruction;
@@ -87,8 +87,7 @@ void hashableIfInfo(char* buffer,
                     uint  seq, // sequence
                     uint  eiseq, // elifsequence
                     uint  scope,
-                    uint  tflag, // then flag
-                    uint  eflag) //else flag
+                    uint  id)
 #undef uint
 {
     buffer[0] = 1; // Unique non-printable character (trun this into macro)
@@ -96,8 +95,7 @@ void hashableIfInfo(char* buffer,
     buffer[2] = seq;
     buffer[3] = eiseq;
     buffer[4] = scope;
-    buffer[5] = tflag;
-    buffer[6] = eflag;
+    buffer[5] = id;
 }
 
 

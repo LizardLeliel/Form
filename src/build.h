@@ -44,6 +44,7 @@ typedef struct if_sequence_tracker
     bool         thenFlag; // Might be a boolean?
     bool         elseFlag; // Might also aalso be a boolean?
 
+    unsigned int currentID;
     unsigned int nextID;
 } if_sequence_tracker_t;
 
@@ -87,16 +88,16 @@ typedef struct function_header
     struct function_header*   next;
     size_t                    depth;
     if_sequence_tracker_t     ifTracker;
-    scope_branch_info_stack_t scopeBranchInfoStack;
 } function_header_t;
 
 // A struct for building a list of instructions and tracking
 //  static data before converting to a program object.
 typedef struct program_build
 {
-    // The hash
-    token_hash_t         tokenHash;
-    constant_data_list_t constantDataList;
+    // Key data structures
+    token_hash_t              tokenHash;
+    constant_data_list_t      constantDataList;
+    scope_branch_info_stack_t scopeBranchInfoStack;
 
     // Important pointers for building
     function_header_t*  programTop;
@@ -128,8 +129,7 @@ void hashableIfInfo(char* buffer,
                     uint  seq, // sequence
                     uint  eiseq, // elifsequence
                     uint  scope,
-                    uint  tflag, // then flag
-                    uint  eflag); //else flag
+                    uint  id);
 #undef uint
 
 // Push new data to the constant data stack, returns which

@@ -8,6 +8,8 @@
 
 #include "build.h"
 
+#define IF_HASHABLE_SIZE 6
+
 extern int64_t interpretAsInt(double value);
 extern double interpretAsFloat(int64_t value);
 
@@ -98,22 +100,23 @@ OP              [+-*/]
                         tracker->scope       += 1;
                         tracker->thenFlag     = false;
                         tracker->elseFlag     = false;
+                        tracker->currentID    = tracker->nextID;
                         tracker->nextID      += 1;
 
-                        char ifHashBuffer[7];
+
+                        char ifHashBuffer[IF_HASHABLE_SIZE];
                         hashableIfInfo(ifHashBuffer,
                             tracker->functionNumber,
                             tracker->sequence,
                             tracker->elifSequence,
                             tracker->scope,
-                            tracker->thenFlag,
-                            tracker->elseFlag);
+                            tracker->currentID);
 
                         // This might be able to go further down out of scope?
                         if (!createHashBucket(
                                   &(programBuild.tokenHash),
                                   h_labelName, 
-                                  7, 
+                                  IF_HASHABLE_SIZE, 
                                   ifHashBuffer,
                                   false))
                         {
@@ -125,7 +128,7 @@ OP              [+-*/]
                         hash_bucket_t* bucket
                             = getBucket(&(programBuild.tokenHash),
                               h_labelName,
-                              7,
+                              IF_HASHABLE_SIZE,
                               ifHashBuffer);
 
                         appendInstruction(&programBuild, i_condgoto, 0, 0);
@@ -135,8 +138,15 @@ OP              [+-*/]
                     else
                     {
                         puts("Warning: scoped ifs not implemented");
-                        // push into one, rewrite some tracker
-                        //  values.
+                        pushScopeBranchInfo(&(programBuild.scopeBranchInfoStack),
+                                            *tracker);
+                        // tracker->sequence    += 1;
+                        // Function number already taken care of
+                        tracker->elifSequence = 1;
+                        tracker->scope       += 1;
+                        tracker->thenFlag     = false;
+                        tracker->elseFlag     = false;
+                        tracker->nextID      += 1;
                     }
                     }
 {THEN}              {
@@ -165,25 +175,24 @@ OP              [+-*/]
                     }
 
                     // Add a goto to go tot he end, once condition is done.
-                    char ifHashBuffer[7];
+                    char ifHashBuffer[IF_HASHABLE_SIZE];
 
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->sequence,
                         0,
                         tracker->scope,
-                        0,
-                        0);
+                        tracker->currentID);
 
                     if (!peakHash(&(programBuild.tokenHash),
                                   h_labelName,
-                                  7,
+                                  IF_HASHABLE_SIZE,
                                   ifHashBuffer))
                     {
                         createHashBucket(
                             &(programBuild.tokenHash),
                             h_labelName, 
-                            7, 
+                            IF_HASHABLE_SIZE, 
                             ifHashBuffer,
                             false);       
                     }   
@@ -192,7 +201,7 @@ OP              [+-*/]
                     hash_bucket_t* bucket
                         = getBucket(&(programBuild.tokenHash),
                           h_labelName,
-                          7,
+                          IF_HASHABLE_SIZE,
                           ifHashBuffer);
                                       
                     // append goto
@@ -205,7 +214,7 @@ OP              [+-*/]
                     ifHashBuffer[3] = tracker->elifSequence;
                     setHashValue(&(programBuild.tokenHash),
                                  h_labelName,
-                                 7,
+                                 IF_HASHABLE_SIZE,
                                  ifHashBuffer,
                                  *(programBuild.currentDepth));
 
@@ -240,20 +249,19 @@ OP              [+-*/]
                     // tracker->elseFlag    = true;
                     tracker->elifSequence += 1;
 
-                    char ifHashBuffer[7];
+                    char ifHashBuffer[IF_HASHABLE_SIZE];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->sequence,
                         tracker->elifSequence,
                         tracker->scope,
-                        tracker->thenFlag,
-                        tracker->elseFlag);
+                        tracker->currentID);
 
                     // This might be able to go further down out of scope?
                     if (!createHashBucket(
                               &(programBuild.tokenHash),
                               h_labelName, 
-                              7, 
+                              IF_HASHABLE_SIZE, 
                               ifHashBuffer,
                               false))
                     {
@@ -265,7 +273,7 @@ OP              [+-*/]
                     hash_bucket_t* bucket
                         = getBucket(&(programBuild.tokenHash),
                           h_labelName,
-                          7,
+                          IF_HASHABLE_SIZE,
                           ifHashBuffer);
 
                     appendInstruction(&programBuild, i_condgoto, 0, 0);
@@ -289,37 +297,35 @@ OP              [+-*/]
                             programBuild.lineNumber);
                         exit(1);
                     }
-                    char ifHashBuffer[7];
+                    char ifHashBuffer[IF_HASHABLE_SIZE];
+                                    
+                    // Sets something important
+                    hashableIfInfo(ifHashBuffer,
+                        tracker->functionNumber,
+                        tracker->sequence,
+                        0,
+                        tracker->scope,
+                        tracker->currentID);
+
+                    createHashBucket(
+                        &(programBuild.tokenHash),
+                        h_labelName, 
+                        IF_HASHABLE_SIZE, 
+                        ifHashBuffer,
+                        tracker->currentID);       
+
+                    // get hash bucket
+                    hash_bucket_t* bucket
+                        = getBucket(&(programBuild.tokenHash),
+                          h_labelName,
+                          IF_HASHABLE_SIZE,
+                          ifHashBuffer);
+                                      
+                    // append goto
+                    appendInstruction(&programBuild, i_goto, 0, 0);
+                    // attack bucket
+                    attachBucket(&programBuild, bucket);                        
                     
-                    if (tracker->elifSequence == 1)
-                    {
-                        hashableIfInfo(ifHashBuffer,
-                            tracker->functionNumber,
-                            tracker->sequence,
-                            0,
-                            tracker->scope,
-                            0,
-                            0);
-
-                        createHashBucket(
-                            &(programBuild.tokenHash),
-                            h_labelName, 
-                            7, 
-                            ifHashBuffer,
-                            false);       
-
-                        // get hash bucket
-                        hash_bucket_t* bucket
-                            = getBucket(&(programBuild.tokenHash),
-                              h_labelName,
-                              7,
-                              ifHashBuffer);
-                                          
-                        // append goto
-                        appendInstruction(&programBuild, i_goto, 0, 0);
-                        // attack bucket
-                        attachBucket(&programBuild, bucket);                        
-                    }
 
                     // Set 
                     hashableIfInfo(ifHashBuffer,
@@ -327,12 +333,11 @@ OP              [+-*/]
                         tracker->sequence,
                         tracker->elifSequence,
                         tracker->scope,
-                        tracker->thenFlag,
-                        tracker->elseFlag);
+                        tracker->currentID);
 
                     setHashValue(&(programBuild.tokenHash),
                         h_labelName,
-                        7,
+                        IF_HASHABLE_SIZE,
                         ifHashBuffer,
                         *(programBuild.currentDepth));
 
@@ -360,20 +365,19 @@ OP              [+-*/]
                     }
 
                     // Set end "end if" destination.
-                    char ifHashBuffer[7];
+                    char ifHashBuffer[IF_HASHABLE_SIZE];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->sequence,
                         0,
                         tracker->scope,
-                        0,
-                        0);
+                        tracker->currentID);
 
                     unsigned int index = *(programBuild.currentDepth);
 
                     setHashValue(&(programBuild.tokenHash),
                                  h_labelName,
-                                 7,
+                                 IF_HASHABLE_SIZE,
                                  ifHashBuffer,
                                  index);
 
@@ -385,12 +389,11 @@ OP              [+-*/]
                             tracker->sequence,
                             tracker->elifSequence,
                             tracker->scope,
-                            tracker->thenFlag,
-                            false);
+                            tracker->currentID);
 
                         setHashValue(&(programBuild.tokenHash),
                             h_labelName,
-                            7,
+                            IF_HASHABLE_SIZE,
                             ifHashBuffer,
                             *(programBuild.currentDepth));
                     }
