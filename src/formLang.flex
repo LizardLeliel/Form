@@ -8,7 +8,7 @@
 
 #include "build.h"
 
-#define IF_HASHABLE_SIZE 5
+#define IF_HASHABLE_SIZE 4
 #define ELIF_SEQ_INDEX   2
 
 extern int64_t interpretAsInt(double value);
@@ -122,7 +122,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->elifSequence,
-                        tracker->scope,
                         tracker->currentID);
 
                     // This might be able to go further down out of scope?
@@ -179,7 +178,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         0,
-                        tracker->scope,
                         tracker->currentID);
 
                     if (!peakHash(&(programBuild.tokenHash),
@@ -251,7 +249,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->elifSequence,
-                        tracker->scope,
                         tracker->currentID);
 
                     // This might be able to go further down out of scope?
@@ -300,7 +297,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         0,
-                        tracker->scope,
                         tracker->currentID);
 
                     createHashBucket(
@@ -327,7 +323,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         tracker->elifSequence,
-                        tracker->scope,
                         tracker->currentID);
 
                     setHashValue(&(programBuild.tokenHash),
@@ -365,7 +360,6 @@ OP              [+-*/]
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
                         0,
-                        tracker->scope,
                         tracker->currentID);
 
                     unsigned int index = *(programBuild.currentDepth);
@@ -382,7 +376,6 @@ OP              [+-*/]
                         hashableIfInfo(ifHashBuffer,
                             tracker->functionNumber,
                             tracker->elifSequence,
-                            tracker->scope,
                             tracker->currentID);
 
                         setHashValue(&(programBuild.tokenHash),

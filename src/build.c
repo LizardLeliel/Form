@@ -84,16 +84,14 @@ if_sequence_tracker_t* getTracker(program_build_t* program)
 void hashableIfInfo(char* buffer,
                     uint  fn, // function number
                     uint  eiseq, // elifsequence
-                    uint  scope,
                     uint  id)
 #undef uint
 {
-    printf("seq: %d eiseq: %d scope: %d id: %d\n", 0, eiseq, scope, id);
+    printf("seq: %d eiseq: %d scope: %d id: %d\n", 0, eiseq, 0, id);
     buffer[0] = 1; // Unique non-printable character (trun this into macro)
     buffer[1] = fn;
     buffer[2] = eiseq;
-    buffer[3] = scope;
-    buffer[4] = id;
+    buffer[3] = id;
 }
 
 

@@ -117,7 +117,6 @@ if_sequence_tracker_t* getTracker(program_build_t* program);
 void hashableIfInfo(char* buffer,
                     uint  fn, // function number
                     uint  eiseq, // elifsequence
-                    uint  scope,
                     uint  id);
 #undef uint
 
