@@ -131,7 +131,7 @@ void pushScopeBranchInfo(scope_branch_info_stack_t* infoStack,
     newInfo->info.scope    = info.scope;
     newInfo->info.thenFlag = info.thenFlag;
     newInfo->info.elseFlag = info.elseFlag;
-    newInfo->info.id       = info.nextID;
+    newInfo->info.id       = info.currentID;
     newInfo->info.sequence = info.sequence;
 
     newInfo->next     = infoStack->head;
@@ -152,11 +152,11 @@ void popScopeBranchInfo(scope_branch_info_stack_t* infoStack,
 
     scope_branch_info_t revertInfo = infoStack->head->info;
 
-    info->scope    = revertInfo.scope;
-    info->thenFlag = revertInfo.thenFlag;
-    info->elseFlag = revertInfo.elseFlag;
-    info->nextID   = revertInfo.id;
-    info->sequence = revertInfo.sequence;
+    info->scope     = revertInfo.scope;
+    info->thenFlag  = revertInfo.thenFlag;
+    info->elseFlag  = revertInfo.elseFlag;
+    info->currentID = revertInfo.id;
+    info->sequence  = revertInfo.sequence;
 
     scope_branch_info_node_t* freeNode = infoStack->head;
     infoStack->head                    = infoStack->head->next;

@@ -97,7 +97,7 @@ OP              [+-*/]
                         tracker->sequence    += 1;
                         // Function number already taken care of
                         tracker->elifSequence = 1;
-                        tracker->scope       += 1;
+                        tracker->scope        = 1;
                         tracker->thenFlag     = false;
                         tracker->elseFlag     = false;
                         tracker->currentID    = tracker->nextID;
@@ -137,15 +137,16 @@ OP              [+-*/]
                     }
                     else
                     {
-                        puts("Warning: scoped ifs not implemented");
                         pushScopeBranchInfo(&(programBuild.scopeBranchInfoStack),
                                             *tracker);
                         // tracker->sequence    += 1;
                         // Function number already taken care of
+                        tracker->sequence     = 1;
                         tracker->elifSequence = 1;
                         tracker->scope       += 1;
                         tracker->thenFlag     = false;
                         tracker->elseFlag     = false;
+                        tracker->currentID    = tracker->nextID;
                         tracker->nextID      += 1;
                     }
                     }
@@ -400,8 +401,14 @@ OP              [+-*/]
 
                     tracker->elseFlag      = false;
                     tracker->elifSequence  = 0;
-                    tracker->scope        -= 1;
 
+                    // Pop scope
+                    tracker->scope        -= 1;
+                    if (tracker->scope != 0)
+                    {
+                        popScopeBranchInfo(&(programBuild.scopeBranchInfoStack),
+                                             tracker);
+                    }
 
                     // If not at scope 1, pop previous scope.
                     } 
