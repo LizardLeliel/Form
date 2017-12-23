@@ -87,7 +87,6 @@ void hashableIfInfo(char* buffer,
                     uint  id)
 #undef uint
 {
-    printf("seq: %d eiseq: %d scope: %d id: %d\n", 0, eiseq, 0, id);
     buffer[0] = 1; // Unique non-printable character (trun this into macro)
     buffer[1] = fn;
     buffer[2] = eiseq;
