@@ -26,7 +26,6 @@ typedef struct constant_data_list
 
 typedef struct if_sequence_tracker
 {
-    unsigned int sequence; 
     unsigned int functionNumber; // Might be able to be infered
                                  // from the function header.
     unsigned int elifSequence;
@@ -45,7 +44,6 @@ typedef struct scope_branch_info
     bool         thenFlag;
     bool         elseFlag;
     unsigned int id;
-    unsigned int sequence; // notes say this can also be inferred.
     unsigned int elifSequence;
 } scope_branch_info_t;
 
@@ -118,7 +116,6 @@ if_sequence_tracker_t* getTracker(program_build_t* program);
 #define uint unsigned int
 void hashableIfInfo(char* buffer,
                     uint  fn, // function number
-                    uint  seq, // sequence
                     uint  eiseq, // elifsequence
                     uint  scope,
                     uint  id);

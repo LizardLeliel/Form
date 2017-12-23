@@ -8,7 +8,8 @@
 
 #include "build.h"
 
-#define IF_HASHABLE_SIZE 6
+#define IF_HASHABLE_SIZE 5
+#define ELIF_SEQ_INDEX   2
 
 extern int64_t interpretAsInt(double value);
 extern double interpretAsFloat(int64_t value);
@@ -94,7 +95,6 @@ OP              [+-*/]
 
                     if (tracker->scope == 0)
                     {
-                        tracker->sequence     = 1;
                         // Function number already taken care of
                         tracker->elifSequence = 1;
                         tracker->scope        = 1;
@@ -110,7 +110,6 @@ OP              [+-*/]
                                             *tracker);
                         // tracker->sequence    += 1;
                         // Function number already taken care of
-                        tracker->sequence     = 1;
                         tracker->elifSequence = 1;
                         tracker->scope       += 1;
                         tracker->thenFlag     = false;
@@ -122,7 +121,6 @@ OP              [+-*/]
                     char ifHashBuffer[IF_HASHABLE_SIZE];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         tracker->elifSequence,
                         tracker->scope,
                         tracker->currentID);
@@ -180,7 +178,6 @@ OP              [+-*/]
 
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         0,
                         tracker->scope,
                         tracker->currentID);
@@ -212,7 +209,7 @@ OP              [+-*/]
 
 
                     // Set if to go here on fail
-                    ifHashBuffer[3] = tracker->elifSequence;
+                    ifHashBuffer[ELIF_SEQ_INDEX] = tracker->elifSequence;
                     setHashValue(&(programBuild.tokenHash),
                                  h_labelName,
                                  IF_HASHABLE_SIZE,
@@ -253,7 +250,6 @@ OP              [+-*/]
                     char ifHashBuffer[IF_HASHABLE_SIZE];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         tracker->elifSequence,
                         tracker->scope,
                         tracker->currentID);
@@ -303,7 +299,6 @@ OP              [+-*/]
                     // Sets something important
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         0,
                         tracker->scope,
                         tracker->currentID);
@@ -331,7 +326,6 @@ OP              [+-*/]
                     // Set 
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         tracker->elifSequence,
                         tracker->scope,
                         tracker->currentID);
@@ -370,7 +364,6 @@ OP              [+-*/]
                     char ifHashBuffer[IF_HASHABLE_SIZE];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
-                        tracker->sequence,
                         0,
                         tracker->scope,
                         tracker->currentID);
@@ -388,7 +381,6 @@ OP              [+-*/]
                         // set the last elifseq to go here.
                         hashableIfInfo(ifHashBuffer,
                             tracker->functionNumber,
-                            tracker->sequence,
                             tracker->elifSequence,
                             tracker->scope,
                             tracker->currentID);
