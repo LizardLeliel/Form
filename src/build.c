@@ -134,7 +134,7 @@ void pushScopeBranchInfo(scope_branch_info_stack_t* infoStack,
     newInfo->info.elseFlag     = info.elseFlag;
     newInfo->info.id           = info.currentID;
     newInfo->info.sequence     = info.sequence;
-    //newInfo->info.elifSequence = info.elifSequence;
+    newInfo->info.elifSequence = info.elifSequence;
 
     newInfo->next     = infoStack->head;
     infoStack->head   = newInfo;
