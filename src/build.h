@@ -105,9 +105,10 @@ typedef struct program_build
     instruction_node_t* currentInstruction;
 
     // Other
-    bool         onMain;
-    unsigned int functionAmount;
-    unsigned int lineNumber;
+    bool          onMain;
+    size_t*       currentDepth;
+    unsigned int  functionAmount;
+    unsigned int  lineNumber;
 } program_build_t;
 
 

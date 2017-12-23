@@ -38,6 +38,7 @@ program_build_t prepareBuild()
     programBuild.onMain         = true;
     programBuild.functionAmount = 1;
     programBuild.lineNumber     = 1;
+    programBuild.currentDepth   = &(programBuild.programTop->depth);
 
     return programBuild;
 }
@@ -198,12 +199,10 @@ void appendInstruction(program_build_t*   programBuild,
     if (programBuild->onMain == true)
     {
         programBuild->programTop->depth += 1;
-        newInstructNode->index           = programBuild->programTop->depth;
     }
     else
     {
         programBuild->lastFunction->depth += 1;
-        newInstructNode->index             = programBuild->lastFunction->depth;
     }
 
     // Append instruction to end of function.
@@ -253,6 +252,9 @@ void makeNewFunction(program_build_t* programBuild)
     programBuild->lastFunction->next = newFunction;
     programBuild->lastFunction       = newFunction;
 
+    programBuild->currentDepth = &(programBuild->lastFunction->depth);
+
+
 }
 
 // Places return instruction on end of the instruction queue,
@@ -268,6 +270,9 @@ void endFunction(program_build_t* programBuild)
     // Set things back onto main
     programBuild->currentInstruction = programBuild->mainLast;
     programBuild->onMain             = true;
+
+    programBuild->currentDepth = &(programBuild->programTop->depth);
+
 }
 
 // Takes an instruction node and converts it to an instruction data struct

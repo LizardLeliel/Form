@@ -47,7 +47,7 @@ OP              [+-*/]
 
 %%
 
-{NL}                    {
+{NL}                {
                     // " (This line is to make my syntax highlighter work)
                     programBuild.lineNumber += 1;
                     }
@@ -94,7 +94,7 @@ OP              [+-*/]
                     {
                         tracker->sequence    += 1;
                         // Function number already taken care of
-                        tracker->elifSequence = 0;
+                        tracker->elifSequence = 1;
                         tracker->scope       += 1;
                         tracker->thenFlag     = false;
                         tracker->elseFlag     = false;
@@ -128,7 +128,7 @@ OP              [+-*/]
                               7,
                               ifHashBuffer);
 
-                        appendInstruction(&programBuild, i_condgoto, 1, 0);
+                        appendInstruction(&programBuild, i_condgoto, 0, 0);
                         attachBucket(&programBuild, bucket);
                         // Start a new one
                     }
@@ -163,6 +163,37 @@ OP              [+-*/]
                             programBuild.lineNumber);
                         exit(1);
                     }
+
+                    // Set if to go here if failed.
+                    char ifHashBuffer[7];
+
+                    hashableIfInfo(ifHashBuffer,
+                        tracker->functionNumber,
+                        tracker->sequence,
+                        0,
+                        tracker->scope,
+                        0,
+                        0);
+
+                    if (!peakHash(&(programBuild.tokenHash),
+                                  h_labelName,
+                                  7,
+                                  ifHashBuffer))
+                    {
+                        createHashBucket(
+                            &(programBuild.tokenHash),
+                            h_labelName, 
+                            7, 
+                            ifHashBuffer,
+                            false);       
+                    }   
+
+                    ifHashBuffer[3] = tracker->elifSequence;
+                    setHashValue(&(programBuild.tokenHash),
+                                 h_labelName,
+                                 7,
+                                 ifHashBuffer,
+                                 *(programBuild.currentDepth));
 
                     tracker->thenFlag = true;
                     }
@@ -236,7 +267,7 @@ OP              [+-*/]
                         exit(0);
                     }
 
-                    // Set hash
+                    // Set end "end if" destination.
                     char ifHashBuffer[7];
                     hashableIfInfo(ifHashBuffer,
                         tracker->functionNumber,
@@ -246,9 +277,7 @@ OP              [+-*/]
                         0,
                         0);
 
-                    unsigned int index = programBuild.onMain == true
-                        ? programBuild.programTop->depth   
-                        : programBuild.lastFunction->depth;
+                    unsigned int index = *(programBuild.currentDepth);
 
                     setHashValue(&(programBuild.tokenHash),
                                  h_labelName,
