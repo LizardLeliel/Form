@@ -7,10 +7,11 @@
 #include <stdint.h>
 
 // Raise error if at bottom of runtime data stack
-void shouldNotBeBottom(stack_t** dataStack) 
+// Just return a 1 or 0, let the above function print the error
+void shouldNotBeBottom(data_stack_t* dataStack) 
 {
     // Try changing later. Make better warning error for user
-    if ((*dataStack)->next == NULL) 
+    if (dataStack->top == NULL) 
     {
         puts("Stack underflow in shouldNotBeBottom()");
         // Todo: print helpful debugging info
@@ -19,42 +20,41 @@ void shouldNotBeBottom(stack_t** dataStack)
 }
 
 // Push data on the run-time stack.
-void pushStack(stack_t**   dataStack, 
-               data_type_t dataType, 
-               int64_t     data) 
+void pushStack(data_stack_t* dataStack, 
+               data_type_t   dataType, 
+               int64_t       data) 
 {
-    stack_t* newNode = malloc(sizeof(stack_t));
-    newNode->data    = data;
-    newNode->type    = dataType;
-    newNode->next    = *dataStack;
-    *dataStack       = newNode;
+    data_stack_node_t* newNode = malloc(sizeof(data_stack_node_t));
 
+    newNode->data.data = data;
+    newNode->data.type = dataType;
+    newNode->next      = dataStack->top;
+    dataStack->top     = newNode;
+    ++(dataStack->depth);
 }
 
 // Deletes the top of the stack
-void dropStack(stack_t** dataStack) {
+void dropStack(data_stack_t* dataStack) {
     shouldNotBeBottom(dataStack);
 
-    stack_t* oldNode = *dataStack;
-    *dataStack       = (*dataStack)->next;
+    data_stack_node_t* oldNode = dataStack->top;
+    dataStack->top             = dataStack->top->next;
     free(oldNode);
+
+    --(dataStack->depth);
 }
 
 // Pops the stack, then puts the data into a data_t data struct
-data_t popData(stack_t** dataStack)
+data_t popData(data_stack_t* dataStack)
 {
 
     // Put the data into a data_t struct.
-    data_t returnStruct = 
-    {
-        .dataType = (*dataStack)->type,
-        .data     = (*dataStack)->data
-    };
-
-    stack_t* freeNode = *dataStack;
-    *dataStack        = (*dataStack)->next;
+    data_t returnStruct         = dataStack->top->data;
+    data_stack_node_t* freeNode = dataStack->top;
+    dataStack->top              = dataStack->top->next;
     free(freeNode); 
 
+    --(dataStack->depth);
     return returnStruct;
 }
 
@@ -173,20 +173,20 @@ void returnFromFunction(program_context_t* program)
 //  f_int
 data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 {
-    if ((operandA->dataType & f_32int) 
-        && (operandB->dataType & f_32int))
+    if ((operandA->type & f_32int) 
+        && (operandB->type & f_32int))
     {
         return f_32int;
     }
     // If they're both not ints, then we want to cast any ints to floats
-    else if (operandA->dataType & f_32int)
+    else if (operandA->type & f_32int)
     {
         // cast it to a float, then reinterpret cast it.
         any64_t data;
         data.as_f = (double)operandA->data;
         operandA->data = data.as_i;
     }
-    else if (operandB->dataType & f_32int)
+    else if (operandB->type & f_32int)
     {
         any64_t data;
         data.as_f = (double)operandB->data;
@@ -199,15 +199,6 @@ data_type_t prepareOperands(data_t* operandA, data_t* operandB)
 // Executes the program.
 void execute(program_context_t program)
 {   
-
-    // Create a dummy stack bottom.
-    stack_t bottom =
-    {
-        f_nil,
-        0,
-        NULL,
-    };
-    program.dataStack = &bottom;
 
     // Initialize values so execution starts at main.
     program.currentInstruction      = program.code[0][0];

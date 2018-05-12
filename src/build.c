@@ -357,5 +357,9 @@ program_context_t returnProgram(program_build_t* programBuild)
     program.functionStack.depth = 0;
     program.functionStack.head  = NULL;
 
+    // Initialize the stack that makes this a stack-oriented language
+    program.dataStack.top   = NULL;
+    program.dataStack.depth = 0;
+
     return program;
 }

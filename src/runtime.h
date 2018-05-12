@@ -95,21 +95,29 @@ typedef enum intsruction_set
     instruction_ammount // 38
 
 } instruction_type_t;
-
-// Stack which stores runtime data.
-typedef struct stack 
-{
-    data_type_t   type;
-    int64_t       data;
-    struct stack* next;
-} stack_t;
-
 // Struct representing ddata that can be stored.
+
 typedef struct data
 {
-    data_type_t dataType;
+    data_type_t type;
     int64_t     data;
 } data_t;
+
+
+// Stack which stores runtime data.
+typedef struct data_stack_node
+{
+    data_t data;
+    struct data_stack_node* next;
+} data_stack_node_t;
+
+typedef struct data_stack 
+{
+    data_stack_node_t* top;
+    size_t             depth;
+} data_stack_t;
+
+
 
 // Represents an executable instruction and its arguments.
 typedef struct instruction 
@@ -118,6 +126,8 @@ typedef struct instruction
     int32_t             arg1;
     int64_t             arg2;
 } instruction_t;
+
+
 
 // Stack node representing the stack of called functions.
 typedef struct function_stack_node
@@ -134,6 +144,7 @@ typedef struct function_stack
     unsigned int           depth;
 } function_stack_t;
 
+
 // Struct to hold composite data type
 //  (ie dicts, arrays, string, etc.)
 typedef struct static_data
@@ -149,6 +160,7 @@ typedef struct static_data_bank
     size_t         size;
 } static_data_bank_t;
 
+
 // Holds all needed data for the program to execute.
 typedef struct program_context
 {
@@ -158,7 +170,7 @@ typedef struct program_context
 
     // Run-time data.
     static_data_bank_t staticDataBank;
-    stack_t*           dataStack;
+    data_stack_t       dataStack;
     instruction_t      currentInstruction;
 
     // Values used to track which instruction gets executed next.
@@ -187,21 +199,21 @@ static const unsigned int maxDepth = 50;
 void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*);
 
 // Raise error if at bottom of runtime data stack
-void shouldNotBeBottom(stack_t** dataStack);
+void shouldNotBeBottom(data_stack_t* dataStack);
 
 // Push data on the run-time stack.
-void pushStack(stack_t**   dataStack, 
+void pushStack(data_stack_t*   dataStack, 
                data_type_t dataType, 
                int64_t     data);
 
 
 // Deletes the top of the stack
-void dropStack(stack_t** dataStack);
+void dropStack(data_stack_t* dataStack);
 
 // Pops the stack, then puts the data into a data_t data struct
-data_t popData(stack_t** dataStack);
+data_t popData(data_stack_t* dataStack);
 
-data_t pickData(stack_t** dataStack, int popData);
+data_t pickData(data_stack_t* dataStack, int popData);
 
 // Calls a new function.
 void pushFunction(function_stack_t* functionStack,

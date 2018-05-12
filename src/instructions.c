@@ -305,7 +305,7 @@ void FORM_LOG_NOT(program_context_t* program)
 {
     int64_t evaluation;
     data_t operand   = popData(&(program->dataStack));
-    data_type_t type = operand.dataType;
+    data_type_t type = operand.type;
 
     if (type & f_32int || type & f_bool)
     {
@@ -331,7 +331,7 @@ void FORM_PUSH(program_context_t* program)
 void FORM_PICK(program_context_t* program)
 {
     data_t operand = popData(&(program->dataStack));
-    if (operand.dataType & f_32int)
+    if (operand.type & f_32int)
     {
         int location = operand.data;
         if (location <= 0)
@@ -340,7 +340,7 @@ void FORM_PICK(program_context_t* program)
             exit(1);
         }
 
-        stack_t* chaser = program->dataStack;
+        data_stack_node_t* chaser = program->dataStack.top;
 
         for (int depth = 1; depth < location && chaser->next != NULL; ++depth)
         {
@@ -355,7 +355,6 @@ void FORM_PICK(program_context_t* program)
 
         // printf("%ld %p\n", chaser->data, chaser->next);
         // stack_t copy = *chaser;
-
 
     }
     else
@@ -373,7 +372,7 @@ void FORM_GOTO(program_context_t* program)
 void FORM_COND_GOTO(program_context_t* program)
 {
     data_t operand   = popData(&(program->dataStack));
-    data_type_t type = operand.dataType;
+    data_type_t type = operand.type;
     bool gotoFlag;
 
     if (type & f_32float)
@@ -433,15 +432,15 @@ void FORM_PRINT(program_context_t* program)
     data_t value = popData(&(program->dataStack));
 
     // Determine how to print based on type.
-    if (value.dataType & f_32float)
+    if (value.type & f_32float)
     {
         printf("%f\n", interpretAsFloat(value.data));
     }
-    else if (value.dataType & f_32int)
+    else if (value.type & f_32int)
     {
         printf("%ld\n", value.data);
     }
-    else if (value.dataType & f_bool)
+    else if (value.type & f_bool)
     {
         if (value.data == 0)
         {
@@ -452,7 +451,7 @@ void FORM_PRINT(program_context_t* program)
             printf("True\n");
         }
     }
-    else if (value.dataType & f_string)
+    else if (value.type & f_string)
     {
         printf("%s\n", program->staticDataBank.dataBank[value.data].data);
     }
