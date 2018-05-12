@@ -45,6 +45,7 @@ THEN            "THEN"
 ELIF            "ELIF"
 ELSE            "ELSE"
 ENDIF           "ENDIF"
+PICK            "PICK"
 OP              [+-*/]
 
 
@@ -65,6 +66,9 @@ OP              [+-*/]
                     }
 {BOOLFALSE}         {
                     appendInstruction(&programBuild, i_push, f_bool, 0);
+                    }
+{PICK}              {
+                    appendInstruction(&programBuild, i_pick, 0, 0);
                     }
 {FLOAT}             {
                     double number = atof(yytext);

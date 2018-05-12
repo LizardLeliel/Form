@@ -58,13 +58,7 @@ data_t popData(stack_t** dataStack)
     return returnStruct;
 }
 
-data_t pickData(stack_t** dataStack, int depth)
-{
-    if (depth < 0)
-    {
-        
-    }
-}
+// Pick data here?
 
 // This is an array of function pointers. These functions
 //  are called during runtime.
@@ -107,10 +101,10 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     // Standard stack-related operations
     FORM_PUSH,
     FORM_NOP,
-    FORM_NOP,
-    FORM_NOP,
-    FORM_NOP,
     FORM_PICK,
+    FORM_NOP,
+    FORM_NOP,
+    FORM_NOP,
 
     // Form goto operations
     FORM_GOTO,

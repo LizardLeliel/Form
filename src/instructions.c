@@ -327,13 +327,36 @@ void FORM_PUSH(program_context_t* program)
     pushStack(&(program->dataStack), type, data);
 }
 
-// Whoops, was in the middle of this
+// Turn this into a call from runtime.c?
 void FORM_PICK(program_context_t* program)
 {
     data_t operand = popData(&(program->dataStack));
     if (operand.dataType & f_32int)
     {
-        
+        int location = operand.data;
+        if (location <= 0)
+        {
+            puts("Operand for 'pick' must be greater then 1!");
+            exit(1);
+        }
+
+        stack_t* chaser = program->dataStack;
+
+        for (int depth = 1; depth < location && chaser->next != NULL; ++depth)
+        {
+            chaser = chaser->next;
+        }
+
+        if (chaser->next == NULL)
+        {
+            puts("Stack underflow in pick");
+            exit(1);
+        }
+
+        // printf("%ld %p\n", chaser->data, chaser->next);
+        // stack_t copy = *chaser;
+
+
     }
     else
     {  
@@ -449,13 +472,3 @@ double interpretAsFloat(int64_t value)
     result.as_i = value;       
     return result.as_f;
 }
-
-// if 
-// then elif
-// then elif
-// else endif
-
-// if 
-// then elif
-// then elif
-// else endif

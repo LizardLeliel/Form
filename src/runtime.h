@@ -70,10 +70,10 @@ typedef enum intsruction_set
     // Standard stack-related operations
     i_push,  // 23
     i_drop,  // 24
-    i_over,  // 25
-    i_swaps, // 26
-    i_rot,   // 27
-    i_pick,  // 28
+    i_pick,  // 25
+    i_del,   // 26
+    i_dup,   // 27
+    i_rot,   // 28
 
     // Form goto operations
     i_goto,     // 29
@@ -92,7 +92,7 @@ typedef enum intsruction_set
 
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that.
-    instruction_ammount // 37
+    instruction_ammount // 38
 
 } instruction_type_t;
 
