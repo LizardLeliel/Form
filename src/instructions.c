@@ -319,6 +319,29 @@ void FORM_LOG_NOT(program_context_t* program)
     }
 }
 
+void FORM_PUSH(program_context_t* program)
+{
+    data_type_t type = program->currentInstruction.arg1;
+    int64_t     data = program->currentInstruction.arg2;
+
+    pushStack(&(program->dataStack), type, data);
+}
+
+// Whoops, was in the middle of this
+void FORM_PICK(program_context_t* program)
+{
+    data_t operand = popData(&(program->dataStack));
+    if (operand.dataType & f_32int)
+    {
+        
+    }
+    else
+    {  
+        puts("Operand for 'pick' must be an integer!");
+        exit(1);
+    }
+}
+
 void FORM_GOTO(program_context_t* program)
 {
     program->nextInstructionIndex = program->currentInstruction.arg2;
@@ -361,13 +384,6 @@ void FORM_COND_GOTO(program_context_t* program)
     }
 }
 
-void FORM_PUSH(program_context_t* program)
-{
-    data_type_t type = program->currentInstruction.arg1;
-    int64_t     data = program->currentInstruction.arg2;
-
-    pushStack(&(program->dataStack), type, data);
-}
 
 void FORM_CALL(program_context_t* program)
 {

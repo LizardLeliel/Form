@@ -40,37 +40,30 @@ void dropStack(stack_t** dataStack) {
     free(oldNode);
 }
 
-// Pops the stack, returns its value and puts the data type into outType
-int64_t popStack(stack_t** dataStack, data_type_t* outType) 
-{
-    shouldNotBeBottom(dataStack);
-
-    // Fetch the data.
-    if (outType != NULL) *outType = (*dataStack)->type;
-    int64_t returnVal = (*dataStack)->data;
-
-    // Free the top of the stack.
-    stack_t* freeNode = *dataStack;
-    *dataStack = (*dataStack)->next;
-    free(freeNode); 
-
-    return returnVal;
-}
-
 // Pops the stack, then puts the data into a data_t data struct
 data_t popData(stack_t** dataStack)
 {
-    shouldNotBeBottom(dataStack);
 
-    // Get values from popping the stack.
-    data_type_t outType;
-    int64_t data = popStack(dataStack, &outType);
+    // Put the data into a data_t struct.
+    data_t returnStruct = 
+    {
+        .dataType = (*dataStack)->type,
+        .data     = (*dataStack)->data
+    };
 
-    // Wrap the dta into a data_t struct.
-    data_t returnStruct 
-        = {.dataType = outType, .data = data};
+    stack_t* freeNode = *dataStack;
+    *dataStack        = (*dataStack)->next;
+    free(freeNode); 
 
     return returnStruct;
+}
+
+data_t pickData(stack_t** dataStack, int depth)
+{
+    if (depth < 0)
+    {
+        
+    }
 }
 
 // This is an array of function pointers. These functions
@@ -117,6 +110,7 @@ void (*EXEC_INSTRUCTION[instruction_ammount])(program_context_t*) =
     FORM_NOP,
     FORM_NOP,
     FORM_NOP,
+    FORM_PICK,
 
     // Form goto operations
     FORM_GOTO,

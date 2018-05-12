@@ -73,21 +73,22 @@ typedef enum intsruction_set
     i_over,  // 25
     i_swaps, // 26
     i_rot,   // 27
+    i_pick,  // 28
 
     // Form goto operations
-    i_goto,    // 28
-    i_condgoto, // 29
+    i_goto,     // 29
+    i_condgoto, // 30
 
     // Variable-related operations
-    i_scope,   // 30
-    i_assigns, // 31
-    i_get,     // 32
+    i_scope,   // 31
+    i_assigns, // 32
+    i_get,     // 33
 
     // Special operations (function call, return, output, end program)
-    i_call,    // 33
-    i_return,  // 34
-    i_print,   // 35
-    i_endprog, // 36
+    i_call,    // 34
+    i_return,  // 35
+    i_print,   // 36
+    i_endprog, // 37
 
     // This isn't an instruction; this is just as the size of the enumeration
     //  if this enum's size changes, this will reflect that.
@@ -193,14 +194,14 @@ void pushStack(stack_t**   dataStack,
                data_type_t dataType, 
                int64_t     data);
 
+
 // Deletes the top of the stack
 void dropStack(stack_t** dataStack);
 
-// Pops the stack, returns its value and puts the data type into outType
-int64_t popStack(stack_t** dataStack, data_type_t* outType);
-
 // Pops the stack, then puts the data into a data_t data struct
-data_t popData();
+data_t popData(stack_t** dataStack);
+
+data_t pickData(stack_t** dataStack, int popData);
 
 // Calls a new function.
 void pushFunction(function_stack_t* functionStack,
