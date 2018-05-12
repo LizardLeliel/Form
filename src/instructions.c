@@ -340,21 +340,46 @@ void FORM_PICK(program_context_t* program)
             exit(1);
         }
 
-        data_stack_node_t* chaser = program->dataStack.top;
-
-        for (int depth = 1; depth < location && chaser->next != NULL; ++depth)
+        if (program->dataStack.depth == 0)
         {
-            chaser = chaser->next;
+            puts("Stack underflow in pick");
         }
 
-        if (chaser->next == NULL)
+        data_stack_node_t* tracer = program->dataStack.top;
+
+        // The .data initialization is insigniiicant
+        data_stack_node_t  back_tracer_base = {.data = tracer->data, .next = tracer};
+        data_stack_node_t* back_tracer      = &back_tracer_base;
+
+        int depth;
+        for (depth = 1; depth < location && tracer != NULL; ++depth)
+        {
+            tracer      = tracer->next;
+            back_tracer = back_tracer->next;
+        }
+
+        data_stack_node_t* copy = malloc(sizeof(data_stack_node_t));
+
+        if (depth == 1 && location == 1)
+        {
+            // nothing to do here, we're moving the top of the stack to the top.
+            return;
+        }
+        else if (tracer != NULL)
+        {
+            back_tracer->next = tracer->next;
+            *copy = *tracer;
+            free(tracer);
+        }
+        else
         {
             puts("Stack underflow in pick");
             exit(1);
         }
 
-        // printf("%ld %p\n", chaser->data, chaser->next);
-        // stack_t copy = *chaser;
+        copy->next             = program->dataStack.top;
+        program->dataStack.top = copy;
+
 
     }
     else
