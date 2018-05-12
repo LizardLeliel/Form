@@ -1,0 +1,17 @@
+
+
+"Testing stack of one item (should say yo)" PRINT
+"Yo" 1 PICK PRINT
+
+"Testing picking middle of stack (should be 2)" PRINT
+3 2 1 2 PICK PRINT
+
+"Deleting rest of stack" PRINT PRINT PRINT
+
+"Testing picking the end of stack (should be m)" PRINT
+"m" 4 3 2 1 5 PICK PRINT
+"Deleting rest of stack" PRINT PRINT PRINT PRINT PRINT
+
+"And this should be stack underflow" PRINT
+9 9 9 4 PICK PRINT
+

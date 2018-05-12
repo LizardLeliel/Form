@@ -1,0 +1,11 @@
+"This should not run" PRINT
+
+IF
+THEN ELIF
+THEN ELIF
+ENDIF
+
+IF
+ENDIF
+
+ELIF

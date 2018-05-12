@@ -1,0 +1,26 @@
+
+:testFunction
+	5 + PRINT
+;
+
+:func1
+	1
+;
+
+:func2
+	2
+;
+
+:func3
+	3
+;
+
+10 testFunction
+2 3 + PRINT
+3 4 * PRINT
+
+"Hello, World!" PRINT
+
+"Should be true:" PRINT
+1 2 && PRINT
+

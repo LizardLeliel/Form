@@ -1,0 +1,4 @@
+
+"This should not run" PRINT
+
+IF THEN THEN ENDIF
