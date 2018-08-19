@@ -147,15 +147,15 @@ To access an element at an index, use the `[]` operator while an integer is on t
 Objects
 -------
 
-# Object creation
+### Object creation
 And object is created with either the operator `{}`, or the keyword `object`. This will create an empty object.
 
-# Member access and assignment
+### Member access and assignment
 To access a member in an object, have a variable at the top of the stack, the object beneath it, and use the operator `.@`. This will push the value of the member to the top of the stack. The variable will be consumed; however, the object will. If the member can not be found on the object, execution will end.
 
 To assign a member to an object, have a value on the top of the stack, follow by the variable and object. Use the operator `.=`. This will consume the value and variable, but not the object. You do not need to explicitly define member fields on objects before hand. If a variable is to be assignen, the variable's value will be copied instead. Members can not store variables.
 
-# Method access
+### Method access
 To access a member in an object, have a function name at the top of the stack, the object beneath it, and use the operator `.@`. This will execute the method found on the object. The function name will be consumed BEFORE execution; however, the object will remain on the top of the stack.
 
 There are multiple ways to assign a method to a function.
@@ -164,7 +164,7 @@ If you have a named function on the top of the stack and an object below, using 
 
 If you have a function name OR variable name, an anonymous function beneath it, and an object beneath it, calling the `.=` operator will assign the anonymous function as a method with the name of the function name or the variable name. 
 
-# Prototyping
+### Prototyping
 Form uses prototyping. If attempted to access a method or member of an object who has never had the method or member accessed, it attempt to access the method or member on its prototype object, if it exists. The prototype of the object can not be accessed directly.
 
 To set a prototype object, have the object to be a prototype on the top of the stack, with the base object below. The `new` keyword will set a copy of the object on the top of the stack to be the prototype of the second object. This will consume the top of the stack.
