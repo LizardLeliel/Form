@@ -334,6 +334,7 @@ void FORM_PICK(program_context_t* program)
     if (operand.type & f_32int)
     {
         int location = operand.data;
+        
         if (location <= 0)
         {
             puts("Operand for 'pick' must be greater then 1!");
@@ -379,9 +380,8 @@ void FORM_PICK(program_context_t* program)
 
         copy->next             = program->dataStack.top;
         program->dataStack.top = copy;
-
-
     }
+
     else
     {  
         puts("Operand for 'pick' must be an integer!");
